@@ -1,0 +1,1110 @@
+{% extends "base.html" %}
+
+{% block title %}Products - Linux Shop{% endblock %}
+
+{% block content %}
+<style>
+    /* ============================================
+       PRODUCTS PAGE — FULLY RESPONSIVE
+       ============================================ */
+
+    /* ---------- Page Header ---------- */
+    .products-header {
+        margin: clamp(1rem, 3vw, 2rem) 0 clamp(1.5rem, 3vw, 2rem);
+        animation: slideInDown 0.6s ease-out;
+    }
+
+    .products-header h1 {
+        font-size: clamp(1.5rem, 4.5vw, 2.25rem);
+        font-weight: 800;
+        color: var(--gray-900);
+        margin: 0;
+        position: relative;
+        display: inline-block;
+    }
+
+    .products-header h1::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 70px;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-color), #f72585);
+        border-radius: 999px;
+        animation: expandWidth 0.8s ease-out 0.3s both;
+    }
+
+    @keyframes expandWidth {
+        from { width: 0; }
+        to   { width: 70px; }
+    }
+
+    /* ---------- Filter Form ---------- */
+    .filter-card {
+        background: white;
+        padding: clamp(1rem, 3vw, 1.75rem);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+        border: 1px solid var(--gray-200);
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    .filter-card .form-label {
+        font-weight: 600;
+        color: var(--gray-700);
+        margin-bottom: 0.35rem;
+        font-size: clamp(0.78rem, 2vw, 0.85rem);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+    }
+
+    .filter-card .form-control,
+    .filter-card .form-select {
+        border: 2px solid var(--gray-200);
+        border-radius: 10px;
+        padding: clamp(0.5rem, 1.5vw, 0.65rem) clamp(0.75rem, 2vw, 1rem);
+        font-size: clamp(0.85rem, 2vw, 0.95rem);
+        transition: all 0.2s ease;
+        background: var(--gray-100);
+        width: 100%;
+    }
+
+    .filter-card .form-control:focus,
+    .filter-card .form-select:focus {
+        border-color: var(--primary-color);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+        background: white;
+    }
+
+    .filter-actions {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .filter-actions .btn {
+        flex: 1;
+        min-width: 90px;
+        padding: clamp(0.5rem, 1.5vw, 0.65rem) 1rem;
+        font-size: clamp(0.82rem, 2vw, 0.9rem);
+        font-weight: 600;
+        border-radius: 10px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.35rem;
+        transition: all 0.25s ease;
+        white-space: nowrap;
+    }
+
+    .btn-filter {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: white;
+        border: none;
+    }
+
+    .btn-filter:hover {
+        background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+        color: white;
+    }
+
+    .btn-reset {
+        background: transparent;
+        color: var(--gray-700);
+        border: 2px solid var(--gray-300);
+    }
+
+    .btn-reset:hover {
+        background: var(--gray-100);
+        border-color: var(--gray-500);
+        color: var(--gray-800);
+    }
+
+    /* ---------- Product Grid ---------- */
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+        gap: clamp(1rem, 2.5vw, 1.75rem);
+        margin-bottom: 2rem;
+    }
+
+    @media (max-width: 575.98px) {
+        .product-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+    }
+
+    @media (min-width: 1400px) {
+        .product-grid {
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        }
+    }
+
+    /* ---------- Product Card ---------- */
+    .product-card {
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        box-shadow: var(--shadow-sm);
+        animation: fadeInUp 0.5s ease-out both;
+    }
+
+    .product-card:hover {
+        transform: translateY(-6px);
+        box-shadow: var(--shadow-xl);
+        border-color: transparent;
+    }
+
+    .product-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-color), #f72585);
+        transform: scaleX(0);
+        transition: transform 0.4s ease;
+        transform-origin: left;
+        z-index: 2;
+    }
+
+    .product-card:hover::before {
+        transform: scaleX(1);
+    }
+
+    /* Stagger entrance */
+    .product-grid > *:nth-child(1)  .product-card { animation-delay: 0.03s; }
+    .product-grid > *:nth-child(2)  .product-card { animation-delay: 0.06s; }
+    .product-grid > *:nth-child(3)  .product-card { animation-delay: 0.09s; }
+    .product-grid > *:nth-child(4)  .product-card { animation-delay: 0.12s; }
+    .product-grid > *:nth-child(5)  .product-card { animation-delay: 0.15s; }
+    .product-grid > *:nth-child(6)  .product-card { animation-delay: 0.18s; }
+    .product-grid > *:nth-child(7)  .product-card { animation-delay: 0.21s; }
+    .product-grid > *:nth-child(8)  .product-card { animation-delay: 0.24s; }
+    .product-grid > *:nth-child(9)  .product-card { animation-delay: 0.27s; }
+    .product-grid > *:nth-child(10) .product-card { animation-delay: 0.30s; }
+    .product-grid > *:nth-child(11) .product-card { animation-delay: 0.33s; }
+    .product-grid > *:nth-child(12) .product-card { animation-delay: 0.36s; }
+
+    /* Image wrapper */
+    .product-image-wrap {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 4 / 3;
+        overflow: hidden;
+        background: var(--gray-100);
+        cursor: pointer;
+    }
+
+    .product-image-wrap img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+        display: block;
+    }
+
+    .product-card:hover .product-image-wrap img {
+        transform: scale(1.06);
+    }
+
+    .product-image-placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, var(--gray-200), var(--gray-300));
+        color: var(--gray-600);
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    /* Card body */
+    .product-body {
+        padding: clamp(0.9rem, 2vw, 1.25rem);
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .product-title {
+        font-size: clamp(1rem, 2.4vw, 1.12rem);
+        font-weight: 700;
+        color: var(--gray-900);
+        margin-bottom: 0.4rem;
+        line-height: 1.35;
+        transition: color 0.3s ease;
+    }
+
+    .product-card:hover .product-title {
+        color: var(--primary-color);
+    }
+
+    .product-desc {
+        color: var(--gray-600);
+        font-size: clamp(0.82rem, 2vw, 0.9rem);
+        line-height: 1.55;
+        margin-bottom: 0.75rem;
+        flex: 1;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .product-price {
+        font-size: clamp(1.1rem, 3vw, 1.3rem);
+        font-weight: 800;
+        color: var(--primary-color);
+        margin: 0.4rem 0 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .product-price::before {
+        content: '';
+        width: 4px;
+        height: 20px;
+        background: linear-gradient(135deg, var(--primary-color), #f72585);
+        border-radius: 2px;
+        flex-shrink: 0;
+    }
+
+    .stock-info {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        font-size: clamp(0.75rem, 1.9vw, 0.82rem);
+        color: var(--gray-600);
+        background: var(--gray-100);
+        padding: 0.35rem 0.75rem;
+        border-radius: 999px;
+        width: fit-content;
+        margin-bottom: 0.85rem;
+    }
+
+    .stock-info i {
+        color: var(--primary-color);
+    }
+
+    .stock-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 999px;
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+
+    .stock-badge.low {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .stock-badge.out {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    /* Card actions */
+    .card-actions {
+        margin-top: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .btn-card {
+        padding: clamp(0.5rem, 1.5vw, 0.65rem) 1rem;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: clamp(0.8rem, 2vw, 0.88rem);
+        transition: all 0.25s ease;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        text-decoration: none;
+        cursor: pointer;
+        white-space: nowrap;
+        line-height: 1.2;
+    }
+
+    .btn-card-primary {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: white;
+        box-shadow: 0 3px 8px rgba(67, 97, 238, 0.25);
+    }
+
+    .btn-card-primary:hover {
+        background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+        transform: translateY(-2px);
+        box-shadow: 0 5px 14px rgba(67, 97, 238, 0.4);
+        color: white;
+    }
+
+    .btn-card-primary:disabled {
+        background: var(--gray-400);
+        cursor: not-allowed;
+        box-shadow: none;
+        transform: none;
+    }
+
+    .btn-card-outline {
+        background: transparent;
+        color: var(--gray-700);
+        border: 1.5px solid var(--gray-300);
+    }
+
+    .btn-card-outline:hover {
+        background: var(--gray-100);
+        border-color: var(--gray-500);
+        color: var(--gray-800);
+        transform: translateY(-2px);
+    }
+
+    .btn-card-warning {
+        background: transparent;
+        color: #d97706;
+        border: 1.5px solid #f59e0b;
+    }
+
+    .btn-card-warning:hover {
+        background: #f59e0b;
+        color: white;
+    }
+
+    .btn-card-danger {
+        background: transparent;
+        color: #dc2626;
+        border: 1.5px solid #ef4444;
+    }
+
+    .btn-card-danger:hover {
+        background: #ef4444;
+        color: white;
+    }
+
+    /* Small action grid (admin buttons) */
+    .admin-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.4rem;
+    }
+
+    /* ---------- Empty State ---------- */
+    .empty-state {
+        text-align: center;
+        padding: clamp(2rem, 6vw, 4rem) 1rem;
+        background: linear-gradient(135deg, var(--info-color), #2563eb);
+        color: white;
+        border-radius: var(--radius-lg);
+        margin: 2rem 0;
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    .empty-state i {
+        font-size: clamp(2.5rem, 8vw, 4rem);
+        margin-bottom: 1rem;
+        opacity: 0.9;
+    }
+
+    .empty-state h4 {
+        font-size: clamp(1.2rem, 3.5vw, 1.75rem);
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+    }
+
+    .empty-state p {
+        font-size: clamp(0.9rem, 2.2vw, 1.05rem);
+        margin-bottom: 1.5rem;
+        opacity: 0.95;
+    }
+
+    .empty-state .btn {
+        background: white;
+        color: var(--info-color);
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 700;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.25s ease;
+    }
+
+    .empty-state .btn:hover {
+        background: var(--gray-100);
+        transform: translateY(-2px);
+        color: var(--info-color);
+    }
+
+    /* ---------- Modal Enhancements ---------- */
+    .modal-content {
+        border: none;
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-xl);
+    }
+
+    .modal-header {
+        background: linear-gradient(135deg, var(--primary-color), #7209b7);
+        color: white;
+        border: none;
+        padding: clamp(0.85rem, 2.5vw, 1.25rem);
+    }
+
+    .modal-header .btn-close {
+        filter: brightness(0) invert(1);
+        opacity: 0.85;
+    }
+
+    .modal-header .btn-close:hover {
+        opacity: 1;
+    }
+
+    .modal-title {
+        font-weight: 700;
+        font-size: clamp(1rem, 2.5vw, 1.15rem);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .modal-body {
+        padding: clamp(1rem, 3vw, 1.75rem);
+    }
+
+    .modal-footer {
+        border-top: 1px solid var(--gray-200);
+        padding: clamp(0.85rem, 2.5vw, 1.25rem);
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .modal-product-img {
+        max-height: 320px;
+        object-fit: contain;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-md);
+        width: 100%;
+    }
+
+    .modal-price {
+        font-size: clamp(1.25rem, 3.5vw, 1.75rem);
+        font-weight: 800;
+        color: var(--primary-color);
+        margin-bottom: 0.75rem;
+    }
+
+    .modal-stock-box {
+        background: var(--gray-100);
+        padding: clamp(0.75rem, 2vw, 1rem);
+        border-radius: var(--radius);
+        margin: 1rem 0;
+    }
+
+    .modal-stock-box p {
+        margin-bottom: 0.4rem;
+        font-size: clamp(0.85rem, 2vw, 0.95rem);
+    }
+
+    /* Delete modal */
+    .delete-icon-wrap {
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+
+    .delete-icon-wrap i {
+        font-size: clamp(3rem, 8vw, 4rem);
+        color: var(--danger-color);
+    }
+
+    /* ---------- Animations ---------- */
+    @keyframes slideInDown {
+        from { opacity: 0; transform: translateY(-20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ---------- Reduced Motion ---------- */
+    @media (prefers-reduced-motion: reduce) {
+        .products-header,
+        .filter-card,
+        .product-card,
+        .empty-state {
+            animation: none !important;
+        }
+        .product-card:hover {
+            transform: none;
+        }
+    }
+
+        /* ---------- Pagination ---------- */
+    .pagination-wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.75rem;
+        margin: clamp(1.5rem, 4vw, 2.5rem) 0 clamp(1rem, 2.5vw, 1.5rem);
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    .pagination-info {
+        font-size: clamp(0.78rem, 2vw, 0.88rem);
+        color: var(--gray-500);
+        text-align: center;
+    }
+
+    .pagination-info strong {
+        color: var(--gray-800);
+        font-weight: 700;
+    }
+
+    .pagination {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 0.35rem;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .pagination-item {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: clamp(36px, 8vw, 42px);
+        height: clamp(36px, 8vw, 42px);
+        padding: 0 0.65rem;
+        border-radius: 10px;
+        border: 1.5px solid var(--gray-200);
+        background: white;
+        color: var(--gray-700);
+        font-size: clamp(0.82rem, 2vw, 0.92rem);
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+        line-height: 1;
+    }
+
+    .pagination-item:hover:not(.disabled):not(.active) {
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(67, 97, 238, 0.15);
+    }
+
+    .pagination-item.active {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: white;
+        border-color: transparent;
+        box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+        cursor: default;
+    }
+
+    .pagination-item.disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+
+    .pagination-item.ellipsis {
+        border: none;
+        background: transparent;
+        cursor: default;
+        color: var(--gray-400);
+        min-width: auto;
+        padding: 0 0.35rem;
+    }
+
+    .pagination-item.ellipsis:hover {
+        transform: none;
+        box-shadow: none;
+    }
+
+    .pagination-item i {
+        font-size: 1em;
+    }
+
+    /* Mobile: hide number buttons, show only prev/next */
+    @media (max-width: 480px) {
+        .pagination-item.page-num:not(.active) {
+            display: none;
+        }
+        .pagination-item.page-num.active {
+            display: inline-flex;
+        }
+        .pagination-item.ellipsis {
+            display: none;
+        }
+    }
+
+    /* Dark mode */
+    body.dark-mode .pagination-item {
+        background: var(--gray-800);
+        border-color: var(--gray-700);
+        color: var(--gray-300);
+    }
+    body.dark-mode .pagination-item:hover:not(.disabled):not(.active) {
+        background: var(--gray-700);
+        color: var(--primary-light);
+        border-color: var(--primary-color);
+    }
+    body.dark-mode .pagination-item.active {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: white;
+    }
+    body.dark-mode .pagination-info { color: var(--gray-400); }
+    body.dark-mode .pagination-info strong { color: var(--gray-100); }
+
+
+    /* ---------- Dark Mode ---------- */
+    body.dark-mode .filter-card,
+    body.dark-mode .product-card {
+        background: var(--gray-800);
+        border-color: var(--gray-700);
+    }
+
+    body.dark-mode .filter-card .form-control,
+    body.dark-mode .filter-card .form-select {
+        background: var(--gray-700);
+        border-color: var(--gray-600);
+        color: white;
+    }
+
+    body.dark-mode .filter-card .form-control:focus,
+    body.dark-mode .filter-card .form-select:focus {
+        background: var(--gray-600);
+    }
+
+    body.dark-mode .products-header h1 { color: var(--gray-100); }
+    body.dark-mode .product-title      { color: var(--gray-100); }
+    body.dark-mode .product-desc       { color: var(--gray-400); }
+    body.dark-mode .stock-info         { background: var(--gray-700); color: var(--gray-300); }
+    body.dark-mode .btn-card-outline   { color: var(--gray-200); border-color: var(--gray-600); }
+    body.dark-mode .btn-card-outline:hover { background: var(--gray-700); }
+    body.dark-mode .modal-stock-box    { background: var(--gray-700); color: var(--gray-200); }
+    body.dark-mode .btn-reset          { color: var(--gray-200); border-color: var(--gray-600); }
+    body.dark-mode .btn-reset:hover    { background: var(--gray-700); }
+</style>
+
+<!-- Page Header -->
+<div class="products-header">
+    <h1><i class="bi bi-grid"></i> All Products</h1>
+</div>
+
+<!-- Filter Form -->
+<form method="get" class="filter-card">
+    <div class="row g-3 align-items-end">
+        <div class="col-lg-4 col-md-6 col-12">
+            <label class="form-label"><i class="bi bi-search"></i> Search</label>
+            <input type="search" name="q" value="{{ q or request.args.get('q','') }}" 
+                   class="form-control" placeholder="Search by name or description...">
+        </div>
+        <div class="col-lg-2 col-md-6 col-6">
+            <label class="form-label"><i class="bi bi-currency-exchange"></i> Min Price</label>
+            <input type="text" name="min_price" value="{{ min_price or request.args.get('min_price','') }}" 
+                   class="form-control" placeholder="0" inputmode="numeric">
+        </div>
+        <div class="col-lg-2 col-md-6 col-6">
+            <label class="form-label"><i class="bi bi-currency-exchange"></i> Max Price</label>
+            <input type="text" name="max_price" value="{{ max_price or request.args.get('max_price','') }}" 
+                   class="form-control" placeholder="10000" inputmode="numeric">
+        </div>
+        <div class="col-lg-2 col-md-6 col-12">
+            <label class="form-label"><i class="bi bi-sort-down"></i> Sort</label>
+            <select name="sort" class="form-select">
+                <option value="" {% if not sort %}selected{% endif %}>✨ Newest</option>
+                <option value="price_asc" {% if sort=='price_asc' %}selected{% endif %}>💰 Price: Low to High</option>
+                <option value="price_desc" {% if sort=='price_desc' %}selected{% endif %}>💰 Price: High to Low</option>
+            </select>
+        </div>
+        <div class="col-lg-2 col-md-6 col-12">
+            <div class="filter-actions">
+                <button type="submit" class="btn btn-filter">
+                    <i class="bi bi-funnel"></i> Filter
+                </button>
+                <a href="{{ url_for('products') }}" class="btn btn-reset">
+                    <i class="bi bi-arrow-counterclockwise"></i> Reset
+                </a>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- Product Grid -->
+{% if products %}
+<div class="product-grid">
+    {% for product in products %}
+    <div class="product-card-wrap" 
+         data-product-id="{{ product.id }}" 
+         data-product-name="{{ product.name }}" 
+         data-product-price="{{ product.price }}">
+        <div class="product-card">
+            <!-- Image -->
+            <div class="product-image-wrap" onclick="openQuickView({{ product.id }})">
+                {% if product.image_url %}
+                <img src="{{ product.image_url }}"
+                     srcset="{{ product.image_url.replace('.','_med.') }} 400w, {{ product.image_url.replace('.','_thumb.') }} 200w"
+                     sizes="(max-width: 600px) 100vw, (max-width: 1200px) 50vw, 400px"
+                     alt="{{ product.name }}"
+                     loading="lazy">
+                {% else %}
+                <div class="product-image-placeholder">
+                    <i class="bi bi-image me-2"></i> No image
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Body -->
+            <div class="product-body">
+                <h5 class="product-title">{{ product.name }}</h5>
+                <p class="product-desc">{{ product.description[:100] }}{% if product.description|length > 100 %}…{% endif %}</p>
+                <p class="product-price">{{ product.price|fcfa }} FCFA</p>
+
+                <div class="stock-info">
+                    <i class="bi bi-box"></i> Stock: {{ product.quantity }}
+                    {% if product.quantity <= 5 and product.quantity > 0 %}
+                    <span class="stock-badge low"><i class="bi bi-exclamation-triangle"></i> Low</span>
+                    {% elif product.quantity == 0 %}
+                    <span class="stock-badge out"><i class="bi bi-x-circle"></i> Out</span>
+                    {% endif %}
+                </div>
+
+                <!-- Actions -->
+                <div class="card-actions">
+                    {% if product.quantity > 0 %}
+                    <a href="{{ url_for('add_to_cart', product_id=product.id) }}" 
+                       class="btn-card btn-card-primary add-to-cart">
+                        <i class="bi bi-cart-plus"></i> Add to Cart
+                    </a>
+                    {% else %}
+                    <button class="btn-card btn-card-primary" disabled>
+                        <i class="bi bi-cart-x"></i> Out of Stock
+                    </button>
+                    {% endif %}
+
+                    <div class="admin-actions" style="grid-template-columns: 1fr 1fr;">
+                        <button type="button" class="btn-card btn-card-outline" 
+                                onclick="openQuickView({{ product.id }})">
+                            <i class="bi bi-eye"></i> View
+                        </button>
+                        <a href="{{ url_for('product_detail', id=product.id) }}" 
+                           class="btn-card btn-card-outline">
+                            <i class="bi bi-box-arrow-up-right"></i> Details
+                        </a>
+                    </div>
+
+                    {% if session.get('role') == 'admin' %}
+                    <div class="admin-actions">
+                        <a href="{{ url_for('edit_product', id=product.id) }}" 
+                           class="btn-card btn-card-warning">
+                            <i class="bi bi-pencil"></i> Edit
+                        </a>
+                        <button type="button" class="btn-card btn-card-danger" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#deleteModal{{ product.id }}">
+                            <i class="bi bi-trash"></i> Delete
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick View Modal -->
+    <div class="modal fade" id="viewModal{{ product.id }}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-info-circle"></i> {{ product.name }}
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3 g-md-4">
+                        <div class="col-md-6">
+                            {% if product.image_url %}
+                            <img src="{{ product.image_url }}" alt="{{ product.name }}" class="modal-product-img">
+                            {% else %}
+                            <div class="product-image-placeholder" style="aspect-ratio: 1; border-radius: var(--radius);">
+                                <i class="bi bi-image me-2"></i> No image
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <div class="modal-price">{{ product.price|fcfa }} FCFA</div>
+                            <p style="color: var(--gray-700); line-height: 1.6;">{{ product.description }}</p>
+                            
+                            <div class="modal-stock-box">
+                                <p><strong><i class="bi bi-box"></i> Stock Status:</strong></p>
+                                {% if product.quantity > 0 %}
+                                <p style="color: var(--success-color); margin-bottom: 0.5rem;">
+                                    <i class="bi bi-check-circle-fill"></i> {{ product.quantity }} units available
+                                </p>
+                                {% else %}
+                                <p style="color: var(--danger-color); margin-bottom: 0.5rem;">
+                                    <i class="bi bi-x-circle-fill"></i> Out of stock
+                                </p>
+                                {% endif %}
+                                <p style="margin-bottom: 0;"><strong><i class="bi bi-upc-scan"></i> Product ID:</strong> {{ product.id }}</p>
+                            </div>
+
+                            <div class="d-flex gap-2 flex-wrap">
+                                {% if product.quantity > 0 %}
+                                <a href="{{ url_for('add_to_cart', product_id=product.id) }}" 
+                                   class="btn-card btn-card-primary flex-fill">
+                                    <i class="bi bi-cart-plus"></i> Add to Cart
+                                </a>
+                                {% endif %}
+                                <a href="{{ url_for('product_detail', id=product.id) }}" 
+                                   class="btn-card btn-card-outline flex-fill">
+                                    <i class="bi bi-box-arrow-up-right"></i> Full Page
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Modal (Admin) -->
+    {% if session.get('role') == 'admin' %}
+    <div class="modal fade" id="deleteModal{{ product.id }}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+                    <h5 class="modal-title">
+                        <i class="bi bi-exclamation-triangle-fill"></i> Confirm Delete
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="delete-icon-wrap">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                    </div>
+                    <p class="text-center" style="font-size: 1.05rem;">
+                        Are you sure you want to delete <strong>{{ product.name }}</strong>?
+                    </p>
+                    <p class="text-center" style="color: var(--danger-color); font-weight: 600;">
+                        <i class="bi bi-exclamation-circle"></i> This action cannot be undone!
+                    </p>
+                    {% if product.command_items %}
+                    <div class="alert alert-warning" style="font-size: 0.9rem;">
+                        <i class="bi bi-info-circle"></i>
+                        This product is in {{ product.command_items|length }} order(s).
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-card btn-card-outline" data-bs-dismiss="modal">
+                        <i class="bi bi-x"></i> Cancel
+                    </button>
+                    <form action="{{ url_for('delete_product', id=product.id) }}" method="POST" class="d-inline">
+                        <button type="submit" class="btn-card btn-card-danger">
+                            <i class="bi bi-trash"></i> Delete Product
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+</div>
+
+<!-- ============================================
+     PAGINATION
+     ============================================ -->
+{% if pagination and pagination.pages > 1 %}
+<div class="pagination-wrap">
+    <div class="pagination-info">
+        Showing
+        <strong>{{ (pagination.page - 1) * pagination.per_page + 1 }}</strong>
+        –
+        <strong>{{ (pagination.page - 1) * pagination.per_page + products|length }}</strong>
+        of
+        <strong>{{ pagination.total }}</strong>
+        products
+    </div>
+
+    <ul class="pagination">
+        {# Previous button #}
+        {% if pagination.has_prev %}
+        <a href="{{ url_for('products', page=pagination.prev_num, q=q, min_price=min_price, max_price=max_price, sort=sort) }}"
+           class="pagination-item" title="Previous page">
+            <i class="bi bi-chevron-left"></i>
+        </a>
+        {% else %}
+        <span class="pagination-item disabled" title="Previous page">
+            <i class="bi bi-chevron-left"></i>
+        </span>
+        {% endif %}
+
+        {# Page numbers with ellipsis #}
+        {% for page_num in pagination.iter_pages(left_edge=1, left_current=1, right_current=2, right_edge=1) %}
+            {% if page_num %}
+                {% if page_num == pagination.page %}
+                <span class="pagination-item active page-num">{{ page_num }}</span>
+                {% else %}
+                <a href="{{ url_for('products', page=page_num, q=q, min_price=min_price, max_price=max_price, sort=sort) }}"
+                   class="pagination-item page-num">{{ page_num }}</a>
+                {% endif %}
+            {% else %}
+                <span class="pagination-item ellipsis">…</span>
+            {% endif %}
+        {% endfor %}
+
+        {# Next button #}
+        {% if pagination.has_next %}
+        <a href="{{ url_for('products', page=pagination.next_num, q=q, min_price=min_price, max_price=max_price, sort=sort) }}"
+           class="pagination-item" title="Next page">
+            <i class="bi bi-chevron-right"></i>
+        </a>
+        {% else %}
+        <span class="pagination-item disabled" title="Next page">
+            <i class="bi bi-chevron-right"></i>
+        </span>
+        {% endif %}
+    </ul>
+</div>
+{% endif %}
+
+{% else %}
+<!-- Empty State -->
+<div class="empty-state">
+    <i class="bi bi-emoji-frown"></i>
+    <h4>No products found!</h4>
+    <p>
+        {% if q or min_price or max_price %}
+        Try adjusting your filters or search terms.
+        {% else %}
+        There are no products in the database yet.
+        {% endif %}
+    </p>
+    {% if session.get('role') == 'admin' %}
+    <a href="{{ url_for('add_product') }}" class="btn">
+        <i class="bi bi-plus-circle"></i> Add Your First Product
+    </a>
+    {% else %}
+    <a href="{{ url_for('products') }}" class="btn">
+        <i class="bi bi-arrow-counterclockwise"></i> Clear Filters
+    </a>
+    {% endif %}
+</div>
+{% endif %}
+
+<script>
+/* ============================================
+   PRODUCTS PAGE SCRIPT
+   ============================================ */
+(function() {
+    'use strict';
+
+    // ---------- Quick View ----------
+    window.openQuickView = function(productId) {
+        const modalEl = document.getElementById(`viewModal${productId}`);
+        if (!modalEl) return;
+        const modal = new bootstrap.Modal(modalEl);
+        modal.show();
+    };
+
+    // ---------- Add to Cart ----------
+    document.querySelectorAll('.add-to-cart').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const card = this.closest('.product-card-wrap');
+            const productName = card ? card.dataset.productName : 'Product';
+
+            this.style.transform = 'scale(0.96)';
+            setTimeout(() => { this.style.transform = ''; }, 180);
+
+            if (typeof showToast === 'function') {
+                showToast(`${productName} added to cart!`, 'success', 'bi-cart-check-fill');
+            }
+
+            const href = this.href;
+            setTimeout(() => { window.location.href = href; }, 400);
+        });
+    });
+
+    // ---------- Filter Form Submit ----------
+    const filterForm = document.querySelector('.filter-card');
+    if (filterForm) {
+        filterForm.addEventListener('submit', function() {
+            const submitBtn = this.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.innerHTML = '<span class="loading loading-sm"></span> Filtering...';
+                submitBtn.disabled = true;
+            }
+        });
+    }
+
+    // ---------- Price Validation ----------
+    const minPrice = document.querySelector('input[name="min_price"]');
+    const maxPrice = document.querySelector('input[name="max_price"]');
+
+    if (minPrice && maxPrice) {
+        function validatePrices() {
+            const min = parseFloat(minPrice.value) || 0;
+            const max = parseFloat(maxPrice.value) || Infinity;
+            if (min > max) {
+                maxPrice.setCustomValidity('Max price must be greater than min price');
+                maxPrice.style.borderColor = '#ef4444';
+            } else {
+                maxPrice.setCustomValidity('');
+                maxPrice.style.borderColor = '';
+            }
+        }
+        minPrice.addEventListener('input', validatePrices);
+        maxPrice.addEventListener('input', validatePrices);
+    }
+
+    // ---------- Modal ESC key ----------
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.modal.show').forEach(modal => {
+                const inst = bootstrap.Modal.getInstance(modal);
+                if (inst) inst.hide();
+            });
+        }
+    });
+
+    console.log('✨ Products page loaded');
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,1643 @@
+{% extends "base.html" %}
+
+{% block title %}Returns & Exchanges - Linux Shop{% endblock %}
+
+{% block content %}
+<style>
+    /* ============================================
+       RETURNS & EXCHANGES PAGE — FULLY RESPONSIVE
+       ============================================ */
+
+    /* ---------- Page Header ---------- */
+    .page-header {
+        text-align: center;
+        padding: clamp(1.5rem, 4vw, 2.5rem) 0 clamp(1.75rem, 4.5vw, 2.5rem);
+        animation: fadeInDown 0.6s ease-out;
+    }
+
+    .page-header-icon {
+        width: clamp(64px, 14vw, 80px);
+        height: clamp(64px, 14vw, 80px);
+        border-radius: 50%;
+        background: linear-gradient(135deg, rgba(6, 214, 160, 0.18), rgba(6, 214, 160, 0.06));
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: clamp(1.75rem, 4vw, 2.25rem);
+        color: var(--success-color);
+        margin-bottom: clamp(0.85rem, 2.5vw, 1.15rem);
+        transition: transform 0.4s ease;
+    }
+
+    .page-header-icon:hover {
+        transform: rotate(-10deg) scale(1.08);
+    }
+
+    .page-header h1 {
+        font-size: clamp(1.5rem, 4.5vw, 2.3rem);
+        font-weight: 800;
+        color: var(--gray-900);
+        margin-bottom: 0.6rem;
+        position: relative;
+        display: inline-block;
+    }
+
+    .page-header h1::after {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 70px;
+        height: 4px;
+        background: linear-gradient(90deg, var(--success-color), #059669);
+        border-radius: 999px;
+        animation: expandWidth 0.8s ease-out 0.3s both;
+    }
+
+    @keyframes expandWidth {
+        from { width: 0; }
+        to   { width: 70px; }
+    }
+
+    .page-header .lead {
+        color: var(--gray-600);
+        font-size: clamp(0.9rem, 2.2vw, 1.05rem);
+        max-width: 640px;
+        margin: 0 auto;
+    }
+
+    /* ---------- Status Pills Row ---------- */
+    .status-pills {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: clamp(0.65rem, 1.8vw, 1rem);
+        margin-top: clamp(1rem, 2.5vw, 1.5rem);
+    }
+
+    @media (min-width: 576px) {
+        .status-pills {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (min-width: 992px) {
+        .status-pills {
+            grid-template-columns: repeat(4, 1fr);
+        }
+    }
+
+    .status-pill {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: clamp(0.75rem, 2vw, 1rem);
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: 14px;
+        box-shadow: var(--shadow-sm);
+        transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+
+    .status-pill:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+        border-color: var(--success-color);
+    }
+
+    .status-pill-icon {
+        width: clamp(38px, 9vw, 46px);
+        height: clamp(38px, 9vw, 46px);
+        min-width: clamp(38px, 9vw, 46px);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: clamp(1rem, 2.4vw, 1.15rem);
+        transition: transform 0.3s ease;
+        flex-shrink: 0;
+    }
+
+    .status-pill:hover .status-pill-icon {
+        transform: rotate(-8deg) scale(1.08);
+    }
+
+    .status-pill-icon.success { background: rgba(6, 214, 160, 0.14); color: var(--success-color); }
+    .status-pill-icon.primary { background: rgba(67, 97, 238, 0.14); color: var(--primary-color); }
+    .status-pill-icon.warning { background: rgba(255, 209, 102, 0.2); color: #d97706; }
+    .status-pill-icon.info    { background: rgba(76, 201, 240, 0.14); color: var(--info-color); }
+
+    .status-pill-text h5 {
+        font-size: clamp(0.85rem, 2.2vw, 0.98rem);
+        font-weight: 700;
+        color: var(--gray-800);
+        margin: 0 0 0.1rem;
+    }
+
+    .status-pill-text small {
+        font-size: clamp(0.7rem, 1.8vw, 0.8rem);
+        color: var(--gray-500);
+    }
+
+    /* ---------- Section Headings ---------- */
+    .section-heading {
+        font-size: clamp(1.1rem, 2.8vw, 1.35rem);
+        font-weight: 700;
+        color: var(--gray-800);
+        margin-bottom: clamp(1rem, 2.5vw, 1.35rem);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .section-heading i {
+        color: var(--primary-color);
+        font-size: 1.05em;
+    }
+
+    /* ---------- Process Steps ---------- */
+    .steps-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: clamp(1rem, 2.5vw, 1.5rem);
+        margin-bottom: clamp(2rem, 5vw, 3rem);
+    }
+
+    @media (min-width: 576px) {
+        .steps-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (min-width: 992px) {
+        .steps-grid {
+            grid-template-columns: repeat(4, 1fr);
+        }
+    }
+
+    .step-card {
+        position: relative;
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        padding: clamp(1.5rem, 4vw, 2rem) clamp(1rem, 2.5vw, 1.25rem) clamp(1.1rem, 2.5vw, 1.35rem);
+        text-align: center;
+        transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        animation: fadeInUp 0.6s ease-out both;
+    }
+
+    .steps-grid > *:nth-child(1) .step-card { animation-delay: 0.05s; }
+    .steps-grid > *:nth-child(2) .step-card { animation-delay: 0.10s; }
+    .steps-grid > *:nth-child(3) .step-card { animation-delay: 0.15s; }
+    .steps-grid > *:nth-child(4) .step-card { animation-delay: 0.20s; }
+
+    .step-card:hover {
+        transform: translateY(-8px);
+        box-shadow: var(--shadow-xl);
+        border-color: var(--primary-color);
+    }
+
+    .step-number {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: clamp(36px, 8vw, 42px);
+        height: clamp(36px, 8vw, 42px);
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: white;
+        font-weight: 800;
+        font-size: clamp(0.95rem, 2.2vw, 1.05rem);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(67, 97, 238, 0.35);
+        transition: transform 0.3s ease;
+    }
+
+    .step-card:hover .step-number {
+        transform: translate(-50%, -50%) scale(1.15);
+    }
+
+    .step-icon {
+        width: clamp(52px, 12vw, 62px);
+        height: clamp(52px, 12vw, 62px);
+        border-radius: 50%;
+        background: rgba(67, 97, 238, 0.1);
+        color: var(--primary-color);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: clamp(1.25rem, 3vw, 1.55rem);
+        margin-bottom: 0.75rem;
+        transition: transform 0.3s ease;
+    }
+
+    .step-card:hover .step-icon {
+        transform: rotate(-10deg) scale(1.08);
+    }
+
+    .step-card h5 {
+        font-size: clamp(0.95rem, 2.3vw, 1.05rem);
+        font-weight: 700;
+        color: var(--gray-800);
+        margin-bottom: 0.5rem;
+    }
+
+    .step-card p {
+        font-size: clamp(0.78rem, 2vw, 0.85rem);
+        color: var(--gray-500);
+        line-height: 1.5;
+        margin: 0;
+    }
+
+    /* ---------- Content Grid (Policy + Timeline) ---------- */
+    .content-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: clamp(1rem, 2.5vw, 1.5rem);
+        margin-bottom: clamp(2rem, 5vw, 3rem);
+    }
+
+    @media (min-width: 992px) {
+        .content-grid {
+            grid-template-columns: 1.7fr 1fr;
+        }
+    }
+
+    .section-card {
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        padding: clamp(1.1rem, 3vw, 1.65rem);
+        transition: box-shadow 0.25s ease;
+        height: 100%;
+    }
+
+    .section-card:hover {
+        box-shadow: var(--shadow-md);
+    }
+
+    /* Policy Grid */
+    .policy-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: clamp(0.85rem, 2vw, 1.15rem);
+        margin-bottom: clamp(1.25rem, 3vw, 1.75rem);
+    }
+
+    @media (min-width: 576px) {
+        .policy-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    .policy-box {
+        padding: clamp(0.85rem, 2vw, 1.1rem) clamp(0.9rem, 2.5vw, 1.15rem);
+        border-left: 4px solid;
+        border-radius: 10px;
+        background: var(--gray-100);
+        transition: transform 0.25s ease, background 0.25s ease;
+    }
+
+    .policy-box:hover {
+        transform: translateX(4px);
+        background: var(--gray-200);
+    }
+
+    .policy-box.success { border-left-color: var(--success-color); }
+    .policy-box.danger  { border-left-color: var(--danger-color); }
+
+    .policy-box h6 {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: clamp(0.85rem, 2.1vw, 0.95rem);
+        font-weight: 700;
+        margin-bottom: 0.6rem;
+    }
+
+    .policy-box.success h6 { color: var(--success-color); }
+    .policy-box.danger h6  { color: var(--danger-color); }
+
+    .policy-box ul {
+        padding-left: 1.1rem;
+        margin: 0;
+    }
+
+    .policy-box ul li {
+        font-size: clamp(0.78rem, 2vw, 0.85rem);
+        color: var(--gray-600);
+        line-height: 1.6;
+        margin-bottom: 0.25rem;
+    }
+
+    /* Condition Table */
+    .condition-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        font-size: clamp(0.78rem, 2vw, 0.85rem);
+    }
+
+    .condition-table thead th {
+        background: linear-gradient(135deg, var(--gray-100), var(--gray-200));
+        color: var(--gray-700);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        font-size: clamp(0.7rem, 1.8vw, 0.78rem);
+        padding: clamp(0.65rem, 1.8vw, 0.85rem) clamp(0.6rem, 1.5vw, 0.9rem);
+        text-align: left;
+        border-bottom: 2px solid var(--gray-300);
+    }
+
+    .condition-table tbody td {
+        padding: clamp(0.65rem, 1.8vw, 0.85rem) clamp(0.6rem, 1.5vw, 0.9rem);
+        border-bottom: 1px solid var(--gray-200);
+        color: var(--gray-700);
+        transition: background 0.2s ease;
+    }
+
+    .condition-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .condition-table tbody tr:hover td {
+        background: var(--gray-100);
+    }
+
+    /* Timeline */
+    .timeline {
+        position: relative;
+        padding-left: clamp(24px, 6vw, 32px);
+    }
+
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: clamp(8px, 2vw, 10px);
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: linear-gradient(180deg, var(--primary-color), var(--success-color), var(--warning-color), var(--info-color));
+        border-radius: 999px;
+    }
+
+    .timeline-item {
+        position: relative;
+        padding-bottom: clamp(1rem, 2.5vw, 1.35rem);
+        animation: slideInLeft 0.5s ease-out both;
+    }
+
+    .timeline-item:last-child {
+        padding-bottom: 0;
+    }
+
+    .timeline-marker {
+        position: absolute;
+        left: calc(-1 * clamp(24px, 6vw, 32px));
+        top: 4px;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        border: 3px solid white;
+        box-shadow: 0 0 0 2px currentColor;
+        transition: transform 0.25s ease;
+    }
+
+    .timeline-item:hover .timeline-marker {
+        transform: scale(1.3);
+    }
+
+    .timeline-marker.primary { background: var(--primary-color); color: var(--primary-color); }
+    .timeline-marker.success { background: var(--success-color); color: var(--success-color); }
+    .timeline-marker.warning { background: var(--warning-color); color: var(--warning-color); }
+    .timeline-marker.info    { background: var(--info-color);    color: var(--info-color); }
+
+    .timeline-content h6 {
+        font-size: clamp(0.85rem, 2.1vw, 0.95rem);
+        font-weight: 700;
+        color: var(--gray-800);
+        margin: 0 0 0.15rem;
+    }
+
+    .timeline-content p {
+        font-size: clamp(0.78rem, 2vw, 0.85rem);
+        color: var(--gray-500);
+        margin: 0;
+    }
+
+    /* Timeline alert */
+    .timeline-note {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5rem;
+        margin-top: clamp(1rem, 2.5vw, 1.35rem);
+        padding: clamp(0.7rem, 1.8vw, 0.9rem) clamp(0.85rem, 2vw, 1rem);
+        background: linear-gradient(135deg, rgba(76, 201, 240, 0.14), rgba(76, 201, 240, 0.05));
+        border-radius: 10px;
+        font-size: clamp(0.75rem, 1.9vw, 0.82rem);
+        color: #0369a1;
+        line-height: 1.5;
+    }
+
+    .timeline-note i {
+        color: var(--info-color);
+        flex-shrink: 0;
+        margin-top: 2px;
+    }
+
+    /* ---------- Exchange Cards ---------- */
+    .exchange-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: clamp(1rem, 2.5vw, 1.5rem);
+        margin-bottom: clamp(2rem, 5vw, 3rem);
+    }
+
+    @media (min-width: 768px) {
+        .exchange-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    .exchange-card {
+        position: relative;
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        padding: clamp(1.1rem, 3vw, 1.5rem);
+        overflow: hidden;
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .exchange-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--success-color), var(--primary-color));
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.4s ease;
+    }
+
+    .exchange-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-xl);
+    }
+
+    .exchange-card:hover::before {
+        transform: scaleX(1);
+    }
+
+    .exchange-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .exchange-icon {
+        width: clamp(44px, 10vw, 52px);
+        height: clamp(44px, 10vw, 52px);
+        min-width: clamp(44px, 10vw, 52px);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: clamp(1.1rem, 2.6vw, 1.35rem);
+        transition: transform 0.3s ease;
+    }
+
+    .exchange-card:hover .exchange-icon {
+        transform: rotate(-8deg) scale(1.05);
+    }
+
+    .exchange-icon.success { background: rgba(6, 214, 160, 0.14); color: var(--success-color); }
+    .exchange-icon.primary { background: rgba(67, 97, 238, 0.14); color: var(--primary-color); }
+
+    .exchange-header h4 {
+        font-size: clamp(1rem, 2.5vw, 1.15rem);
+        font-weight: 700;
+        color: var(--gray-800);
+        margin: 0;
+    }
+
+    .exchange-card > p {
+        font-size: clamp(0.82rem, 2vw, 0.9rem);
+        color: var(--gray-500);
+        margin-bottom: 0.85rem;
+    }
+
+    .exchange-list {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 1.1rem;
+    }
+
+    .exchange-list li {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.4rem;
+        padding: 0.25rem 0;
+        font-size: clamp(0.8rem, 2vw, 0.88rem);
+        color: var(--gray-600);
+        line-height: 1.5;
+    }
+
+    .exchange-list li i {
+        color: var(--success-color);
+        flex-shrink: 0;
+        margin-top: 3px;
+        font-size: 0.85em;
+    }
+
+    /* ---------- FAQ Accordion ---------- */
+    .faq-accordion {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .faq-item {
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: 12px !important;
+        overflow: hidden;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .faq-item:hover {
+        border-color: var(--success-color);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .faq-button {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        width: 100%;
+        padding: clamp(0.85rem, 2.5vw, 1.1rem) clamp(1rem, 2.5vw, 1.25rem);
+        background: white;
+        border: none;
+        font-weight: 600;
+        font-size: clamp(0.85rem, 2vw, 0.95rem);
+        color: var(--gray-800);
+        text-align: left;
+        cursor: pointer;
+        transition: background 0.2s ease, color 0.2s ease;
+        line-height: 1.4;
+    }
+
+    .faq-button:not(.collapsed) {
+        background: linear-gradient(135deg, rgba(6, 214, 160, 0.12), rgba(6, 214, 160, 0.05));
+        color: #065f46;
+        font-weight: 700;
+    }
+
+    .faq-button::after {
+        margin-left: auto;
+        transition: transform 0.25s ease;
+        flex-shrink: 0;
+    }
+
+    .faq-button:not(.collapsed)::after {
+        transform: rotate(180deg);
+    }
+
+    .faq-body {
+        padding: clamp(0.85rem, 2.5vw, 1.25rem) clamp(1rem, 2.5vw, 1.25rem);
+        background: var(--gray-100);
+        color: var(--gray-700);
+        font-size: clamp(0.82rem, 2vw, 0.9rem);
+        line-height: 1.65;
+    }
+
+    /* ---------- Refund Methods Grid ---------- */
+    .refund-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: clamp(0.85rem, 2vw, 1.15rem);
+        margin-bottom: clamp(2rem, 5vw, 3rem);
+    }
+
+    @media (min-width: 576px) {
+        .refund-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (min-width: 992px) {
+        .refund-grid {
+            grid-template-columns: repeat(4, 1fr);
+        }
+    }
+
+    .refund-card {
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        padding: clamp(1rem, 2.5vw, 1.35rem);
+        text-align: center;
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .refund-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .refund-icon {
+        width: clamp(52px, 12vw, 62px);
+        height: clamp(52px, 12vw, 62px);
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: clamp(1.2rem, 2.8vw, 1.5rem);
+        margin-bottom: 0.75rem;
+        transition: transform 0.3s ease;
+    }
+
+    .refund-card:hover .refund-icon {
+        transform: rotate(-8deg) scale(1.08);
+    }
+
+    .refund-icon.primary { background: rgba(67, 97, 238, 0.12); color: var(--primary-color); }
+    .refund-icon.success { background: rgba(6, 214, 160, 0.14); color: var(--success-color); }
+    .refund-icon.warning { background: rgba(255, 209, 102, 0.2); color: #d97706; }
+    .refund-icon.info    { background: rgba(76, 201, 240, 0.14); color: var(--info-color); }
+
+    .refund-card h5 {
+        font-size: clamp(0.88rem, 2.2vw, 1rem);
+        font-weight: 700;
+        color: var(--gray-800);
+        margin-bottom: 0.5rem;
+    }
+
+    .refund-card p {
+        font-size: clamp(0.75rem, 1.9vw, 0.82rem);
+        color: var(--gray-500);
+        line-height: 1.5;
+        margin: 0 0 0.5rem;
+    }
+
+    .bonus-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.2rem 0.6rem;
+        background: linear-gradient(135deg, var(--success-color), #059669);
+        color: white;
+        border-radius: 999px;
+        font-size: clamp(0.65rem, 1.5vw, 0.72rem);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+    }
+
+    /* ---------- Return Options Grid ---------- */
+    .return-options-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: clamp(1rem, 2.5vw, 1.5rem);
+        margin-bottom: clamp(2rem, 5vw, 3rem);
+    }
+
+    @media (min-width: 768px) {
+        .return-options-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    .return-option {
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        padding: clamp(1.1rem, 3vw, 1.5rem);
+        transition: box-shadow 0.25s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .return-option:hover {
+        box-shadow: var(--shadow-lg);
+    }
+
+    .return-option.primary {
+        border: 2px solid var(--primary-color);
+    }
+
+    .return-option h4 {
+        font-size: clamp(1rem, 2.5vw, 1.15rem);
+        font-weight: 700;
+        color: var(--gray-800);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .return-option h4 i {
+        color: var(--primary-color);
+    }
+
+    .feature-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.65rem;
+        margin-bottom: 0.85rem;
+    }
+
+    .feature-row i {
+        color: var(--success-color);
+        flex-shrink: 0;
+        margin-top: 3px;
+        font-size: clamp(0.95rem, 2.3vw, 1.05rem);
+    }
+
+    .feature-row h6 {
+        font-size: clamp(0.82rem, 2vw, 0.9rem);
+        font-weight: 700;
+        color: var(--gray-800);
+        margin: 0 0 0.1rem;
+    }
+
+    .feature-row p {
+        font-size: clamp(0.75rem, 1.9vw, 0.82rem);
+        color: var(--gray-500);
+        margin: 0;
+        line-height: 1.5;
+    }
+
+    /* Form fields */
+    .form-group-modern {
+        margin-bottom: clamp(0.85rem, 2.5vw, 1.15rem);
+    }
+
+    .form-label {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-weight: 600;
+        color: var(--gray-700);
+        font-size: clamp(0.78rem, 2vw, 0.86rem);
+        margin-bottom: 0.4rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .form-input {
+        width: 100%;
+        border: 2px solid var(--gray-200);
+        border-radius: 11px;
+        padding: clamp(0.55rem, 1.6vw, 0.7rem) clamp(0.75rem, 2vw, 1rem);
+        font-size: clamp(0.85rem, 2vw, 0.95rem);
+        color: var(--gray-800);
+        transition: all 0.2s ease;
+        background: var(--gray-100);
+        min-height: 42px;
+        font-family: inherit;
+    }
+
+    .form-input:focus {
+        border-color: var(--primary-color);
+        background: white;
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.12);
+    }
+
+    .form-input.is-invalid {
+        border-color: var(--danger-color);
+    }
+
+    .form-input.is-valid {
+        border-color: var(--success-color);
+    }
+
+    .field-error {
+        font-size: clamp(0.72rem, 1.8vw, 0.78rem);
+        color: var(--danger-color);
+        margin-top: 0.35rem;
+        display: none;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .field-error.show {
+        display: flex;
+    }
+
+    /* Form actions */
+    .form-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+
+    .btn-form {
+        padding: clamp(0.65rem, 1.8vw, 0.8rem) clamp(1rem, 2.5vw, 1.35rem);
+        border-radius: 11px;
+        font-weight: 600;
+        font-size: clamp(0.82rem, 2vw, 0.92rem);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.45rem;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        text-decoration: none;
+        white-space: nowrap;
+        border: none;
+        width: 100%;
+    }
+
+    .btn-form.primary {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: white;
+        box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+    }
+
+    .btn-form.primary:hover {
+        background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(67, 97, 238, 0.45);
+        color: white;
+    }
+
+    .btn-form.outline {
+        background: white;
+        color: var(--gray-700);
+        border: 2px solid var(--gray-300) !important;
+    }
+
+    .btn-form.outline:hover {
+        background: var(--gray-100);
+        border-color: var(--gray-500);
+        color: var(--gray-900);
+        transform: translateY(-2px);
+    }
+
+    /* ---------- Contact Support Section ---------- */
+    .contact-section {
+        background: linear-gradient(135deg, rgba(6, 214, 160, 0.06), rgba(6, 214, 160, 0.02));
+        border: 2px solid var(--success-color);
+        border-radius: var(--radius-lg);
+        padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1.1rem, 3vw, 1.5rem);
+        text-align: center;
+        animation: fadeInUp 0.6s ease-out 0.3s both;
+    }
+
+    .contact-section h3 {
+        font-size: clamp(1.15rem, 3vw, 1.5rem);
+        font-weight: 800;
+        color: var(--gray-800);
+        margin-bottom: 0.6rem;
+    }
+
+    .contact-section > p {
+        color: var(--gray-600);
+        font-size: clamp(0.85rem, 2vw, 0.95rem);
+        margin-bottom: clamp(1.25rem, 3vw, 1.75rem);
+        max-width: 520px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .contact-options-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: clamp(0.75rem, 2vw, 1rem);
+    }
+
+    @media (min-width: 576px) {
+        .contact-options-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    .contact-option {
+        padding: clamp(0.9rem, 2.5vw, 1.15rem);
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: 12px;
+        cursor: pointer;
+        transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+
+    .contact-option:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+        border-color: var(--primary-color);
+    }
+
+    .contact-option i {
+        font-size: clamp(1.5rem, 3.5vw, 1.85rem);
+        display: block;
+        margin-bottom: 0.5rem;
+        transition: transform 0.3s ease;
+    }
+
+    .contact-option:hover i {
+        transform: scale(1.15);
+    }
+
+    .contact-option i.primary { color: var(--primary-color); }
+    .contact-option i.success { color: var(--success-color); }
+    .contact-option i.warning { color: var(--warning-color); }
+
+    .contact-option h6 {
+        font-size: clamp(0.85rem, 2.1vw, 0.95rem);
+        font-weight: 700;
+        color: var(--gray-800);
+        margin-bottom: 0.25rem;
+    }
+
+    .contact-option small {
+        font-size: clamp(0.72rem, 1.8vw, 0.8rem);
+        color: var(--gray-500);
+        display: block;
+        word-break: break-word;
+    }
+
+    .contact-response {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        margin-top: clamp(1rem, 2.5vw, 1.5rem);
+        font-size: clamp(0.75rem, 1.9vw, 0.85rem);
+        color: var(--gray-500);
+    }
+
+    .contact-response i {
+        color: var(--info-color);
+    }
+
+    /* ---------- Animations ---------- */
+    @keyframes fadeInDown {
+        from { opacity: 0; transform: translateY(-20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideInLeft {
+        from { opacity: 0; transform: translateX(-15px); }
+        to   { opacity: 1; transform: translateX(0); }
+    }
+
+    /* ---------- Reduced Motion ---------- */
+    @media (prefers-reduced-motion: reduce) {
+        .page-header,
+        .page-header-icon,
+        .step-card,
+        .timeline-item,
+        .contact-section {
+            animation: none !important;
+        }
+        .step-card:hover,
+        .status-pill:hover,
+        .refund-card:hover,
+        .contact-option:hover {
+            transform: none;
+        }
+    }
+
+    /* ---------- Dark Mode ---------- */
+    body.dark-mode .page-header h1 { color: var(--gray-100); }
+    body.dark-mode .page-header .lead { color: var(--gray-400); }
+
+    body.dark-mode .status-pill,
+    body.dark-mode .step-card,
+    body.dark-mode .section-card,
+    body.dark-mode .exchange-card,
+    body.dark-mode .refund-card,
+    body.dark-mode .return-option,
+    body.dark-mode .faq-item {
+        background: var(--gray-800);
+        border-color: var(--gray-700);
+    }
+
+    body.dark-mode .status-pill-text h5,
+    body.dark-mode .step-card h5,
+    body.dark-mode .section-heading,
+    body.dark-mode .exchange-header h4,
+    body.dark-mode .refund-card h5,
+    body.dark-mode .return-option h4,
+    body.dark-mode .feature-row h6,
+    body.dark-mode .timeline-content h6,
+    body.dark-mode .contact-section h3,
+    body.dark-mode .faq-button,
+    body.dark-mode .form-label {
+        color: var(--gray-100);
+    }
+
+    body.dark-mode .status-pill-text small,
+    body.dark-mode .step-card p,
+    body.dark-mode .exchange-card > p,
+    body.dark-mode .refund-card p,
+    body.dark-mode .timeline-content p,
+    body.dark-mode .feature-row p,
+    body.dark-mode .contact-section > p,
+    body.dark-mode .contact-option small {
+        color: var(--gray-400);
+    }
+
+    body.dark-mode .policy-box {
+        background: var(--gray-700);
+    }
+
+    body.dark-mode .policy-box ul li { color: var(--gray-400); }
+
+    body.dark-mode .condition-table thead th {
+        background: linear-gradient(135deg, var(--gray-700), var(--gray-800));
+        color: var(--gray-300);
+        border-bottom-color: var(--gray-600);
+    }
+
+    body.dark-mode .condition-table tbody td {
+        color: var(--gray-300);
+        border-bottom-color: var(--gray-700);
+    }
+
+    body.dark-mode .condition-table tbody tr:hover td {
+        background: var(--gray-700);
+    }
+
+    body.dark-mode .faq-button { background: var(--gray-800); }
+
+    body.dark-mode .faq-button:not(.collapsed) {
+        background: linear-gradient(135deg, rgba(6, 214, 160, 0.2), rgba(6, 214, 160, 0.1));
+        color: var(--success-color);
+    }
+
+    body.dark-mode .faq-body {
+        background: var(--gray-700);
+        color: var(--gray-300);
+    }
+
+    body.dark-mode .form-input {
+        background: var(--gray-700);
+        border-color: var(--gray-600);
+        color: white;
+    }
+
+    body.dark-mode .form-input:focus {
+        background: var(--gray-600);
+    }
+
+    body.dark-mode .contact-option {
+        background: var(--gray-800);
+        border-color: var(--gray-700);
+    }
+
+    body.dark-mode .contact-option h6 { color: var(--gray-100); }
+
+    body.dark-mode .contact-section {
+        background: linear-gradient(135deg, rgba(6, 214, 160, 0.1), rgba(6, 214, 160, 0.03));
+        border-color: var(--success-color);
+    }
+</style>
+
+<div class="container py-3 py-md-4">
+
+    <!-- ============ PAGE HEADER ============ -->
+    <header class="page-header">
+        <div class="page-header-icon">
+            <i class="bi bi-arrow-left-right"></i>
+        </div>
+        <h1>Returns &amp; Exchanges</h1>
+        <p class="lead">Easy, hassle-free returns and exchanges within 30 days.</p>
+
+        <!-- Status pills -->
+        <div class="status-pills">
+            <div class="status-pill">
+                <div class="status-pill-icon success"><i class="bi bi-check-circle-fill"></i></div>
+                <div class="status-pill-text">
+                    <h5>30-Day Policy</h5>
+                    <small>Risk-free returns</small>
+                </div>
+            </div>
+            <div class="status-pill">
+                <div class="status-pill-icon primary"><i class="bi bi-truck"></i></div>
+                <div class="status-pill-text">
+                    <h5>Free Returns</h5>
+                    <small>For defective items</small>
+                </div>
+            </div>
+            <div class="status-pill">
+                <div class="status-pill-icon warning"><i class="bi bi-clock-history"></i></div>
+                <div class="status-pill-text">
+                    <h5>Fast Refunds</h5>
+                    <small>Within 5–7 days</small>
+                </div>
+            </div>
+            <div class="status-pill">
+                <div class="status-pill-icon info"><i class="bi bi-shield-check"></i></div>
+                <div class="status-pill-text">
+                    <h5>Easy Process</h5>
+                    <small>Online or in-store</small>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ============ PROCESS STEPS ============ -->
+    <h3 class="section-heading"><i class="bi bi-list-check"></i> Return Process in 4 Easy Steps</h3>
+
+    <div class="steps-grid">
+        {% set steps = [
+            ('Initiate Return', 'bi-box-arrow-right', '1', 'Log in to your account, go to "My Orders", select the item, and choose a return reason.'),
+            ('Print Label', 'bi-printer', '2', 'Print the prepaid return label or generate a QR code for drop-off.'),
+            ('Package Item', 'bi-box-seam', '3', 'Pack the item securely in original packaging with all accessories and tags.'),
+            ('Drop Off', 'bi-truck', '4', 'Drop the package at a designated carrier location or schedule a pickup.')
+        ] %}
+        {% for title, icon, number, description in steps %}
+        <div>
+            <div class="step-card">
+                <span class="step-number">{{ number }}</span>
+                <div class="step-icon"><i class="bi {{ icon }}"></i></div>
+                <h5>{{ title }}</h5>
+                <p>{{ description }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- ============ POLICY + TIMELINE ============ -->
+    <div class="content-grid">
+
+        <!-- Policy Details -->
+        <div class="section-card">
+            <h3 class="section-heading"><i class="bi bi-file-text"></i> Return Policy Details</h3>
+
+            <div class="policy-grid">
+                <div class="policy-box success">
+                    <h6><i class="bi bi-check-circle-fill"></i> Eligible Items</h6>
+                    <ul>
+                        <li>Unused items in original condition</li>
+                        <li>Original packaging with tags</li>
+                        <li>All accessories included</li>
+                        <li>Within 30 days of delivery</li>
+                    </ul>
+                </div>
+                <div class="policy-box danger">
+                    <h6><i class="bi bi-x-circle-fill"></i> Non-Returnable Items</h6>
+                    <ul>
+                        <li>Personalized / custom items</li>
+                        <li>Opened software or digital goods</li>
+                        <li>Intimate apparel &amp; swimwear</li>
+                        <li>Gift cards</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h4 class="section-heading" style="margin-top: 1rem;"><i class="bi bi-table"></i> Condition Requirements</h4>
+            <div style="overflow-x: auto;">
+                <table class="condition-table">
+                    <thead>
+                        <tr>
+                            <th>Item Condition</th>
+                            <th>Acceptable</th>
+                            <th>Refund</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>New, Unused</td>
+                            <td><i class="bi bi-check-circle-fill text-success me-1"></i> Yes</td>
+                            <td>100%</td>
+                        </tr>
+                        <tr>
+                            <td>Gently Used</td>
+                            <td><i class="bi bi-exclamation-circle-fill text-warning me-1"></i> Case by case</td>
+                            <td>Up to 70%</td>
+                        </tr>
+                        <tr>
+                            <td>Damaged / Defective</td>
+                            <td><i class="bi bi-check-circle-fill text-success me-1"></i> Yes</td>
+                            <td>100% + free return</td>
+                        </tr>
+                        <tr>
+                            <td>Missing Parts</td>
+                            <td><i class="bi bi-x-circle-fill text-danger me-1"></i> No</td>
+                            <td>0%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Timeline -->
+        <div class="section-card">
+            <h3 class="section-heading"><i class="bi bi-calendar-check"></i> Important Timelines</h3>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <span class="timeline-marker primary"></span>
+                    <div class="timeline-content">
+                        <h6>Return Window</h6>
+                        <p>30 days from delivery date</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <span class="timeline-marker success"></span>
+                    <div class="timeline-content">
+                        <h6>Refund Processing</h6>
+                        <p>5–7 business days after receipt</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <span class="timeline-marker warning"></span>
+                    <div class="timeline-content">
+                        <h6>Exchange Processing</h6>
+                        <p>3–5 business days after receipt</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <span class="timeline-marker info"></span>
+                    <div class="timeline-content">
+                        <h6>Store Credit</h6>
+                        <p>Issued immediately upon approval</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-note">
+                <i class="bi bi-info-circle-fill"></i>
+                <span>Holiday season purchases (Nov 15 – Dec 25) have extended returns until Jan 15.</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ EXCHANGE PROCESS ============ -->
+    <h3 class="section-heading"><i class="bi bi-arrow-left-right"></i> Exchange Process</h3>
+
+    <div class="exchange-grid">
+        <div class="exchange-card">
+            <div class="exchange-header">
+                <div class="exchange-icon success"><i class="bi bi-arrow-left-right"></i></div>
+                <h4>Direct Exchange</h4>
+            </div>
+            <p>Exchange for a different size, color, or variant of the same item.</p>
+            <ul class="exchange-list">
+                <li><i class="bi bi-check-circle-fill"></i> No additional payment if same price</li>
+                <li><i class="bi bi-check-circle-fill"></i> Price difference charged or refunded if different</li>
+                <li><i class="bi bi-check-circle-fill"></i> Free return shipping for exchanges</li>
+                <li><i class="bi bi-check-circle-fill"></i> New item shipped once return is scanned</li>
+            </ul>
+            <button class="btn-form primary start-exchange" type="button" style="max-width: 220px;">
+                <i class="bi bi-arrow-left-right"></i> Start Exchange
+            </button>
+        </div>
+
+        <div class="exchange-card">
+            <div class="exchange-header">
+                <div class="exchange-icon primary"><i class="bi bi-currency-exchange"></i></div>
+                <h4>Return &amp; Repurchase</h4>
+            </div>
+            <p>Return your item and purchase a different item entirely.</p>
+            <ul class="exchange-list">
+                <li><i class="bi bi-check-circle-fill"></i> Return processed normally</li>
+                <li><i class="bi bi-check-circle-fill"></i> Refund issued to original payment method</li>
+                <li><i class="bi bi-check-circle-fill"></i> Place new order separately</li>
+                <li><i class="bi bi-check-circle-fill"></i> Use store credit for immediate purchase</li>
+            </ul>
+            <button class="btn-form primary start-return" type="button" style="max-width: 220px;">
+                <i class="bi bi-arrow-counterclockwise"></i> Return &amp; Shop
+            </button>
+        </div>
+    </div>
+
+    <!-- ============ FAQ ============ -->
+    <h3 class="section-heading"><i class="bi bi-question-circle-fill"></i> Frequently Asked Questions</h3>
+
+    <div class="faq-accordion" id="returnsFAQ">
+        {% set faqs = [
+            ('How long do I have to return an item?', 'You have 30 days from the delivery date to initiate a return. Holiday purchases have extended returns until January 15.'),
+            ('Who pays for return shipping?', 'We provide free return shipping for defective, damaged, or incorrect items. For other returns, the customer pays unless you choose store credit.'),
+            ('How will I receive my refund?', 'Refunds are issued to your original payment method within 5–7 business days after we receive and inspect the return.'),
+            ('Can I return an item purchased with a gift card?', 'Yes, returns for gift card purchases will be refunded as store credit to your account.'),
+            ('What if I received a damaged or wrong item?', 'Contact us immediately. We\'ll send a replacement right away and provide a prepaid return label for the incorrect item.'),
+            ('Can I return an item without the original packaging?', 'Items must be returned in their original packaging with all tags and accessories. Returns without packaging may be subject to a restocking fee.'),
+            ('How do I check my return status?', 'Log in to your account and visit "My Returns" to track your return status in real-time.'),
+            ('Can I return sale or clearance items?', 'Sale items are returnable within 30 days. Clearance items are final sale unless defective.')
+        ] %}
+        {% for question, answer in faqs %}
+        <div class="faq-item">
+            <button class="faq-button collapsed" type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#faq{{ loop.index }}"
+                    aria-expanded="false">
+                <span>{{ question }}</span>
+            </button>
+            <div id="faq{{ loop.index }}"
+                 class="accordion-collapse collapse"
+                 data-bs-parent="#returnsFAQ">
+                <div class="faq-body">{{ answer }}</div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- ============ REFUND METHODS ============ -->
+    <h3 class="section-heading" style="margin-top: clamp(2rem, 5vw, 3rem);"><i class="bi bi-wallet2"></i> Refund Methods</h3>
+
+    <div class="refund-grid">
+        <div class="refund-card">
+            <div class="refund-icon primary"><i class="bi bi-credit-card-2-front-fill"></i></div>
+            <h5>Original Payment</h5>
+            <p>Refunded to original card or PayPal within 5–7 business days.</p>
+        </div>
+        <div class="refund-card">
+            <div class="refund-icon success"><i class="bi bi-gift-fill"></i></div>
+            <h5>Store Credit</h5>
+            <p>Instant store credit to your account for future purchases.</p>
+            <span class="bonus-badge"><i class="bi bi-stars"></i> +10% Bonus</span>
+        </div>
+        <div class="refund-card">
+            <div class="refund-icon warning"><i class="bi bi-card-text"></i></div>
+            <h5>Gift Card</h5>
+            <p>Digital gift card emailed immediately upon return approval.</p>
+        </div>
+        <div class="refund-card">
+            <div class="refund-icon info"><i class="bi bi-bank"></i></div>
+            <h5>Bank Transfer</h5>
+            <p>Available for wire transfers (additional 3–5 business days).</p>
+        </div>
+    </div>
+
+    <!-- ============ RETURN OPTIONS ============ -->
+    <div class="return-options-grid">
+
+        <!-- In-Store -->
+        <div class="return-option">
+            <h4><i class="bi bi-shop"></i> In-Store Returns</h4>
+            <div class="feature-row">
+                <i class="bi bi-check-circle-fill"></i>
+                <div>
+                    <h6>Instant Refunds</h6>
+                    <p>Get refunded immediately at our physical stores.</p>
+                </div>
+            </div>
+            <div class="feature-row">
+                <i class="bi bi-check-circle-fill"></i>
+                <div>
+                    <h6>No Packaging Required</h6>
+                    <p>Bring the item with receipt — no need for the original box.</p>
+                </div>
+            </div>
+            <div class="feature-row">
+                <i class="bi bi-check-circle-fill"></i>
+                <div>
+                    <h6>Immediate Exchange</h6>
+                    <p>Swap items on the spot if available in store.</p>
+                </div>
+            </div>
+            <button class="btn-form outline find-store" type="button" style="margin-top: 0.5rem; max-width: 220px;">
+                <i class="bi bi-geo-alt"></i> Find Nearest Store
+            </button>
+        </div>
+
+        <!-- Start a Return -->
+        <div class="return-option primary">
+            <h4><i class="bi bi-lightning-charge-fill"></i> Start a Return Now</h4>
+            <p style="color: var(--gray-500); font-size: clamp(0.82rem, 2vw, 0.9rem); margin-bottom: 1rem;">
+                Ready to return or exchange an item? Start the process online:
+            </p>
+
+            <div class="form-group-modern">
+                <label class="form-label" for="orderNumber">
+                    <i class="bi bi-hash"></i> Order Number
+                </label>
+                <input type="text"
+                       class="form-input"
+                       id="orderNumber"
+                       placeholder="e.g., ORD-123456"
+                       autocomplete="off">
+                <div class="field-error" id="orderNumberError">
+                    <i class="bi bi-exclamation-circle-fill"></i> Please enter a valid order number.
+                </div>
+            </div>
+
+            <div class="form-group-modern">
+                <label class="form-label" for="email">
+                    <i class="bi bi-envelope-fill"></i> Email Address
+                </label>
+                <input type="email"
+                       class="form-input"
+                       id="email"
+                       placeholder="your@email.com"
+                       autocomplete="email">
+                <div class="field-error" id="emailError">
+                    <i class="bi bi-exclamation-circle-fill"></i> Please enter a valid email address.
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn-form primary start-return-process" type="button">
+                    <i class="bi bi-box-arrow-right"></i> Start Return Process
+                </button>
+                <button class="btn-form outline contact-support" type="button">
+                    <i class="bi bi-question-circle"></i> Need Help? Contact Support
+                </button>
+            </div>
+
+            <div style="margin-top: 0.85rem; text-align: center;">
+                <small style="font-size: clamp(0.72rem, 1.8vw, 0.8rem); color: var(--gray-500);">
+                    <i class="bi bi-shield-check"></i> Secure process • No login required
+                </small>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ CONTACT SECTION ============ -->
+    <section class="contact-section">
+        <h3>Need Help with Your Return?</h3>
+        <p>Our returns specialists are here to help you with any questions or issues.</p>
+
+        <div class="contact-options-grid">
+            <div class="contact-option" data-contact="email">
+                <i class="bi bi-envelope-fill primary"></i>
+                <h6>Email Support</h6>
+                <small>support@shopmetuge.com</small>
+            </div>
+            <div class="contact-option" data-contact="phone">
+                <i class="bi bi-telephone-fill success"></i>
+                <h6>Phone Support</h6>
+                <small>+237 650-970-291</small>
+            </div>
+            <div class="contact-option" data-contact="chat">
+                <i class="bi bi-chat-left-text-fill warning"></i>
+                <h6>Live Chat</h6>
+                <small>Available 9AM – 8PM CAT</small>
+            </div>
+        </div>
+
+        <div class="contact-response">
+            <i class="bi bi-clock-history"></i>
+            Average response time: less than 2 hours during business hours
+        </div>
+    </section>
+
+</div>
+
+<script>
+/* ============================================
+   RETURNS & EXCHANGES PAGE SCRIPT
+   ============================================ */
+(function() {
+    'use strict';
+
+    const orderNumberInput = document.getElementById('orderNumber');
+    const emailInput       = document.getElementById('email');
+    const orderNumberError = document.getElementById('orderNumberError');
+    const emailError       = document.getElementById('emailError');
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    // ---------- Live Validation ----------
+    function validateOrderNumber() {
+        if (!orderNumberInput) return true;
+        const val = orderNumberInput.value.trim();
+        const valid = val.length >= 3;
+        orderNumberInput.classList.toggle('is-invalid', !valid && val.length > 0);
+        orderNumberInput.classList.toggle('is-valid', valid);
+        orderNumberError.classList.toggle('show', !valid && val.length > 0);
+        return valid;
+    }
+
+    function validateEmail() {
+        if (!emailInput) return true;
+        const val = emailInput.value.trim();
+        const valid = emailPattern.test(val);
+        emailInput.classList.toggle('is-invalid', !valid && val.length > 0);
+        emailInput.classList.toggle('is-valid', valid);
+        emailError.classList.toggle('show', !valid && val.length > 0);
+        return valid;
+    }
+
+    if (orderNumberInput) {
+        orderNumberInput.addEventListener('input', validateOrderNumber);
+        orderNumberInput.addEventListener('blur', validateOrderNumber);
+    }
+
+    if (emailInput) {
+        emailInput.addEventListener('input', validateEmail);
+        emailInput.addEventListener('blur', validateEmail);
+    }
+
+    // ---------- Start Exchange ----------
+    document.querySelectorAll('.start-exchange').forEach(btn => {
+        btn.addEventListener('click', function() {
+            if (typeof showToast === 'function') {
+                showToast('Starting exchange process…', 'success', 'bi-arrow-left-right');
+            }
+            // Uncomment and set your redirect target:
+            // setTimeout(() => { window.location.href = "{{ url_for('login') }}"; }, 800);
+        });
+    });
+
+    // ---------- Start Return (both buttons) ----------
+    document.querySelectorAll('.start-return, .start-return-process').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const isFormSubmit = this.classList.contains('start-return-process');
+
+            // If it's the form button, validate the fields first
+            if (isFormSubmit) {
+                const validOrder = validateOrderNumber();
+                const validEmail = validateEmail();
+
+                if (!validOrder || !validEmail) {
+                    if (typeof showToast === 'function') {
+                        showToast('Please fix the highlighted fields.', 'warning', 'bi-exclamation-triangle-fill');
+                    }
+                    if (!validOrder && orderNumberInput) orderNumberInput.focus();
+                    else if (!validEmail && emailInput) emailInput.focus();
+                    return;
+                }
+            }
+
+            if (typeof showToast === 'function') {
+                showToast('Starting return process…', 'info', 'bi-box-arrow-right');
+            }
+            // Uncomment and set your redirect target:
+            // setTimeout(() => { window.location.href = "{{ url_for('login') }}"; }, 800);
+        });
+    });
+
+    // ---------- Find Store ----------
+    document.querySelectorAll('.find-store').forEach(btn => {
+        btn.addEventListener('click', function() {
+            if (typeof showToast === 'function') {
+                showToast('Finding nearest stores…', 'info', 'bi-geo-alt');
+            }
+        });
+    });
+
+    // ---------- Contact Support Button ----------
+    document.querySelectorAll('.contact-support').forEach(btn => {
+        btn.addEventListener('click', function() {
+            if (typeof showToast === 'function') {
+                showToast('Opening support chat…', 'info', 'bi-headset');
+            }
+        });
+    });
+
+    // ---------- Contact Options (native links) ----------
+    document.querySelectorAll('.contact-option').forEach(option => {
+        option.addEventListener('click', function() {
+            const type = this.dataset.contact;
+            const info = this.querySelector('small')?.textContent?.trim() || '';
+
+            if (type === 'email') {
+                const email = info.split(/\s+/).pop();
+                window.location.href = `mailto:${email}`;
+            } else if (type === 'phone') {
+                const digits = info.replace(/[^\d+]/g, '');
+                if (digits) window.location.href = `tel:${digits}`;
+            } else if (type === 'chat') {
+                if (typeof showToast === 'function') {
+                    showToast('Connecting to live chat…', 'info', 'bi-chat-dots-fill');
+                }
+            }
+        });
+    });
+
+    // ---------- FAQ Open Tracking ----------
+    document.querySelectorAll('.faq-button').forEach(btn => {
+        btn.addEventListener('click', function() {
+            // Only toast when opening (not when closing)
+            if (this.classList.contains('collapsed')) {
+                const q = this.querySelector('span')?.textContent?.trim() || '';
+                if (q && typeof showToast === 'function') {
+                    showToast(`FAQ: ${q}`, 'info', 'bi-question-circle');
+                }
+            }
+        });
+    });
+
+    // ---------- Welcome Toast ----------
+    if (typeof showToast === 'function') {
+        setTimeout(() => {
+            showToast('🔄 Easy returns & exchanges within 30 days', 'success', 'bi-arrow-left-right');
+        }, 900);
+    }
+
+    console.log('🔄 Returns & Exchanges page loaded');
+})();
+</script>
+{% endblock %}

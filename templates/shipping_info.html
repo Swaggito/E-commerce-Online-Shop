@@ -1,0 +1,993 @@
+{% extends "base.html" %}
+
+{% block title %}Shipping Information - Linux Shop{% endblock %}
+
+{% block content %}
+<style>
+    /* ============================================
+       SHIPPING INFO PAGE — FULLY RESPONSIVE
+       ============================================ */
+
+    /* ---------- Page Header ---------- */
+    .shipping-header {
+        text-align: center;
+        padding: clamp(1.5rem, 4vw, 2.5rem) 0 clamp(1.75rem, 4.5vw, 2.5rem);
+        animation: fadeInDown 0.6s ease-out;
+    }
+
+    .shipping-header-icon {
+        width: clamp(64px, 14vw, 80px);
+        height: clamp(64px, 14vw, 80px);
+        border-radius: 50%;
+        background: linear-gradient(135deg, rgba(67, 97, 238, 0.15), rgba(67, 97, 238, 0.06));
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: clamp(1.75rem, 4vw, 2.25rem);
+        color: var(--primary-color);
+        margin-bottom: clamp(0.85rem, 2.5vw, 1.15rem);
+        animation: bounce 2.5s ease-in-out infinite;
+    }
+
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50%      { transform: translateY(-8px); }
+    }
+
+    .shipping-header h1 {
+        font-size: clamp(1.5rem, 4.5vw, 2.3rem);
+        font-weight: 800;
+        color: var(--gray-900);
+        margin-bottom: 0.6rem;
+        position: relative;
+        display: inline-block;
+    }
+
+    .shipping-header h1::after {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 70px;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-color), #7209b7);
+        border-radius: 999px;
+        animation: expandWidth 0.8s ease-out 0.3s both;
+    }
+
+    @keyframes expandWidth {
+        from { width: 0; }
+        to   { width: 70px; }
+    }
+
+    .shipping-header .lead {
+        color: var(--gray-600);
+        font-size: clamp(0.9rem, 2.2vw, 1.05rem);
+        max-width: 640px;
+        margin: 0 auto;
+    }
+
+    /* ---------- Content Wrapper ---------- */
+    .shipping-content {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    /* ---------- Section Card ---------- */
+    .section-card {
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        margin-bottom: clamp(1.25rem, 3vw, 2rem);
+        overflow: hidden;
+        animation: fadeInUp 0.6s ease-out 0.1s both;
+        transition: box-shadow 0.25s ease;
+    }
+
+    .section-card:hover {
+        box-shadow: var(--shadow-lg);
+    }
+
+    .section-card-body {
+        padding: clamp(1.1rem, 3vw, 1.75rem);
+    }
+
+    .section-title {
+        font-size: clamp(1.05rem, 2.7vw, 1.3rem);
+        font-weight: 700;
+        color: var(--gray-800);
+        margin-bottom: clamp(1rem, 2.5vw, 1.35rem);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .section-title i {
+        color: var(--primary-color);
+        font-size: 1.05em;
+    }
+
+    /* ---------- Timeline Row (3 columns) ---------- */
+    .timeline-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: clamp(0.85rem, 2vw, 1.15rem);
+    }
+
+    @media (min-width: 768px) {
+        .timeline-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    .timeline-card {
+        text-align: center;
+        padding: clamp(1rem, 2.5vw, 1.35rem);
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: 14px;
+        transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .timeline-card:hover {
+        transform: translateY(-4px);
+        border-color: var(--primary-color);
+        box-shadow: var(--shadow-md);
+    }
+
+    .timeline-icon {
+        width: clamp(50px, 11vw, 60px);
+        height: clamp(50px, 11vw, 60px);
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: clamp(1.2rem, 2.8vw, 1.5rem);
+        margin-bottom: 0.65rem;
+        transition: transform 0.3s ease;
+    }
+
+    .timeline-card:hover .timeline-icon {
+        transform: rotate(-8deg) scale(1.08);
+    }
+
+    .timeline-icon.primary { background: rgba(67, 97, 238, 0.12); color: var(--primary-color); }
+    .timeline-icon.success { background: rgba(6, 214, 160, 0.12); color: var(--success-color); }
+    .timeline-icon.warning { background: rgba(255, 209, 102, 0.18); color: #d97706; }
+
+    .timeline-card h5 {
+        font-size: clamp(0.9rem, 2.2vw, 1.05rem);
+        font-weight: 700;
+        color: var(--gray-800);
+        margin-bottom: 0.35rem;
+        transition: color 0.25s ease;
+    }
+
+    .timeline-card:hover h5 {
+        color: var(--primary-color);
+    }
+
+    .timeline-card .duration {
+        font-size: clamp(0.82rem, 2vw, 0.9rem);
+        color: var(--gray-600);
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+
+    .timeline-card .note {
+        font-size: clamp(0.72rem, 1.8vw, 0.8rem);
+        color: var(--gray-500);
+        line-height: 1.4;
+    }
+
+    /* ---------- Shipping Methods Grid ---------- */
+    .methods-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: clamp(1rem, 2.5vw, 1.35rem);
+    }
+
+    @media (min-width: 768px) {
+        .methods-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    .method-card {
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        padding: clamp(1.1rem, 2.5vw, 1.35rem);
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .method-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .method-title {
+        font-size: clamp(1rem, 2.3vw, 1.15rem);
+        font-weight: 700;
+        color: var(--gray-800);
+        margin-bottom: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .method-title i {
+        color: var(--primary-color);
+        font-size: 1.05em;
+    }
+
+    .method-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .method-list li {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5rem;
+        padding: 0.4rem 0;
+        font-size: clamp(0.82rem, 2vw, 0.9rem);
+        color: var(--gray-700);
+        line-height: 1.5;
+        transition: transform 0.2s ease;
+    }
+
+    .method-list li:hover {
+        transform: translateX(4px);
+    }
+
+    .method-list li i {
+        color: var(--success-color);
+        flex-shrink: 0;
+        margin-top: 3px;
+        font-size: 0.9em;
+    }
+
+    .method-list li strong {
+        color: var(--gray-900);
+        font-weight: 700;
+    }
+
+    /* Method info alert */
+    .method-note {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5rem;
+        margin-top: 0.85rem;
+        padding: 0.7rem 0.9rem;
+        background: linear-gradient(135deg, rgba(76, 201, 240, 0.12), rgba(76, 201, 240, 0.05));
+        border-radius: 10px;
+        font-size: clamp(0.75rem, 1.9vw, 0.82rem);
+        color: #0369a1;
+        line-height: 1.5;
+    }
+
+    .method-note i {
+        color: var(--info-color);
+        flex-shrink: 0;
+        margin-top: 2px;
+    }
+
+    /* ---------- FAQ Accordion ---------- */
+    .faq-accordion {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .faq-item {
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: 12px !important;
+        overflow: hidden;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .faq-item:hover {
+        border-color: var(--primary-color);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .faq-button {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        width: 100%;
+        padding: clamp(0.85rem, 2.5vw, 1.1rem) clamp(1rem, 2.5vw, 1.25rem);
+        background: white;
+        border: none;
+        font-weight: 600;
+        font-size: clamp(0.85rem, 2vw, 0.95rem);
+        color: var(--gray-800);
+        text-align: left;
+        cursor: pointer;
+        transition: background 0.2s ease, color 0.2s ease;
+        line-height: 1.4;
+    }
+
+    .faq-button i {
+        color: var(--primary-color);
+        flex-shrink: 0;
+        font-size: 1.05em;
+    }
+
+    .faq-button:not(.collapsed) {
+        background: linear-gradient(135deg, rgba(67, 97, 238, 0.1), rgba(114, 9, 183, 0.08));
+        color: var(--primary-dark);
+        font-weight: 700;
+    }
+
+    .faq-button::after {
+        margin-left: auto;
+        transition: transform 0.25s ease;
+        flex-shrink: 0;
+    }
+
+    .faq-button:not(.collapsed)::after {
+        transform: rotate(180deg);
+    }
+
+    .faq-body {
+        padding: clamp(0.85rem, 2.5vw, 1.25rem) clamp(1rem, 2.5vw, 1.25rem);
+        background: var(--gray-100);
+        color: var(--gray-700);
+        font-size: clamp(0.82rem, 2vw, 0.9rem);
+        line-height: 1.65;
+    }
+
+    .faq-body p {
+        margin-bottom: 0.65rem;
+    }
+    .faq-body p:last-child { margin-bottom: 0; }
+    .faq-body ul, .faq-body ol {
+        padding-left: 1.25rem;
+        margin-bottom: 0.65rem;
+    }
+    .faq-body li {
+        margin-bottom: 0.35rem;
+    }
+    .faq-body a {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 600;
+    }
+    .faq-body a:hover { text-decoration: underline; }
+
+    .faq-body table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0.75rem 0;
+        font-size: 0.88em;
+    }
+    .faq-body table td {
+        padding: 0.45rem 0.6rem;
+        border-bottom: 1px solid var(--gray-200);
+        vertical-align: top;
+    }
+    .faq-body table tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* ---------- Shipping Partners ---------- */
+    .partners-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: clamp(0.65rem, 1.8vw, 1rem);
+    }
+
+    @media (min-width: 768px) {
+        .partners-grid {
+            grid-template-columns: repeat(4, 1fr);
+        }
+    }
+
+    .partner-card {
+        text-align: center;
+        padding: clamp(0.85rem, 2.5vw, 1.15rem);
+        background: var(--gray-100);
+        border: 1px solid var(--gray-200);
+        border-radius: 12px;
+        transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+        cursor: pointer;
+    }
+
+    .partner-card:hover {
+        transform: translateY(-4px) scale(1.03);
+        border-color: var(--primary-color);
+        box-shadow: var(--shadow-md);
+        background: white;
+    }
+
+    .partner-card i {
+        font-size: clamp(1.5rem, 4vw, 2rem);
+        display: block;
+        margin-bottom: 0.4rem;
+        transition: transform 0.3s ease;
+    }
+
+    .partner-card:hover i {
+        transform: scale(1.15) rotate(-8deg);
+    }
+
+    .partner-card i.primary { color: var(--primary-color); }
+    .partner-card i.success { color: var(--success-color); }
+    .partner-card i.warning { color: var(--warning-color); }
+    .partner-card i.info    { color: var(--info-color); }
+
+    .partner-card h6 {
+        font-size: clamp(0.82rem, 2vw, 0.9rem);
+        font-weight: 700;
+        color: var(--gray-800);
+        margin: 0;
+        transition: color 0.25s ease;
+    }
+
+    .partner-card:hover h6 {
+        color: var(--primary-color);
+    }
+
+    .partner-card small {
+        display: block;
+        font-size: clamp(0.68rem, 1.6vw, 0.75rem);
+        color: var(--gray-500);
+        margin-top: 0.15rem;
+    }
+
+    /* ---------- Contact Section ---------- */
+    .contact-section {
+        background: linear-gradient(135deg, rgba(67, 97, 238, 0.04), rgba(114, 9, 183, 0.03));
+        border: 2px solid var(--primary-color);
+        border-radius: var(--radius-lg);
+        padding: clamp(1.25rem, 3.5vw, 2rem);
+        text-align: center;
+        animation: fadeInUp 0.6s ease-out 0.3s both;
+    }
+
+    .contact-section h4 {
+        font-size: clamp(1.05rem, 2.7vw, 1.35rem);
+        font-weight: 800;
+        color: var(--gray-800);
+        margin-bottom: 0.6rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .contact-section h4 i {
+        color: var(--primary-color);
+    }
+
+    .contact-section > p {
+        color: var(--gray-600);
+        font-size: clamp(0.85rem, 2vw, 0.95rem);
+        margin-bottom: clamp(1rem, 2.5vw, 1.5rem);
+        max-width: 520px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .contact-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+        justify-content: center;
+    }
+
+    .btn-action {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: clamp(0.6rem, 1.7vw, 0.75rem) clamp(1.1rem, 2.8vw, 1.5rem);
+        border-radius: 11px;
+        font-weight: 600;
+        font-size: clamp(0.82rem, 2vw, 0.92rem);
+        cursor: pointer;
+        transition: all 0.25s ease;
+        text-decoration: none;
+        white-space: nowrap;
+        border: none;
+    }
+
+    .btn-action.primary {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: white;
+        box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+    }
+    .btn-action.primary:hover {
+        background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(67, 97, 238, 0.45);
+        color: white;
+    }
+
+    .btn-action.outline {
+        background: white;
+        color: var(--primary-color);
+        border: 2px solid var(--primary-color) !important;
+    }
+    .btn-action.outline:hover {
+        background: var(--primary-color);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .contact-response-time {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        margin-top: 0.85rem;
+        font-size: clamp(0.72rem, 1.8vw, 0.82rem);
+        color: var(--gray-500);
+    }
+
+    .contact-response-time i {
+        color: var(--warning-color);
+    }
+
+    /* ---------- Animations ---------- */
+    @keyframes fadeInDown {
+        from { opacity: 0; transform: translateY(-20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ---------- Reduced Motion ---------- */
+    @media (prefers-reduced-motion: reduce) {
+        .shipping-header,
+        .shipping-header-icon,
+        .section-card,
+        .contact-section {
+            animation: none !important;
+        }
+        .timeline-card:hover,
+        .method-card:hover,
+        .partner-card:hover {
+            transform: none;
+        }
+        .timeline-card:hover .timeline-icon,
+        .partner-card:hover i {
+            transform: none;
+        }
+    }
+
+    /* ---------- Dark Mode ---------- */
+    body.dark-mode .shipping-header h1 { color: var(--gray-100); }
+    body.dark-mode .shipping-header .lead { color: var(--gray-400); }
+
+    body.dark-mode .section-card,
+    body.dark-mode .timeline-card,
+    body.dark-mode .method-card,
+    body.dark-mode .faq-item {
+        background: var(--gray-800);
+        border-color: var(--gray-700);
+    }
+
+    body.dark-mode .section-title,
+    body.dark-mode .timeline-card h5,
+    body.dark-mode .method-title,
+    body.dark-mode .faq-button,
+    body.dark-mode .contact-section h4 {
+        color: var(--gray-100);
+    }
+
+    body.dark-mode .timeline-card .duration,
+    body.dark-mode .timeline-card .note,
+    body.dark-mode .method-list li,
+    body.dark-mode .contact-section > p {
+        color: var(--gray-400);
+    }
+
+    body.dark-mode .method-list li strong {
+        color: var(--gray-200);
+    }
+
+    body.dark-mode .faq-button {
+        background: var(--gray-800);
+    }
+
+    body.dark-mode .faq-button:not(.collapsed) {
+        background: linear-gradient(135deg, rgba(67, 97, 238, 0.2), rgba(114, 9, 183, 0.15));
+        color: var(--primary-light);
+    }
+
+    body.dark-mode .faq-body {
+        background: var(--gray-700);
+        color: var(--gray-300);
+    }
+
+    body.dark-mode .faq-body table td {
+        border-bottom-color: var(--gray-600);
+    }
+
+    body.dark-mode .partner-card {
+        background: var(--gray-700);
+        border-color: var(--gray-600);
+    }
+
+    body.dark-mode .partner-card:hover {
+        background: var(--gray-600);
+    }
+
+    body.dark-mode .partner-card h6 {
+        color: var(--gray-100);
+    }
+
+    body.dark-mode .partner-card small {
+        color: var(--gray-400);
+    }
+
+    body.dark-mode .contact-section {
+        background: linear-gradient(135deg, rgba(67, 97, 238, 0.1), rgba(114, 9, 183, 0.05));
+        border-color: var(--primary-color);
+    }
+
+    body.dark-mode .btn-action.outline {
+        background: var(--gray-800);
+        color: var(--primary-light);
+        border-color: var(--primary-color) !important;
+    }
+</style>
+
+<div class="container py-3 py-md-4">
+
+    <!-- ============ PAGE HEADER ============ -->
+    <div class="shipping-header">
+        <div class="shipping-header-icon">
+            <i class="bi bi-truck"></i>
+        </div>
+        <h1>Shipping Information</h1>
+        <p class="lead">Everything you need to know about our shipping policies and delivery options.</p>
+    </div>
+
+    <div class="shipping-content">
+
+        <!-- ============ TIMELINE ============ -->
+        <div class="section-card">
+            <div class="section-card-body">
+                <h3 class="section-title">
+                    <i class="bi bi-clock-history"></i>
+                    Processing & Delivery Times
+                </h3>
+                <div class="timeline-grid">
+                    <div class="timeline-card">
+                        <div class="timeline-icon primary">
+                            <i class="bi bi-box-seam-fill"></i>
+                        </div>
+                        <h5>Order Processing</h5>
+                        <p class="duration">1–2 business days</p>
+                        <p class="note">Mon–Fri, excluding holidays</p>
+                    </div>
+                    <div class="timeline-card">
+                        <div class="timeline-icon success">
+                            <i class="bi bi-truck"></i>
+                        </div>
+                        <h5>Standard Shipping</h5>
+                        <p class="duration">3–5 business days</p>
+                        <p class="note">Free over 50,000 FCFA</p>
+                    </div>
+                    <div class="timeline-card">
+                        <div class="timeline-icon warning">
+                            <i class="bi bi-rocket-takeoff-fill"></i>
+                        </div>
+                        <h5>Express Shipping</h5>
+                        <p class="duration">1–2 business days</p>
+                        <p class="note">Same-day if ordered before 2 PM</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ METHODS & RATES ============ -->
+        <div class="methods-grid" style="margin-bottom: clamp(1.25rem, 3vw, 2rem);">
+            <!-- Domestic -->
+            <div class="method-card">
+                <h4 class="method-title">
+                    <i class="bi bi-truck-flatbed"></i>
+                    Domestic Shipping
+                </h4>
+                <ul class="method-list">
+                    <li>
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span><strong>Standard:</strong> 5,000 FCFA (3–5 business days)</span>
+                    </li>
+                    <li>
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span><strong>Express:</strong> 12,000 FCFA (1–2 business days)</span>
+                    </li>
+                    <li>
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span><strong>Free shipping</strong> on orders over 50,000 FCFA</span>
+                    </li>
+                    <li>
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span><strong>Same-day delivery</strong> available in select areas</span>
+                    </li>
+                </ul>
+                <div class="method-note">
+                    <i class="bi bi-info-circle-fill"></i>
+                    <span>Same-day delivery available in Douala, Yaoundé, and Limbe.</span>
+                </div>
+            </div>
+
+            <!-- International -->
+            <div class="method-card">
+                <h4 class="method-title">
+                    <i class="bi bi-globe2"></i>
+                    International Shipping
+                </h4>
+                <ul class="method-list">
+                    <li>
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span><strong>Standard International:</strong> 19,000 FCFA (7–14 business days)</span>
+                    </li>
+                    <li>
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span><strong>Express International:</strong> 34,000 FCFA (3–5 business days)</span>
+                    </li>
+                    <li>
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span><strong>Shipping to 50+ countries</strong> worldwide</span>
+                    </li>
+                </ul>
+                <div class="method-note">
+                    <i class="bi bi-info-circle-fill"></i>
+                    <span>Customs duties and taxes may apply for international orders and are the customer's responsibility.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ FAQ ============ -->
+        <div class="section-card">
+            <div class="section-card-body">
+                <h3 class="section-title">
+                    <i class="bi bi-question-circle-fill"></i>
+                    Frequently Asked Questions
+                </h3>
+
+                <div class="faq-accordion" id="shippingFAQ">
+
+                    <!-- FAQ 1 -->
+                    <div class="faq-item">
+                        <button class="faq-button collapsed" type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#faq1"
+                                aria-expanded="false">
+                            <i class="bi bi-search"></i>
+                            <span>How can I track my order?</span>
+                        </button>
+                        <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#shippingFAQ">
+                            <div class="faq-body">
+                                <p>Once your order is shipped, you'll receive a tracking number via email. You can track your package in several ways:</p>
+                                <ul>
+                                    <li>Visit our <a href="#" class="track-link">Track Order</a> page and enter your tracking number</li>
+                                    <li>Click the tracking link in your shipping confirmation email</li>
+                                    <li>Track directly on the carrier's website (DHL, UPS, FedEx, USPS)</li>
+                                </ul>
+                                <p>You'll also receive SMS updates if you provided a mobile number at checkout.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FAQ 2 -->
+                    <div class="faq-item">
+                        <button class="faq-button collapsed" type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#faq2"
+                                aria-expanded="false">
+                            <i class="bi bi-house-door-fill"></i>
+                            <span>What if I'm not home when my package arrives?</span>
+                        </button>
+                        <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#shippingFAQ">
+                            <div class="faq-body">
+                                <p>If you're not home, the carrier will typically:</p>
+                                <ul>
+                                    <li>Leave a delivery attempt notice with instructions</li>
+                                    <li>Leave the package in a safe place (at driver's discretion for non-signature items)</li>
+                                    <li>Deliver to a neighbor (with your prior authorization)</li>
+                                </ul>
+                                <p>For valuable items requiring signature, you can arrange redelivery or pick up from their local facility. Most carriers make 3 delivery attempts before returning to sender.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FAQ 3 -->
+                    <div class="faq-item">
+                        <button class="faq-button collapsed" type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#faq3"
+                                aria-expanded="false">
+                            <i class="bi bi-mailbox2"></i>
+                            <span>Do you ship to PO boxes?</span>
+                        </button>
+                        <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#shippingFAQ">
+                            <div class="faq-body">
+                                <p>Yes, we ship to PO boxes via standard shipping. However, please note:</p>
+                                <ul>
+                                    <li>Express shipping options (FedEx, UPS, DHL) cannot deliver to PO boxes</li>
+                                    <li>Some international destinations may restrict PO box delivery</li>
+                                    <li>Signature-required items cannot be delivered to PO boxes</li>
+                                </ul>
+                                <p>If you select express shipping with a PO box, we'll contact you to arrange alternative delivery.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FAQ 4 -->
+                    <div class="faq-item">
+                        <button class="faq-button collapsed" type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#faq4"
+                                aria-expanded="false">
+                            <i class="bi bi-pencil-square"></i>
+                            <span>Can I change my shipping address after placing an order?</span>
+                        </button>
+                        <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#shippingFAQ">
+                            <div class="faq-body">
+                                <p>You can change your shipping address within <strong>2 hours</strong> of placing your order:</p>
+                                <ol>
+                                    <li>Log in to your account and go to "My Orders"</li>
+                                    <li>Select the order and click "Edit Shipping Address"</li>
+                                    <li>Or contact our customer service immediately at <a href="tel:+237650970291">+237 650-970-291</a></li>
+                                </ol>
+                                <p>After the 2-hour window, changes may not be possible as orders begin processing. If your order has already shipped, we cannot redirect it.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FAQ 5 -->
+                    <div class="faq-item">
+                        <button class="faq-button collapsed" type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#faq5"
+                                aria-expanded="false">
+                            <i class="bi bi-clock-fill"></i>
+                            <span>What are your shipping cut-off times?</span>
+                        </button>
+                        <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#shippingFAQ">
+                            <div class="faq-body">
+                                <p>Our shipping cut-off times are as follows:</p>
+                                <table>
+                                    <tr>
+                                        <td><strong>Standard Shipping:</strong></td>
+                                        <td>Orders before 4 PM ship same day</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Express Shipping:</strong></td>
+                                        <td>Orders before 2 PM ship same day for next-day delivery</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>International:</strong></td>
+                                        <td>Orders before 12 PM ship same day</td>
+                                    </tr>
+                                </table>
+                                <p>Orders placed after cut-off or on weekends/holidays are processed the next business day.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ SHIPPING PARTNERS ============ -->
+        <div class="section-card">
+            <div class="section-card-body">
+                <h3 class="section-title">
+                    <i class="bi bi-shield-check"></i>
+                    Our Shipping Partners
+                </h3>
+                <p style="color: var(--gray-600); margin-bottom: 1rem; font-size: clamp(0.85rem, 2vw, 0.95rem);">
+                    We partner with trusted carriers to ensure your packages arrive safely and on time:
+                </p>
+                <div class="partners-grid">
+                    <div class="partner-card" data-carrier="USPS">
+                        <i class="bi bi-truck primary"></i>
+                        <h6>USPS</h6>
+                        <small>United States</small>
+                    </div>
+                    <div class="partner-card" data-carrier="UPS">
+                        <i class="bi bi-box-seam-fill success"></i>
+                        <h6>UPS</h6>
+                        <small>Worldwide</small>
+                    </div>
+                    <div class="partner-card" data-carrier="FedEx">
+                        <i class="bi bi-airplane-fill warning"></i>
+                        <h6>FedEx</h6>
+                        <small>International</small>
+                    </div>
+                    <div class="partner-card" data-carrier="DHL">
+                        <i class="bi bi-globe2 info"></i>
+                        <h6>DHL</h6>
+                        <small>Express</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ CONTACT SECTION ============ -->
+        <div class="contact-section">
+            <h4><i class="bi bi-headset"></i> Need Help with Shipping?</h4>
+            <p>Our customer service team is here to assist you with any shipping questions or concerns.</p>
+            <div class="contact-actions">
+                <a href="{{ url_for('help_center') }}" class="btn-action primary">
+                    <i class="bi bi-headset"></i> Contact Support
+                </a>
+                <a href="{{ url_for('products') }}" class="btn-action outline">
+                    <i class="bi bi-cart-fill"></i> Continue Shopping
+                </a>
+            </div>
+            <div class="contact-response-time">
+                <i class="bi bi-clock-history"></i>
+                Average response time: under 2 hours
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+/* ============================================
+   SHIPPING INFO PAGE SCRIPT
+   ============================================ */
+(function() {
+    'use strict';
+
+    // ---------- Track Order Link ----------
+    document.querySelectorAll('.track-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (typeof showToast === 'function') {
+                showToast('Opening tracking page…', 'info', 'bi-truck');
+            }
+            // Uncomment when you have a track-order page:
+            // setTimeout(() => { window.location.href = "/track-order"; }, 600);
+        });
+    });
+
+    // ---------- Shipping Partner Cards ----------
+    document.querySelectorAll('.partner-card').forEach(card => {
+        card.addEventListener('click', function() {
+            const carrier = this.dataset.carrier || this.querySelector('h6')?.textContent || 'Carrier';
+            if (typeof showToast === 'function') {
+                showToast(`Learn more about ${carrier} shipping`, 'info', 'bi-box-seam');
+            }
+        });
+    });
+
+    // ---------- FAQ Open Tracking ----------
+    document.querySelectorAll('.faq-button').forEach(btn => {
+        btn.addEventListener('click', function() {
+            // Only show toast when opening (not when closing)
+            if (this.classList.contains('collapsed')) {
+                const question = this.querySelector('span')?.textContent?.trim() || 'question';
+                if (typeof showToast === 'function') {
+                    showToast(`Opening: ${question}`, 'info', 'bi-question-circle');
+                }
+            }
+        });
+    });
+
+    // ---------- Welcome Toast ----------
+    if (typeof showToast === 'function') {
+        setTimeout(() => {
+            showToast('🚚 Free shipping on orders over 50,000 FCFA!', 'success', 'bi-truck');
+        }, 900);
+    }
+
+    console.log('🚚 Shipping Information page loaded');
+})();
+</script>
+{% endblock %}

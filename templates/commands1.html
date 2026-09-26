@@ -1,0 +1,1141 @@
+{% extends "base.html" %}
+
+{% block title %}Orders - Linux Shop{% endblock %}
+
+{% block content %}
+<style>
+    /* Modern Admin Orders Page Styling */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+    :root {
+        --primary: #6366f1;
+        --primary-dark: #4f46e5;
+        --primary-light: #818cf8;
+        --secondary: #8b5cf6;
+        --success: #10b981;
+        --success-light: #d1fae5;
+        --danger: #ef4444;
+        --danger-light: #fee2e2;
+        --warning: #f59e0b;
+        --warning-light: #fef3c7;
+        --info: #3b82f6;
+        --info-light: #dbeafe;
+        --gray-50: #f9fafb;
+        --gray-100: #f3f4f6;
+        --gray-200: #e5e7eb;
+        --gray-300: #d1d5db;
+        --gray-400: #9ca3af;
+        --gray-500: #6b7280;
+        --gray-600: #4b5563;
+        --gray-700: #374151;
+        --gray-800: #1f2937;
+        --gray-900: #111827;
+        
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+        
+        --radius-sm: 0.375rem;
+        --radius: 0.5rem;
+        --radius-md: 0.75rem;
+        --radius-lg: 1rem;
+        --radius-xl: 1.5rem;
+        --radius-2xl: 2rem;
+        --radius-full: 9999px;
+        
+        --transition-fast: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+        --transition: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+        --transition-bounce: 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* Page Header */
+    h1 {
+        font-size: clamp(2rem, 4vw, 2.5rem);
+        font-weight: 800;
+        color: var(--gray-900);
+        margin: 2rem 0;
+        position: relative;
+        display: inline-block;
+        animation: slideInDown 0.6s ease-out;
+    }
+
+    h1::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 80px;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        border-radius: var(--radius-full);
+        animation: expandWidth 0.8s ease-out 0.3s both;
+    }
+
+    h1 i {
+        color: var(--primary);
+        margin-right: 0.5rem;
+    }
+
+    /* Admin Dashboard Stats */
+    .admin-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+        animation: fadeInUp 0.8s ease-out;
+    }
+
+    .stat-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-lg);
+        border: 1px solid var(--gray-200);
+        transition: all var(--transition);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-2xl);
+        border-color: var(--primary);
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+    }
+
+    .stat-icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--gray-900);
+        line-height: 1.2;
+    }
+
+    .stat-label {
+        color: var(--gray-600);
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* Filter Bar */
+    .filter-bar {
+        background: white;
+        padding: 1.5rem;
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-lg);
+        margin-bottom: 2rem;
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        align-items: center;
+        animation: fadeInUp 0.8s ease-out 0.2s both;
+    }
+
+    .filter-group {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .filter-label {
+        font-weight: 600;
+        color: var(--gray-700);
+    }
+
+    .filter-select {
+        border: 2px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        padding: 0.5rem 2rem 0.5rem 1rem;
+        font-size: 0.95rem;
+        transition: all var(--transition-fast);
+        background: var(--gray-50);
+        cursor: pointer;
+        min-width: 150px;
+    }
+
+    .filter-select:focus {
+        border-color: var(--primary);
+        outline: none;
+        box-shadow: 0 0 0 3px var(--primary-light);
+    }
+
+    .filter-search {
+        flex: 1;
+        min-width: 250px;
+        position: relative;
+    }
+
+    .filter-search input {
+        width: 100%;
+        padding: 0.5rem 1rem 0.5rem 2.5rem;
+        border: 2px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        font-size: 0.95rem;
+        transition: all var(--transition-fast);
+    }
+
+    .filter-search i {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--gray-400);
+    }
+
+    .filter-search input:focus {
+        border-color: var(--primary);
+        outline: none;
+        box-shadow: 0 0 0 3px var(--primary-light);
+    }
+
+    /* Table Container */
+    .table-responsive {
+        background: white;
+        border-radius: var(--radius-xl);
+        padding: 1.5rem;
+        box-shadow: var(--shadow-xl);
+        animation: fadeInUp 0.8s ease-out 0.4s both;
+        border: 1px solid var(--gray-200);
+        overflow-x: auto;
+        margin-bottom: 2rem;
+    }
+
+    /* Orders Table */
+    .table {
+        margin-bottom: 0;
+        min-width: 1200px;
+    }
+
+    .table thead th {
+        background: linear-gradient(135deg, var(--gray-50), var(--gray-100));
+        color: var(--gray-700);
+        font-weight: 700;
+        font-size: 0.95rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 1.25rem 1rem;
+        border-bottom: 2px solid var(--gray-300);
+        border-top: none;
+        white-space: nowrap;
+    }
+
+    .table thead th i {
+        margin-right: 0.5rem;
+        color: var(--primary);
+    }
+
+    .table tbody tr {
+        transition: all var(--transition);
+        animation: fadeIn 0.5s ease-out;
+        animation-fill-mode: both;
+        position: relative;
+    }
+
+    {% for i in range(1, 31) %}
+    .table tbody tr:nth-child({{ i }}) {
+        animation-delay: {{ 0.03 * i }}s;
+    }
+    {% endfor %}
+
+    .table tbody tr:hover {
+        background: var(--gray-50) !important;
+        transform: scale(1.01);
+        box-shadow: var(--shadow-md);
+        z-index: 10;
+        position: relative;
+    }
+
+    .table tbody td {
+        padding: 1.25rem 1rem;
+        vertical-align: middle;
+        color: var(--gray-700);
+        font-weight: 500;
+        border-bottom: 1px solid var(--gray-200);
+    }
+
+    /* Order Number */
+    .table tbody td:first-child {
+        font-weight: 700;
+        color: var(--primary);
+        font-family: monospace;
+        font-size: 1rem;
+    }
+
+    /* Customer Name */
+    .table tbody td:nth-child(2) {
+        font-weight: 600;
+        color: var(--gray-900);
+    }
+
+    /* Date */
+    .table tbody td:nth-child(3) {
+        color: var(--gray-600);
+        font-size: 0.95rem;
+        white-space: nowrap;
+    }
+
+    .table tbody td:nth-child(3) i {
+        margin-right: 0.3rem;
+        color: var(--primary);
+    }
+
+    /* Total Amount */
+    .table tbody td:nth-child(4) {
+        font-weight: 700;
+        color: var(--success);
+        font-size: 1rem;
+        white-space: nowrap;
+    }
+
+    .table tbody td:nth-child(4)::before {
+        content: '💰';
+        margin-right: 0.5rem;
+        opacity: 0.7;
+    }
+
+    /* Payment Method */
+    .table tbody td:nth-child(5) {
+        font-weight: 600;
+        text-transform: capitalize;
+        white-space: nowrap;
+    }
+
+    .table tbody td:nth-child(5) i {
+        margin-right: 0.3rem;
+        color: var(--primary);
+    }
+
+    /* Status Badge */
+    .badge {
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius-full);
+        font-weight: 600;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        box-shadow: var(--shadow-sm);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        white-space: nowrap;
+    }
+
+    .badge i {
+        font-size: 0.9rem;
+    }
+
+    .badge.bg-warning {
+        background: linear-gradient(135deg, var(--warning), #d97706) !important;
+        color: white;
+        animation: pulse 2s infinite;
+    }
+
+    .badge.bg-info {
+        background: linear-gradient(135deg, var(--info), #2563eb) !important;
+        color: white;
+    }
+
+    .badge.bg-primary {
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark)) !important;
+        color: white;
+    }
+
+    .badge.bg-success {
+        background: linear-gradient(135deg, var(--success), #059669) !important;
+        color: white;
+    }
+
+    .badge.bg-secondary {
+        background: linear-gradient(135deg, var(--gray-500), var(--gray-600)) !important;
+        color: white;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+
+    /* Actions Cell */
+    .table tbody td:last-child {
+        min-width: 350px;
+    }
+
+    /* View Button */
+    .btn-outline-info {
+        background: transparent;
+        color: var(--info);
+        border: 2px solid var(--info);
+        padding: 0.4rem 1rem;
+        border-radius: var(--radius-lg);
+        font-weight: 600;
+        font-size: 0.85rem;
+        transition: all var(--transition-bounce);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .btn-outline-info:hover {
+        background: linear-gradient(135deg, var(--info), #2563eb);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-xl);
+        border-color: transparent;
+    }
+
+    .btn-outline-info i {
+        font-size: 0.9rem;
+    }
+
+    /* Admin Controls */
+    .admin-controls {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .status-select {
+        border: 2px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        padding: 0.4rem 1.5rem 0.4rem 0.75rem;
+        font-size: 0.85rem;
+        font-weight: 500;
+        transition: all var(--transition-fast);
+        background: var(--gray-50);
+        cursor: pointer;
+        min-width: 120px;
+    }
+
+    .status-select:focus {
+        border-color: var(--primary);
+        outline: none;
+        box-shadow: 0 0 0 3px var(--primary-light);
+    }
+
+    .btn-success {
+        background: linear-gradient(135deg, var(--success), #059669);
+        color: white;
+        border: none;
+        padding: 0.4rem 1rem;
+        border-radius: var(--radius-lg);
+        font-weight: 600;
+        font-size: 0.85rem;
+        transition: all var(--transition-bounce);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .btn-success:hover {
+        background: linear-gradient(135deg, #059669, var(--success));
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-xl);
+    }
+
+    .btn-danger {
+        background: linear-gradient(135deg, var(--danger), #dc2626);
+        color: white;
+        border: none;
+        padding: 0.4rem 1rem;
+        border-radius: var(--radius-lg);
+        font-weight: 600;
+        font-size: 0.85rem;
+        transition: all var(--transition-bounce);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .btn-danger:hover {
+        background: linear-gradient(135deg, #dc2626, var(--danger));
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-xl);
+    }
+
+    .btn-sm {
+        padding: 0.4rem 0.75rem;
+        font-size: 0.8rem;
+    }
+
+    .ms-1, .ms-2 {
+        margin-left: 0.5rem;
+    }
+
+    /* No Orders State */
+    .table tbody tr td[colspan="7"] {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: var(--gray-500);
+        font-size: 1.1rem;
+        background: linear-gradient(135deg, var(--gray-50), var(--gray-100));
+        border-radius: var(--radius-lg);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .table tbody tr td[colspan="7"]::before {
+        content: '📦';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 5rem;
+        opacity: 0.1;
+        animation: float 3s ease infinite;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translate(-50%, -50%) translateY(0); }
+        50% { transform: translate(-50%, -50%) translateY(-20px); }
+    }
+
+    /* Animations */
+    @keyframes slideInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes expandWidth {
+        from { width: 0; }
+        to { width: 80px; }
+    }
+
+    /* Toast Notification */
+    .toast-notification {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background: linear-gradient(135deg, var(--success), #059669);
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-2xl);
+        transform: translateX(400px);
+        transition: transform 0.3s ease;
+        z-index: 9999;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .toast-notification.show {
+        transform: translateX(0);
+    }
+
+    .toast-notification i {
+        font-size: 1.25rem;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .admin-stats {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .filter-bar {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .filter-group {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .filter-select {
+            width: 100%;
+        }
+
+        .filter-search {
+            width: 100%;
+        }
+
+        .table-responsive {
+            padding: 1rem;
+        }
+
+        .admin-controls {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .status-select {
+            width: 100%;
+        }
+
+        .btn-success, .btn-danger {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 480px) {
+        h1 {
+            font-size: 1.75rem;
+        }
+
+        .stat-card {
+            padding: 1rem;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+        }
+
+        .stat-icon {
+            font-size: 1.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+        }
+    }
+
+    /* Dark Mode */
+    @media (prefers-color-scheme: dark) {
+        .stat-card,
+        .filter-bar,
+        .table-responsive {
+            background: var(--gray-800);
+            border-color: var(--gray-700);
+        }
+
+        .stat-value,
+        .filter-label {
+            color: white;
+        }
+
+        .stat-label {
+            color: var(--gray-400);
+        }
+
+        .filter-select,
+        .filter-search input,
+        .status-select {
+            background: var(--gray-700);
+            border-color: var(--gray-600);
+            color: white;
+        }
+
+        .filter-select:focus,
+        .filter-search input:focus,
+        .status-select:focus {
+            background: var(--gray-600);
+        }
+
+        .table thead th {
+            background: linear-gradient(135deg, var(--gray-700), var(--gray-800));
+            color: var(--gray-300);
+            border-bottom-color: var(--gray-600);
+        }
+
+        .table tbody td {
+            color: var(--gray-300);
+            border-bottom-color: var(--gray-700);
+        }
+
+        .table tbody tr:hover {
+            background: var(--gray-700) !important;
+        }
+
+        .table tbody td:first-child {
+            color: var(--primary-light);
+        }
+
+        .table tbody td:nth-child(2) {
+            color: white;
+        }
+
+        .table tbody tr td[colspan="7"] {
+            background: linear-gradient(135deg, var(--gray-800), var(--gray-900));
+            color: var(--gray-500);
+        }
+    }
+</style>
+
+<!-- Page Header -->
+<h1>
+    <i class="bi bi-clipboard-data"></i> 
+    Order Management
+    <span class="badge bg-primary ms-2" style="font-size: 1rem;">{{ commands|length }} Total Orders</span>
+</h1>
+
+<!-- Admin Statistics -->
+<div class="admin-stats">
+    {% set pending_count = commands|selectattr('status', 'equalto', 'pending')|list|length %}
+    {% set confirmed_count = commands|selectattr('status', 'equalto', 'confirmed')|list|length %}
+    {% set shipped_count = commands|selectattr('status', 'equalto', 'shipped')|list|length %}
+    {% set delivered_count = commands|selectattr('status', 'equalto', 'delivered')|list|length %}
+    {% set total_revenue = commands|sum(attribute='total_amount') %}
+    
+    <div class="stat-card">
+        <div class="stat-icon">⏳</div>
+        <div class="stat-value">{{ pending_count }}</div>
+        <div class="stat-label">Pending</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">✓</div>
+        <div class="stat-value">{{ confirmed_count }}</div>
+        <div class="stat-label">Confirmed</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">🚚</div>
+        <div class="stat-value">{{ shipped_count }}</div>
+        <div class="stat-label">Shipped</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">✅</div>
+        <div class="stat-value">{{ delivered_count }}</div>
+        <div class="stat-label">Delivered</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">💰</div>
+        <div class="stat-value">{{ total_revenue|fcfa }}</div>
+        <div class="stat-label">Revenue</div>
+    </div>
+</div>
+
+<!-- Filter Bar -->
+<div class="filter-bar">
+    <div class="filter-group">
+        <span class="filter-label"><i class="bi bi-funnel"></i> Filter:</span>
+        <select class="filter-select" id="statusFilter" onchange="filterByStatus(this.value)">
+            <option value="all">All Orders</option>
+            <option value="pending">Pending</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="shipped">Shipped</option>
+            <option value="delivered">Delivered</option>
+        </select>
+    </div>
+    
+    <div class="filter-group">
+        <span class="filter-label"><i class="bi bi-sort-down"></i> Sort:</span>
+        <select class="filter-select" id="sortFilter" onchange="sortOrders(this.value)">
+            <option value="date_desc">Newest First</option>
+            <option value="date_asc">Oldest First</option>
+            <option value="total_desc">Highest Total</option>
+            <option value="total_asc">Lowest Total</option>
+        </select>
+    </div>
+    
+    <div class="filter-search">
+        <i class="bi bi-search"></i>
+        <input type="text" id="searchInput" placeholder="Search orders..." onkeyup="searchOrders()">
+    </div>
+    
+    <div class="filter-group">
+        <button class="btn-success btn-sm" onclick="exportOrders()">
+            <i class="bi bi-download"></i> Export
+        </button>
+        <button class="btn-info btn-sm" onclick="refreshOrders()">
+            <i class="bi bi-arrow-repeat"></i> Refresh
+        </button>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table" id="ordersTable">
+        <thead>
+            <tr>
+                <th><i class="bi bi-hash"></i> Order #</th>
+                <th><i class="bi bi-person"></i> Customer</th>
+                <th><i class="bi bi-calendar"></i> Date</th>
+                <th><i class="bi bi-currency-dollar"></i> Total</th>
+                <th><i class="bi bi-credit-card"></i> Payment</th>
+                <th><i class="bi bi-truck"></i> Status</th>
+                <th><i class="bi bi-gear"></i> Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for command in commands %}
+            <tr data-order-id="{{ command.id }}" data-status="{{ command.status }}" data-date="{{ command.created_at.timestamp() }}" data-total="{{ command.total_amount }}">
+                <td><span class="order-number">#{{ command.command_number }}</span></td>
+                <td>
+                    <div class="customer-info">
+                        <i class="bi bi-person-circle"></i>
+                        {{ command.customer_name }}
+                    </div>
+                </td>
+                <td>
+                    <i class="bi bi-calendar-event"></i>
+                    {{ command.created_at.strftime('%Y-%m-%d') }}
+                    <br>
+                    <small class="text-muted">
+                        <i class="bi bi-clock"></i>
+                        {{ command.created_at.strftime('%H:%M') }}
+                    </small>
+                </td>
+                <td class="order-total">{{ command.total_amount|fcfa }} FCFA</td>
+                <td>
+                    <i class="bi {% if command.payment_method == 'cash' %}bi-cash{% elif command.payment_method == 'card' %}bi-credit-card{% else %}bi-phone{% endif %}"></i>
+                    {{ command.payment_method|default('cash')|title }}
+                </td>
+                <td>
+                    <span class="badge 
+                        {% if command.status == 'pending' %}bg-warning
+                        {% elif command.status == 'confirmed' %}bg-info
+                        {% elif command.status == 'shipped' %}bg-primary
+                        {% elif command.status == 'delivered' %}bg-success
+                        {% else %}bg-secondary{% endif %}">
+                        <i class="bi 
+                            {% if command.status == 'pending' %}bi-hourglass-split
+                            {% elif command.status == 'confirmed' %}bi-check-circle
+                            {% elif command.status == 'shipped' %}bi-truck
+                            {% elif command.status == 'delivered' %}bi-check-all
+                            {% else %}bi-question-circle{% endif %}">
+                        </i>
+                        {{ command.status|title }}
+                    </span>
+                </td>
+                <td>
+                    <div class="admin-controls">
+                        <a href="{{ url_for('command_confirmation', command_id=command.id) }}" class="btn-outline-info btn-sm view-order">
+                            <i class="bi bi-eye"></i> View
+                        </a>
+                        
+                        {% if session.get('role') == 'admin' %}
+                        <form action="{{ url_for('update_command_status', command_id=command.id) }}" method="post" class="d-inline status-form">
+                            <select name="status" class="status-select">
+                                <option value="pending" {% if command.status=='pending' %}selected{% endif %}>⏳ Pending</option>
+                                <option value="confirmed" {% if command.status=='confirmed' %}selected{% endif %}>✓ Confirmed</option>
+                                <option value="shipped" {% if command.status=='shipped' %}selected{% endif %}>🚚 Shipped</option>
+                                <option value="delivered" {% if command.status=='delivered' %}selected{% endif %}>✅ Delivered</option>
+                            </select>
+                            <button type="submit" class="btn-success btn-sm update-status">
+                                <i class="bi bi-check-lg"></i> Update
+                            </button>
+                        </form>
+                        
+                        <form action="{{ url_for('delete_command', command_id=command.id) }}" method="post" class="d-inline delete-form" onsubmit="return confirmDelete(this, '{{ command.command_number }}');">
+                            <button type="submit" class="btn-danger btn-sm">
+                                <i class="bi bi-trash"></i> Delete
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+            
+            {% if not commands %}
+            <tr>
+                <td colspan="7">
+                    <div class="empty-orders">
+                        <p>📦 No orders found</p>
+                        <p class="text-muted">There are no orders in the system yet.</p>
+                    </div>
+                </td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3"></div>
+
+<script>
+    // Modern JavaScript for Admin Orders Page
+    (function() {
+        'use strict';
+
+        // Toast notification system
+        function showToast(message, type = 'success', icon = 'bi-check-circle-fill') {
+            const toastContainer = document.querySelector('.toast-container');
+            if (!toastContainer) return;
+
+            const colors = {
+                success: 'linear-gradient(135deg, #10b981, #059669)',
+                warning: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                danger: 'linear-gradient(135deg, #ef4444, #dc2626)',
+                info: 'linear-gradient(135deg, #3b82f6, #2563eb)'
+            };
+
+            const toastId = 'toast-' + Date.now();
+            const toastHtml = `
+                <div id="${toastId}" class="toast-notification show" style="background: ${colors[type] || colors.success}">
+                    <i class="bi ${icon}"></i>
+                    <div class="toast-message">${message}</div>
+                </div>
+            `;
+
+            toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+
+            setTimeout(() => {
+                const toast = document.getElementById(toastId);
+                if (toast) {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 300);
+                }
+            }, 3000);
+        }
+
+        // Filter by status
+        window.filterByStatus = function(status) {
+            const rows = document.querySelectorAll('tbody tr[data-status]');
+            let visibleCount = 0;
+            
+            rows.forEach(row => {
+                if (status === 'all' || row.dataset.status === status) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            showToast(`Showing ${visibleCount} ${status === 'all' ? 'orders' : status + ' orders'}`, 'info', 'bi-funnel');
+        };
+
+        // Search orders
+        window.searchOrders = function() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('tbody tr[data-order-id]');
+            let visibleCount = 0;
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            if (searchTerm.length > 2) {
+                showToast(`Found ${visibleCount} matching orders`, 'info', 'bi-search');
+            }
+        };
+
+        // Sort orders
+        window.sortOrders = function(sortBy) {
+            const tbody = document.querySelector('tbody');
+            const rows = Array.from(document.querySelectorAll('tbody tr[data-order-id]'));
+            
+            rows.sort((a, b) => {
+                if (sortBy === 'date_desc') {
+                    return b.dataset.date - a.dataset.date;
+                } else if (sortBy === 'date_asc') {
+                    return a.dataset.date - b.dataset.date;
+                } else if (sortBy === 'total_desc') {
+                    return b.dataset.total - a.dataset.total;
+                } else if (sortBy === 'total_asc') {
+                    return a.dataset.total - b.dataset.total;
+                }
+            });
+            
+            rows.forEach(row => tbody.appendChild(row));
+            showToast('Orders sorted', 'success', 'bi-sort-down');
+        };
+
+        // Export orders
+        window.exportOrders = function() {
+            const orders = [];
+            document.querySelectorAll('tbody tr[data-order-id]').forEach(row => {
+                if (row.style.display !== 'none') {
+                    orders.push({
+                        number: row.querySelector('.order-number')?.textContent || '',
+                        customer: row.querySelector('td:nth-child(2)')?.textContent.trim() || '',
+                        date: row.querySelector('td:nth-child(3)')?.textContent.trim() || '',
+                        total: row.querySelector('.order-total')?.textContent || '',
+                        status: row.querySelector('.badge')?.textContent.trim() || ''
+                    });
+                }
+            });
+            
+            // Create CSV
+            const csv = [
+                ['Order #', 'Customer', 'Date', 'Total', 'Status'],
+                ...orders.map(o => [o.number, o.customer, o.date, o.total, o.status])
+            ].map(row => row.join(',')).join('\n');
+            
+            // Download
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `orders_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            
+            showToast(`Exported ${orders.length} orders`, 'success', 'bi-download');
+        };
+
+        // Refresh orders
+        window.refreshOrders = function() {
+            showToast('Refreshing orders...', 'info', 'bi-arrow-repeat');
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        };
+
+        // Confirm delete
+        window.confirmDelete = function(form, orderNumber) {
+            return new Promise((resolve) => {
+                const confirmed = confirm(`Delete order ${orderNumber}? This will restore stock quantities and cannot be undone.`);
+                
+                if (confirmed) {
+                    const row = form.closest('tr');
+                    row.style.transform = 'translateX(100px)';
+                    row.style.opacity = '0';
+                    row.style.transition = 'all 0.3s ease';
+                    
+                    showToast(`Deleting order ${orderNumber}...`, 'warning', 'bi-trash');
+                    
+                    setTimeout(() => {
+                        form.submit();
+                    }, 300);
+                }
+                return confirmed;
+            });
+        };
+
+        // View order animation
+        document.querySelectorAll('.view-order').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                this.style.transform = 'scale(0.95)';
+                this.innerHTML = '<i class="bi bi-hourglass-split"></i> Loading...';
+                
+                showToast('Loading order details...', 'info', 'bi-eye');
+                
+                setTimeout(() => {
+                    window.location.href = this.href;
+                }, 500);
+            });
+        });
+
+        // Status update animation
+        document.querySelectorAll('.status-form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const button = this.querySelector('.update-status');
+                const originalText = button.innerHTML;
+                
+                button.innerHTML = '<i class="bi bi-hourglass-split"></i> Updating...';
+                button.disabled = true;
+                
+                showToast('Updating order status...', 'info', 'bi-arrow-repeat');
+                
+                setTimeout(() => {
+                    form.submit();
+                }, 1000);
+            });
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Alt + 1-4 for status filters
+            if (e.altKey && e.key >= '1' && e.key <= '4') {
+                e.preventDefault();
+                const statuses = ['pending', 'confirmed', 'shipped', 'delivered'];
+                const index = parseInt(e.key) - 1;
+                document.getElementById('statusFilter').value = statuses[index];
+                filterByStatus(statuses[index]);
+            }
+            
+            // Alt + S for search focus
+            if (e.altKey && e.key === 's') {
+                e.preventDefault();
+                document.getElementById('searchInput').focus();
+            }
+            
+            // Alt + R for refresh
+            if (e.altKey && e.key === 'r') {
+                e.preventDefault();
+                refreshOrders();
+            }
+            
+            // Alt + E for export
+            if (e.altKey && e.key === 'e') {
+                e.preventDefault();
+                exportOrders();
+            }
+        });
+
+        // Live stats update simulation
+        function updateLiveStats() {
+            const visibleCount = document.querySelectorAll('tbody tr[data-order-id]:not([style*="display: none"])').length;
+            document.querySelector('.badge.bg-primary').textContent = visibleCount + ' Orders';
+        }
+
+        // Debounced search
+        let searchTimeout;
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    searchOrders();
+                }, 300);
+            });
+        }
+
+        // Welcome message
+        setTimeout(() => {
+            const orderCount = document.querySelectorAll('tbody tr[data-order-id]').length;
+            if (orderCount > 0) {
+                showToast(`📊 Managing ${orderCount} orders`, 'info', 'bi-clipboard-data');
+            }
+        }, 1000);
+
+        // Console greeting
+        console.log('📊 Admin Orders Page - Managing all orders');
+
+        // Expose functions globally
+        window.showToast = showToast;
+    })();
+</script>
+{% endblock %}

@@ -1,0 +1,978 @@
+{% extends "base.html" %}
+
+{% block title %}My Orders - Linux Shop{% endblock %}
+
+{% block content %}
+<style>
+    /* ============================================
+       MY ORDERS PAGE — FULLY RESPONSIVE
+       ============================================ */
+
+    /* ---------- Page Header ---------- */
+    .orders-header {
+        margin: clamp(1rem, 3vw, 2rem) 0 clamp(1rem, 2.5vw, 1.5rem);
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.75rem;
+        animation: slideInDown 0.6s ease-out;
+    }
+
+    .orders-header h1 {
+        font-size: clamp(1.4rem, 4.5vw, 2.2rem);
+        font-weight: 800;
+        color: var(--gray-900);
+        margin: 0;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        position: relative;
+    }
+
+    .orders-header h1 i {
+        color: var(--primary-color);
+        font-size: clamp(1.25rem, 3.5vw, 1.75rem);
+    }
+
+    .orders-header h1::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 70px;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-color), #7209b7);
+        border-radius: 999px;
+        animation: expandWidth 0.8s ease-out 0.3s both;
+    }
+
+    @keyframes expandWidth {
+        from { width: 0; }
+        to   { width: 70px; }
+    }
+
+    .orders-count-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.35rem 0.85rem;
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: white;
+        border-radius: 999px;
+        font-size: clamp(0.75rem, 2vw, 0.85rem);
+        font-weight: 700;
+        white-space: nowrap;
+        box-shadow: 0 4px 12px rgba(67, 97, 238, 0.25);
+        margin-left: auto;
+    }
+
+    /* ---------- Stats Grid ---------- */
+    .orders-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        gap: clamp(0.6rem, 2vw, 1rem);
+        margin-bottom: clamp(1.25rem, 3vw, 1.75rem);
+        animation: fadeInUp 0.6s ease-out 0.1s both;
+    }
+
+    @media (max-width: 575.98px) {
+        .orders-stats {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    .stat-card {
+        background: white;
+        padding: clamp(0.85rem, 2.5vw, 1.15rem);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--gray-200);
+        text-align: center;
+        transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+        border-color: var(--primary-color);
+    }
+
+    .stat-icon {
+        font-size: clamp(1.2rem, 3.2vw, 1.6rem);
+        margin-bottom: 0.25rem;
+        line-height: 1;
+    }
+
+    .stat-value {
+        font-size: clamp(1.15rem, 3.2vw, 1.5rem);
+        font-weight: 800;
+        color: var(--primary-color);
+        line-height: 1.15;
+    }
+
+    .stat-label {
+        color: var(--gray-500);
+        font-size: clamp(0.68rem, 1.7vw, 0.78rem);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+        margin-top: 0.15rem;
+    }
+
+    /* ---------- Filter Chips ---------- */
+    .filter-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: clamp(1rem, 3vw, 1.5rem);
+        animation: fadeInUp 0.6s ease-out 0.15s both;
+    }
+
+    .filter-chip {
+        padding: clamp(0.4rem, 1.3vw, 0.5rem) clamp(0.75rem, 2vw, 1rem);
+        border-radius: 999px;
+        border: 1.5px solid var(--gray-300);
+        background: white;
+        color: var(--gray-700);
+        font-size: clamp(0.78rem, 1.9vw, 0.85rem);
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+    }
+
+    .filter-chip:hover {
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+        transform: translateY(-1px);
+    }
+
+    .filter-chip.active {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: white;
+        border-color: transparent;
+        box-shadow: 0 3px 10px rgba(67, 97, 238, 0.3);
+    }
+
+    /* ---------- Orders Wrapper ---------- */
+    .orders-wrapper {
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        overflow: hidden;
+        margin-bottom: clamp(1rem, 3vw, 2rem);
+        animation: fadeInUp 0.6s ease-out 0.2s both;
+    }
+
+    /* ---------- Desktop Table ---------- */
+    .orders-table-scroll {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .orders-table {
+        width: 100%;
+        min-width: 780px;
+        border-collapse: collapse;
+    }
+
+    .orders-table thead th {
+        background: linear-gradient(135deg, var(--gray-100), var(--gray-200));
+        color: var(--gray-700);
+        font-weight: 700;
+        font-size: clamp(0.72rem, 1.8vw, 0.82rem);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: clamp(0.75rem, 2vw, 1rem) clamp(0.6rem, 1.8vw, 0.9rem);
+        text-align: left;
+        white-space: nowrap;
+    }
+
+    .orders-table thead th i {
+        margin-right: 0.35rem;
+        color: var(--primary-color);
+        font-size: 0.9em;
+    }
+
+    .orders-table tbody tr {
+        border-bottom: 1px solid var(--gray-200);
+        transition: background 0.2s ease;
+    }
+
+    .orders-table tbody tr:last-child {
+        border-bottom: none;
+    }
+
+    .orders-table tbody tr:hover {
+        background: var(--gray-100);
+    }
+
+    .orders-table tbody td {
+        padding: clamp(0.75rem, 2vw, 1.1rem) clamp(0.6rem, 1.8vw, 0.9rem);
+        vertical-align: middle;
+        color: var(--gray-700);
+        font-size: clamp(0.8rem, 1.9vw, 0.9rem);
+    }
+
+    /* Order number */
+    .order-number {
+        font-family: 'Courier New', monospace;
+        font-weight: 700;
+        color: var(--primary-color);
+        white-space: nowrap;
+        font-size: clamp(0.85rem, 2vw, 0.95rem);
+    }
+
+    /* Date cell */
+    .order-date {
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+        white-space: nowrap;
+    }
+
+    .order-date .date-main {
+        font-weight: 600;
+        color: var(--gray-700);
+        font-size: 0.88em;
+    }
+
+    .order-date .date-time {
+        color: var(--gray-500);
+        font-size: 0.78em;
+    }
+
+    /* Total */
+    .order-total {
+        font-weight: 800;
+        color: var(--success-color);
+        white-space: nowrap;
+        font-size: clamp(0.85rem, 2vw, 0.95rem);
+    }
+
+    /* Payment method */
+    .payment-method {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-weight: 600;
+        text-transform: capitalize;
+        white-space: nowrap;
+    }
+
+    .payment-method i {
+        color: var(--primary-color);
+    }
+
+    /* Status badge */
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.35rem 0.7rem;
+        border-radius: 999px;
+        font-weight: 700;
+        font-size: clamp(0.68rem, 1.6vw, 0.75rem);
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        white-space: nowrap;
+        color: white;
+    }
+
+    .status-badge.pending   { background: linear-gradient(135deg, var(--warning-color), #d97706); }
+    .status-badge.confirmed { background: linear-gradient(135deg, var(--info-color), #2563eb); }
+    .status-badge.shipped   { background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); }
+    .status-badge.delivered { background: linear-gradient(135deg, var(--success-color), #059669); }
+    .status-badge.default   { background: linear-gradient(135deg, var(--gray-500), var(--gray-600)); }
+
+    /* Progress bar */
+    .progress-track {
+        height: 6px;
+        border-radius: 999px;
+        background: var(--gray-200);
+        overflow: hidden;
+        margin-top: 0.5rem;
+        box-shadow: inset 0 1px 2px rgba(0,0,0,0.06);
+    }
+
+    .progress-fill {
+        height: 100%;
+        border-radius: 999px;
+        transition: width 0.9s ease;
+        background: linear-gradient(90deg, var(--primary-color), #7209b7);
+        background-size: 200% 100%;
+        animation: shimmer 2s linear infinite;
+    }
+
+    .progress-fill.pending   { background: linear-gradient(90deg, var(--warning-color), #fbbf24); }
+    .progress-fill.confirmed { background: linear-gradient(90deg, var(--info-color), #60a5fa); }
+    .progress-fill.shipped   { background: linear-gradient(90deg, var(--primary-color), #7209b7); }
+    .progress-fill.delivered { background: linear-gradient(90deg, var(--success-color), #34d399); }
+
+    @keyframes shimmer {
+        0%   { background-position: 0% 50%; }
+        100% { background-position: 200% 50%; }
+    }
+
+    /* Status timeline dots */
+    .status-timeline {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        margin-top: 0.4rem;
+    }
+
+    .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--gray-300);
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+    }
+
+    .status-dot.active {
+        background: var(--success-color);
+        box-shadow: 0 0 0 3px rgba(6, 214, 160, 0.2);
+    }
+
+    /* View button */
+    .btn-view {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: clamp(0.4rem, 1.2vw, 0.5rem) clamp(0.75rem, 2vw, 1rem);
+        border-radius: 10px;
+        border: 1.5px solid var(--info-color);
+        background: transparent;
+        color: var(--info-color);
+        font-weight: 600;
+        font-size: clamp(0.78rem, 1.9vw, 0.85rem);
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+    }
+
+    .btn-view:hover {
+        background: var(--info-color);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(76, 201, 240, 0.35);
+    }
+
+    /* ---------- Mobile Card View ---------- */
+    .orders-cards-mobile {
+        display: none;
+    }
+
+    .order-card {
+        padding: clamp(0.9rem, 2.5vw, 1.15rem);
+        border-bottom: 1px solid var(--gray-200);
+        display: flex;
+        flex-direction: column;
+        gap: 0.65rem;
+        animation: fadeInUp 0.4s ease-out both;
+    }
+
+    .order-card:last-child {
+        border-bottom: none;
+    }
+
+    .order-card:hover {
+        background: var(--gray-100);
+    }
+
+    .order-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .order-card-header .order-number {
+        font-size: 0.95rem;
+    }
+
+    .order-card-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: clamp(0.82rem, 2vw, 0.9rem);
+    }
+
+    .order-card-row .label {
+        color: var(--gray-500);
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+    }
+
+    .order-card-row .value {
+        color: var(--gray-800);
+        font-weight: 600;
+        text-align: right;
+    }
+
+    .order-card-row .value.order-total {
+        color: var(--success-color);
+        font-weight: 800;
+    }
+
+    .order-card-actions {
+        margin-top: 0.35rem;
+        padding-top: 0.6rem;
+        border-top: 1px dashed var(--gray-200);
+    }
+
+    .order-card-actions .btn-view {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* ---------- Empty State ---------- */
+    .empty-state {
+        text-align: center;
+        padding: clamp(2rem, 6vw, 4rem) clamp(1rem, 3vw, 2rem);
+        background: linear-gradient(135deg, var(--gray-100), var(--gray-200));
+        border-radius: var(--radius-lg);
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    .empty-state .icon {
+        font-size: clamp(2.5rem, 8vw, 4rem);
+        opacity: 0.35;
+        display: block;
+        margin-bottom: 0.85rem;
+        animation: floatY 3s ease-in-out infinite;
+    }
+
+    @keyframes floatY {
+        0%, 100% { transform: translateY(0); }
+        50%      { transform: translateY(-10px); }
+    }
+
+    .empty-state h3 {
+        font-size: clamp(1.1rem, 3vw, 1.4rem);
+        font-weight: 700;
+        color: var(--gray-700);
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-state p {
+        font-size: clamp(0.85rem, 2vw, 0.95rem);
+        color: var(--gray-500);
+        margin-bottom: 1.25rem;
+    }
+
+    .empty-state .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: clamp(0.6rem, 1.7vw, 0.75rem) clamp(1.1rem, 3vw, 1.5rem);
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: white;
+        font-weight: 600;
+        font-size: clamp(0.85rem, 2vw, 0.95rem);
+        text-decoration: none;
+        box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+        transition: all 0.25s ease;
+    }
+
+    .empty-state .btn:hover {
+        background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(67, 97, 238, 0.45);
+        color: white;
+    }
+
+    /* ---------- Animations ---------- */
+    @keyframes slideInDown {
+        from { opacity: 0; transform: translateY(-20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ---------- Responsive Breakpoints ---------- */
+    @media (max-width: 767.98px) {
+        .orders-table-scroll { display: none; }
+        .orders-cards-mobile  { display: block; }
+
+        .orders-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .orders-count-badge {
+            margin-left: 0;
+            align-self: flex-start;
+        }
+    }
+
+    /* ---------- Reduced Motion ---------- */
+    @media (prefers-reduced-motion: reduce) {
+        .orders-header,
+        .orders-stats,
+        .filter-chips,
+        .orders-wrapper,
+        .order-card,
+        .empty-state,
+        .empty-state .icon {
+            animation: none !important;
+        }
+        .stat-card:hover,
+        .filter-chip:hover,
+        .btn-view:hover {
+            transform: none;
+        }
+        .progress-fill {
+            animation: none;
+        }
+    }
+
+    /* ---------- Dark Mode ---------- */
+    body.dark-mode .orders-header h1 { color: var(--gray-100); }
+
+    body.dark-mode .stat-card {
+        background: var(--gray-800);
+        border-color: var(--gray-700);
+    }
+
+    body.dark-mode .stat-label { color: var(--gray-400); }
+
+    body.dark-mode .filter-chip {
+        background: var(--gray-800);
+        color: var(--gray-300);
+        border-color: var(--gray-600);
+    }
+
+    body.dark-mode .filter-chip:hover {
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+    }
+
+    body.dark-mode .orders-wrapper {
+        background: var(--gray-800);
+        border-color: var(--gray-700);
+    }
+
+    body.dark-mode .orders-table thead th {
+        background: linear-gradient(135deg, var(--gray-700), var(--gray-800));
+        color: var(--gray-300);
+    }
+
+    body.dark-mode .orders-table tbody tr {
+        border-bottom-color: var(--gray-700);
+    }
+
+    body.dark-mode .orders-table tbody tr:hover {
+        background: var(--gray-700);
+    }
+
+    body.dark-mode .orders-table tbody td { color: var(--gray-300); }
+
+    body.dark-mode .order-date .date-main { color: var(--gray-200); }
+    body.dark-mode .order-date .date-time { color: var(--gray-500); }
+
+    body.dark-mode .progress-track { background: var(--gray-600); }
+
+    body.dark-mode .status-dot { background: var(--gray-600); }
+
+    body.dark-mode .order-card { border-bottom-color: var(--gray-700); }
+    body.dark-mode .order-card:hover { background: var(--gray-700); }
+    body.dark-mode .order-card-row .value { color: var(--gray-100); }
+    body.dark-mode .order-card-actions { border-top-color: var(--gray-600); }
+
+    body.dark-mode .empty-state {
+        background: linear-gradient(135deg, var(--gray-800), var(--gray-900));
+    }
+    body.dark-mode .empty-state h3 { color: var(--gray-200); }
+    body.dark-mode .empty-state p  { color: var(--gray-500); }
+</style>
+
+<!-- Page Header -->
+<div class="orders-header">
+    <h1>
+        <i class="bi bi-box-seam-fill"></i>
+        My Orders
+    </h1>
+    {% if commands %}
+    <span class="orders-count-badge">
+        <i class="bi bi-receipt"></i> {{ commands|length }} Order{{ 's' if commands|length != 1 else '' }}
+    </span>
+    {% endif %}
+</div>
+
+{% if commands %}
+<!-- Statistics -->
+{% set pending_count   = commands|selectattr('status', 'equalto', 'pending')|list|length %}
+{% set confirmed_count = commands|selectattr('status', 'equalto', 'confirmed')|list|length %}
+{% set shipped_count   = commands|selectattr('status', 'equalto', 'shipped')|list|length %}
+{% set delivered_count = commands|selectattr('status', 'equalto', 'delivered')|list|length %}
+
+<div class="orders-stats">
+    <div class="stat-card">
+        <div class="stat-icon">⏳</div>
+        <div class="stat-value">{{ pending_count }}</div>
+        <div class="stat-label">Pending</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">✓</div>
+        <div class="stat-value">{{ confirmed_count }}</div>
+        <div class="stat-label">Confirmed</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">🚚</div>
+        <div class="stat-value">{{ shipped_count }}</div>
+        <div class="stat-label">Shipped</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">✅</div>
+        <div class="stat-value">{{ delivered_count }}</div>
+        <div class="stat-label">Delivered</div>
+    </div>
+</div>
+
+<!-- Filter Chips -->
+<div class="filter-chips" id="filterChips">
+    <button class="filter-chip active" data-filter="all">
+        <i class="bi bi-collection"></i> All
+    </button>
+    <button class="filter-chip" data-filter="pending">
+        <i class="bi bi-hourglass-split"></i> Pending
+    </button>
+    <button class="filter-chip" data-filter="confirmed">
+        <i class="bi bi-check-circle"></i> Confirmed
+    </button>
+    <button class="filter-chip" data-filter="shipped">
+        <i class="bi bi-truck"></i> Shipped
+    </button>
+    <button class="filter-chip" data-filter="delivered">
+        <i class="bi bi-check-all"></i> Delivered
+    </button>
+</div>
+
+<!-- Orders Wrapper -->
+<div class="orders-wrapper">
+
+    <!-- ============================= -->
+    <!-- Desktop Table View (≥ 768px)   -->
+    <!-- ============================= -->
+    <div class="orders-table-scroll">
+        <table class="orders-table" id="ordersTable">
+            <thead>
+                <tr>
+                    <th><i class="bi bi-hash"></i> Order #</th>
+                    <th><i class="bi bi-calendar"></i> Date</th>
+                    <th><i class="bi bi-currency-exchange"></i> Total</th>
+                    <th><i class="bi bi-credit-card"></i> Payment</th>
+                    <th><i class="bi bi-truck"></i> Status</th>
+                    <th style="text-align: right;"><i class="bi bi-eye"></i> Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for command in commands %}
+                <tr data-order-id="{{ command.id }}"
+                    data-order-number="{{ command.command_number }}"
+                    data-status="{{ command.status }}">
+
+                    <td>
+                        <span class="order-number">#{{ command.command_number }}</span>
+                    </td>
+
+                    <td>
+                        <div class="order-date">
+                            <span class="date-main">{{ command.created_at.strftime('%b %d, %Y') }}</span>
+                            <span class="date-time"><i class="bi bi-clock"></i> {{ command.created_at.strftime('%H:%M') }}</span>
+                        </div>
+                    </td>
+
+                    <td class="order-total">{{ command.total_amount|fcfa }} FCFA</td>
+
+                    <td>
+                        <span class="payment-method">
+                            {% if command.payment_method == 'cash' %}
+                                <i class="bi bi-cash-stack"></i> Cash
+                            {% elif command.payment_method == 'card' %}
+                                <i class="bi bi-credit-card-2-front"></i> Card
+                            {% elif command.payment_method == 'mobile' %}
+                                <i class="bi bi-phone"></i> Mobile
+                            {% else %}
+                                <i class="bi bi-cash-stack"></i>
+                                {{ command.payment_method|default('Cash')|title }}
+                            {% endif %}
+                        </span>
+                    </td>
+
+                    <td>
+                        <span class="status-badge {{ command.status }}">
+                            <i class="bi 
+                                {% if command.status == 'pending' %}bi-hourglass-split
+                                {% elif command.status == 'confirmed' %}bi-check-circle-fill
+                                {% elif command.status == 'shipped' %}bi-truck
+                                {% elif command.status == 'delivered' %}bi-check-all
+                                {% else %}bi-question-circle{% endif %}"></i>
+                            {{ command.status|title }}
+                        </span>
+
+                        <div class="progress-track">
+                            <div class="progress-fill {{ command.status }}" 
+                                 style="width: {% if command.status=='pending' %}25%{% elif command.status=='confirmed' %}50%{% elif command.status=='shipped' %}75%{% elif command.status=='delivered' %}100%{% else %}0%{% endif %};">
+                            </div>
+                        </div>
+
+                        <div class="status-timeline">
+                            <span class="status-dot {% if command.status in ['pending','confirmed','shipped','delivered'] %}active{% endif %}"></span>
+                            <span class="status-dot {% if command.status in ['confirmed','shipped','delivered'] %}active{% endif %}"></span>
+                            <span class="status-dot {% if command.status in ['shipped','delivered'] %}active{% endif %}"></span>
+                            <span class="status-dot {% if command.status == 'delivered' %}active{% endif %}"></span>
+                        </div>
+                    </td>
+
+                    <td style="text-align: right;">
+                        <a href="{{ url_for('command_confirmation', command_id=command.id) }}" 
+                           class="btn-view view-order">
+                            <i class="bi bi-eye"></i> View
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ============================= -->
+    <!-- Mobile Card View (< 768px)     -->
+    <!-- ============================= -->
+    <div class="orders-cards-mobile">
+        {% for command in commands %}
+        <div class="order-card"
+             data-order-id="{{ command.id }}"
+             data-order-number="{{ command.command_number }}"
+             data-status="{{ command.status }}">
+
+            <div class="order-card-header">
+                <span class="order-number">#{{ command.command_number }}</span>
+                <span class="status-badge {{ command.status }}">
+                    <i class="bi 
+                        {% if command.status == 'pending' %}bi-hourglass-split
+                        {% elif command.status == 'confirmed' %}bi-check-circle-fill
+                        {% elif command.status == 'shipped' %}bi-truck
+                        {% elif command.status == 'delivered' %}bi-check-all
+                        {% else %}bi-question-circle{% endif %}"></i>
+                    {{ command.status|title }}
+                </span>
+            </div>
+
+            <div class="order-card-row">
+                <span class="label">Date</span>
+                <span class="value">
+                    {{ command.created_at.strftime('%b %d, %Y') }} · {{ command.created_at.strftime('%H:%M') }}
+                </span>
+            </div>
+
+            <div class="order-card-row">
+                <span class="label">Payment</span>
+                <span class="value">
+                    <i class="bi 
+                        {% if command.payment_method == 'cash' %}bi-cash-stack
+                        {% elif command.payment_method == 'card' %}bi-credit-card-2-front
+                        {% elif command.payment_method == 'mobile' %}bi-phone
+                        {% else %}bi-cash-stack{% endif %}"></i>
+                    {{ command.payment_method|default('Cash')|title }}
+                </span>
+            </div>
+
+            <div class="order-card-row">
+                <span class="label">Total</span>
+                <span class="value order-total">{{ command.total_amount|fcfa }} FCFA</span>
+            </div>
+
+            <div class="progress-track">
+                <div class="progress-fill {{ command.status }}"
+                     style="width: {% if command.status=='pending' %}25%{% elif command.status=='confirmed' %}50%{% elif command.status=='shipped' %}75%{% elif command.status=='delivered' %}100%{% else %}0%{% endif %};">
+                </div>
+            </div>
+
+            <div class="status-timeline">
+                <span class="status-dot {% if command.status in ['pending','confirmed','shipped','delivered'] %}active{% endif %}"></span>
+                <span class="status-dot {% if command.status in ['confirmed','shipped','delivered'] %}active{% endif %}"></span>
+                <span class="status-dot {% if command.status in ['shipped','delivered'] %}active{% endif %}"></span>
+                <span class="status-dot {% if command.status == 'delivered' %}active{% endif %}"></span>
+            </div>
+
+            <div class="order-card-actions">
+                <a href="{{ url_for('command_confirmation', command_id=command.id) }}" 
+                   class="btn-view view-order">
+                    <i class="bi bi-eye"></i> View Order Details
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+{% else %}
+<!-- Empty State -->
+<div class="empty-state">
+    <span class="icon">📦</span>
+    <h3>No orders yet</h3>
+    <p>You haven't placed any orders. Start shopping to see them here!</p>
+    <a href="{{ url_for('products') }}" class="btn">
+        <i class="bi bi-bag-check-fill"></i> Browse Products
+    </a>
+</div>
+{% endif %}
+
+<script>
+/* ============================================
+   MY ORDERS PAGE SCRIPT
+   ============================================ */
+(function() {
+    'use strict';
+
+    const filterChips = document.querySelectorAll('.filter-chip');
+
+    // ---------- Get all order containers (desktop rows + mobile cards) ----------
+    function getOrderItems() {
+        return Array.from(document.querySelectorAll('#ordersTable tbody tr[data-order-id]'));
+    }
+
+    // ---------- Apply visibility to BOTH desktop row and mobile card ----------
+    function applyVisibility(orderId, visible) {
+        const row  = document.querySelector(`#ordersTable tbody tr[data-order-id="${orderId}"]`);
+        const card = document.querySelector(`.order-card[data-order-id="${orderId}"]`);
+        const display = visible ? '' : 'none';
+        if (row)  row.style.display  = display;
+        if (card) card.style.display = display;
+    }
+
+    // ---------- Filter by Status ----------
+    function filterOrders(status) {
+        const items = getOrderItems();
+        let visible = 0;
+
+        items.forEach(row => {
+            const match = (status === 'all' || row.dataset.status === status);
+            applyVisibility(row.dataset.orderId, match);
+            if (match) visible++;
+        });
+
+        // Update chip active state
+        filterChips.forEach(chip => {
+            chip.classList.toggle('active', chip.dataset.filter === status);
+        });
+
+        return visible;
+    }
+
+    // ---------- Attach click handlers to filter chips ----------
+    filterChips.forEach(chip => {
+        chip.addEventListener('click', () => {
+            const status = chip.dataset.filter;
+            const visible = filterOrders(status);
+
+            if (typeof showToast === 'function') {
+                const label = status === 'all' ? 'all orders' : `${status} order${visible !== 1 ? 's' : ''}`;
+                showToast(
+                    `Showing ${visible} ${label}`,
+                    'info',
+                    'bi-funnel-fill'
+                );
+            }
+        });
+    });
+
+    // ---------- View Order Button Animation ----------
+    document.querySelectorAll('.view-order').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const href = this.href;
+            const container = this.closest('[data-order-id]');
+            const orderNumber = container?.dataset.orderNumber || '';
+
+            const originalHtml = this.innerHTML;
+            this.innerHTML = '<i class="bi bi-hourglass-split"></i> Loading…';
+            this.style.pointerEvents = 'none';
+
+            if (typeof showToast === 'function') {
+                showToast(`Loading order #${orderNumber}…`, 'info', 'bi-box-seam-fill');
+            }
+
+            setTimeout(() => { window.location.href = href; }, 350);
+
+            // Restore if navigation stalls
+            setTimeout(() => {
+                this.innerHTML = originalHtml;
+                this.style.pointerEvents = '';
+            }, 1500);
+        });
+    });
+
+    // ---------- Animate Progress Bars on Load ----------
+    document.querySelectorAll('.progress-fill').forEach(bar => {
+        const targetWidth = bar.style.width;
+        bar.style.width = '0%';
+        bar.style.transition = 'width 0.9s cubic-bezier(0.4, 0, 0.2, 1)';
+
+        setTimeout(() => { bar.style.width = targetWidth; }, 300);
+    });
+
+    // ---------- Keyboard Shortcuts ----------
+    document.addEventListener('keydown', function(e) {
+        const tag = (document.activeElement || {}).tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+
+        // Alt+R — refresh
+        if (e.altKey && e.key.toLowerCase() === 'r') {
+            e.preventDefault();
+            if (typeof showToast === 'function') {
+                showToast('Refreshing orders…', 'info', 'bi-arrow-clockwise');
+            }
+            setTimeout(() => window.location.reload(), 400);
+        }
+
+        // Alt+1–5 — quick status filter
+        if (e.altKey && ['1','2','3','4','5'].includes(e.key)) {
+            e.preventDefault();
+            const statuses = ['all','pending','confirmed','shipped','delivered'];
+            const idx = parseInt(e.key) - 1;
+            if (statuses[idx]) {
+                const visible = filterOrders(statuses[idx]);
+                if (typeof showToast === 'function') {
+                    showToast(`Showing ${visible} ${statuses[idx] === 'all' ? 'orders' : statuses[idx]}`,
+                              'info', 'bi-funnel-fill');
+                }
+            }
+        }
+    });
+
+    // ---------- Welcome Toast ----------
+    const orderCount = getOrderItems().length;
+    if (orderCount > 0 && typeof showToast === 'function') {
+        setTimeout(() => {
+            showToast(
+                `📦 You have ${orderCount} order${orderCount !== 1 ? 's' : ''}`,
+                'info',
+                'bi-box-seam-fill'
+            );
+        }, 800);
+    }
+
+    console.log('📦 My Orders page loaded');
+})();
+</script>
+{% endblock %}

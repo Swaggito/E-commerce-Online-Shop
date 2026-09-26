@@ -1,0 +1,862 @@
+{% extends "base.html" %}
+
+{% block title %}Order Confirmation - ShopMetuge{% endblock %}
+
+{% block styles %}
+<style>
+    /* Custom animations and styles for order confirmation page */
+    .confirmation-card {
+        border: none;
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        transform: translateY(0);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        animation: slideInUp 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+    
+    .confirmation-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+    }
+    
+    .card-header {
+        background: linear-gradient(135deg, #10b981, #059669) !important;
+        border: none;
+        padding: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .card-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        animation: rotate 20s linear infinite;
+    }
+    
+    @keyframes rotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+    
+    .card-header h2 {
+        animation: bounceIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        position: relative;
+        z-index: 1;
+    }
+    
+    .card-header h2 i {
+        animation: checkmark 0.5s ease-out 0.3s both;
+    }
+    
+    @keyframes checkmark {
+        0% {
+            transform: scale(0);
+            opacity: 0;
+        }
+        50% {
+            transform: scale(1.2);
+        }
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes bounceIn {
+        0% {
+            opacity: 0;
+            transform: scale(0.3);
+        }
+        50% {
+            opacity: 1;
+            transform: scale(1.05);
+        }
+        70% {
+            transform: scale(0.9);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+    
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Progress Bar Animation */
+    .progress {
+        border-radius: 10px;
+        background-color: #e5e7eb;
+        overflow: hidden;
+        box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .progress-bar {
+        background: linear-gradient(90deg, #10b981, #34d399, #10b981);
+        background-size: 200% 100%;
+        animation: progressShine 2s ease infinite, progressFill 1s ease-out;
+        transition: width 0.5s ease;
+        position: relative;
+        border-radius: 10px;
+    }
+    
+    @keyframes progressShine {
+        0% {
+            background-position: 200% 0;
+        }
+        100% {
+            background-position: -200% 0;
+        }
+    }
+    
+    @keyframes progressFill {
+        from {
+            width: 0;
+        }
+        to {
+            width: var(--progress-width);
+        }
+    }
+    
+    /* Status Badge */
+    .status-badge {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-weight: 600;
+        animation: pulse 2s infinite;
+        background: linear-gradient(135deg, rgba(16,185,129,0.2), rgba(5,150,105,0.2));
+        border: 1px solid rgba(16,185,129,0.3);
+    }
+    
+    .status-pending {
+        background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(217,119,6,0.2));
+        border-color: rgba(245,158,11,0.3);
+        color: #f59e0b;
+    }
+    
+    .status-confirmed {
+        background: linear-gradient(135deg, rgba(16,185,129,0.2), rgba(5,150,105,0.2));
+        border-color: rgba(16,185,129,0.3);
+        color: #10b981;
+    }
+    
+    .status-shipped {
+        background: linear-gradient(135deg, rgba(59,130,246,0.2), rgba(37,99,235,0.2));
+        border-color: rgba(59,130,246,0.3);
+        color: #3b82f6;
+    }
+    
+    .status-delivered {
+        background: linear-gradient(135deg, rgba(139,92,246,0.2), rgba(124,58,237,0.2));
+        border-color: rgba(139,92,246,0.3);
+        color: #8b5cf6;
+    }
+    
+    @keyframes pulse {
+        0%, 100% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0.7;
+        }
+    }
+    
+    /* Alert Box Animation */
+    .alert-info {
+        background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+        border: none;
+        border-radius: 16px;
+        padding: 1.5rem;
+        animation: fadeInUp 0.6s ease-out 0.2s both;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .alert-info::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+        animation: shimmer 3s infinite;
+    }
+    
+    @keyframes shimmer {
+        0% {
+            left: -100%;
+        }
+        20%, 100% {
+            left: 100%;
+        }
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Table Styling */
+    .table {
+        border-radius: 12px;
+        overflow: hidden;
+        animation: fadeIn 0.6s ease-out 0.3s both;
+    }
+    
+    .table thead th {
+        background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+        border: none;
+        font-weight: 700;
+        color: #374151;
+        padding: 1rem;
+    }
+    
+    .table tbody tr {
+        transition: all 0.3s ease;
+        animation: slideInRight 0.5s ease-out;
+        animation-fill-mode: both;
+    }
+    
+    .table tbody tr:hover {
+        background: linear-gradient(90deg, #f9fafb, #ffffff);
+        transform: scale(1.01);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+    
+    /* Stagger animation for table rows */
+    .table tbody tr:nth-child(1) { animation-delay: 0.05s; }
+    .table tbody tr:nth-child(2) { animation-delay: 0.1s; }
+    .table tbody tr:nth-child(3) { animation-delay: 0.15s; }
+    .table tbody tr:nth-child(4) { animation-delay: 0.2s; }
+    .table tbody tr:nth-child(5) { animation-delay: 0.25s; }
+    
+    /* Button Styling */
+    .btn {
+        border-radius: 50px;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .btn::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+    
+    .btn:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        border: none;
+        box-shadow: 0 4px 15px rgba(59,130,246,0.3);
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(59,130,246,0.4);
+    }
+    
+    .btn-outline-secondary {
+        border: 2px solid #6b7280;
+        color: #6b7280;
+        background: transparent;
+    }
+    
+    .btn-outline-secondary:hover {
+        transform: translateY(-2px);
+        background: #6b7280;
+        color: white;
+        border-color: #6b7280;
+    }
+    
+    .btn:active {
+        transform: scale(0.95);
+    }
+    
+    /* Order Details Animation */
+    .order-detail-item {
+        animation: fadeInLeft 0.5s ease-out;
+        animation-fill-mode: both;
+    }
+    
+    @keyframes fadeInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    .order-detail-item:nth-child(1) { animation-delay: 0.1s; }
+    .order-detail-item:nth-child(2) { animation-delay: 0.15s; }
+    .order-detail-item:nth-child(3) { animation-delay: 0.2s; }
+    .order-detail-item:nth-child(4) { animation-delay: 0.25s; }
+    .order-detail-item:nth-child(5) { animation-delay: 0.3s; }
+    .order-detail-item:nth-child(6) { animation-delay: 0.35s; }
+    
+    /* Confetti Animation */
+    .confetti {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 9999;
+    }
+    
+    .confetti-piece {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        background: linear-gradient(135deg, #10b981, #34d399);
+        opacity: 0.7;
+        animation: fall 3s linear forwards;
+    }
+    
+    @keyframes fall {
+        0% {
+            transform: translateY(-100vh) rotate(0deg);
+            opacity: 1;
+        }
+        100% {
+            transform: translateY(100vh) rotate(360deg);
+            opacity: 0;
+        }
+    }
+    
+    /* Loading Spinner for buttons */
+    .btn-loading {
+        position: relative;
+        pointer-events: none;
+    }
+    
+    .btn-loading::after {
+        content: '';
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        top: 50%;
+        left: 50%;
+        margin-left: -10px;
+        margin-top: -10px;
+        border: 2px solid rgba(255,255,255,0.3);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+    }
+    
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .card-header {
+            padding: 1.5rem;
+        }
+        
+        .card-header h2 {
+            font-size: 1.5rem;
+        }
+        
+        .btn {
+            padding: 0.6rem 1.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .alert-info {
+            padding: 1rem;
+        }
+        
+        .table thead th,
+        .table tbody td {
+            padding: 0.75rem;
+            font-size: 0.9rem;
+        }
+    }
+    
+    /* Print Styles */
+    @media print {
+        .btn,
+        .confetti,
+        .progress,
+        .status-badge {
+            display: none !important;
+        }
+        
+        .confirmation-card {
+            box-shadow: none;
+            animation: none;
+        }
+        
+        .card-header {
+            background: #10b981 !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        
+        .alert-info {
+            border: 1px solid #ddd;
+            background: #f9fafb;
+        }
+    }
+    
+    /* Hover Effects */
+    .hover-glow {
+        transition: all 0.3s ease;
+    }
+    
+    .hover-glow:hover {
+        box-shadow: 0 0 20px rgba(16,185,129,0.3);
+        transform: translateY(-2px);
+    }
+    
+    /* Floating Animation */
+    @keyframes float {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-5px);
+        }
+    }
+    
+    .float-animation {
+        animation: float 3s ease-in-out infinite;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="text-center mt-3 mb-5">
+        <div class="confirmation-card card border-success">
+            <div class="card-header bg-success text-white text-center">
+                <h2 class="mb-0">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    Order Confirmed!
+                </h2>
+            </div>
+            <div class="card-body p-4 p-md-5">
+                <div class="text-center mb-4">
+                    <i class="bi bi-emoji-smile-fill text-success display-1 float-animation"></i>
+                    <h3 class="mt-3">Thank you for your order!</h3>
+                    <p class="lead text-muted">Your order has been successfully placed and is being processed.</p>
+                </div>
+
+                <!-- Order Progress Section -->
+                <div class="mb-4 p-3 bg-light rounded-3">
+                    <label class="form-label fw-bold mb-2">
+                        <i class="bi bi-graph-up me-2"></i>Order Progress
+                    </label>
+                    <div class="mb-2">
+                        <div class="progress" style="height: 12px;">
+                            <div class="progress-bar" id="progressBar" role="progressbar" 
+                                 style="width: {% if command.status=='pending' %}25%{% elif command.status=='confirmed' %}50%{% elif command.status=='shipped' %}75%{% elif command.status=='delivered' %}100%{% else %}0%{% endif %};" 
+                                 aria-valuenow="{% if command.status=='pending' %}25{% elif command.status=='confirmed' %}50{% elif command.status=='shipped' %}75{% elif command.status=='delivered' %}100{% else %}0{% endif %}" 
+                                 aria-valuemin="0" 
+                                 aria-valuemax="100">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between mt-2">
+                        <small class="text-muted">Pending</small>
+                        <small class="text-muted">Confirmed</small>
+                        <small class="text-muted">Shipped</small>
+                        <small class="text-muted">Delivered</small>
+                    </div>
+                    <div class="mt-3 text-center">
+                        <span class="status-badge status-{{ command.status }}">
+                            <i class="bi bi-{% if command.status=='pending' %}clock-history{% elif command.status=='confirmed' %}check-circle{% elif command.status=='shipped' %}truck{% elif command.status=='delivered' %}house-check{% endif %} me-1"></i>
+                            Status: <strong>{{ command.status|title }}</strong>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Order Details Alert -->
+                <div class="alert alert-info mt-4 border-0 shadow-sm">
+                    <div class="d-flex align-items-start">
+                        <i class="bi bi-info-circle-fill fs-3 me-3 text-info"></i>
+                        <div class="flex-grow-1">
+                            <h4 class="mb-3">
+                                <i class="bi bi-receipt me-2"></i>Order Details
+                            </h4>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="order-detail-item mb-2">
+                                        <strong><i class="bi bi-hash me-1"></i>Order Number:</strong> 
+                                        <span class="text-primary fw-bold">{{ command.command_number }}</span>
+                                    </div>
+                                    <div class="order-detail-item mb-2">
+                                        <strong><i class="bi bi-person me-1"></i>Customer Name:</strong> 
+                                        {{ command.customer_name }}
+                                    </div>
+                                    <div class="order-detail-item mb-2">
+                                        <strong><i class="bi bi-envelope me-1"></i>Email:</strong> 
+                                        {{ command.customer_email }}
+                                    </div>
+                                    <div class="order-detail-item mb-2">
+                                        <strong><i class="bi bi-geo-alt me-1"></i>Shipping Address:</strong> 
+                                        {{ command.customer_address }}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="order-detail-item mb-2">
+                                        <strong><i class="bi bi-currency-dollar me-1"></i>Order Total:</strong> 
+                                        <span class="text-success fw-bold fs-5">{{ command.total_amount|fcfa }} FCFA</span>
+                                    </div>
+                                    <div class="order-detail-item mb-2">
+                                        <strong><i class="bi bi-credit-card me-1"></i>Payment Method:</strong> 
+                                        {{ command.payment_method|default('cash')|title }}
+                                    </div>
+                                    {% if command.transaction_reference %}
+                                    <div class="order-detail-item mb-2">
+                                        <strong><i class="bi bi-upc-scan me-1"></i>Transaction Reference:</strong> 
+                                        <code>{{ command.transaction_reference }}</code>
+                                    </div>
+                                    {% endif %}
+                                    <div class="order-detail-item mb-2">
+                                        <strong><i class="bi bi-calendar me-1"></i>Order Date:</strong> 
+                                        {{ command.created_at.strftime('%B %d, %Y at %H:%M') }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Order Items Table -->
+                <h5 class="mt-4 mb-3">
+                    <i class="bi bi-box-seam me-2"></i>Order Items
+                </h5>
+                <div class="table-responsive mt-3">
+                    <table class="table table-hover table-bordered align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th><i class="bi bi-tag me-1"></i> Product</th>
+                                <th class="text-center"><i class="bi bi-123 me-1"></i> Quantity</th>
+                                <th class="text-end"><i class="bi bi-currency-dollar me-1"></i> Price</th>
+                                <th class="text-end"><i class="bi bi-calculator me-1"></i> Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in command.items %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        {% if item.product.image %}
+                                        <img src="{{ url_for('static', filename='uploads/' + item.product.image) }}" 
+                                             alt="{{ item.product.name }}" 
+                                             style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;"
+                                             class="me-3">
+                                        {% else %}
+                                        <div class="bg-light rounded me-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                            <i class="bi bi-box fs-3 text-secondary"></i>
+                                        </div>
+                                        {% endif %}
+                                        <div>
+                                            <strong>{{ item.product.name }}</strong>
+                                            {% if item.product.category %}
+                                            <br>
+                                            <small class="text-muted">{{ item.product.category }}</small>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-secondary rounded-pill px-3 py-2">{{ item.quantity }}</span>
+                                </td>
+                                <td class="text-end">{{ item.price_at_time|fcfa }} FCFA</td>
+                                <td class="text-end fw-bold text-primary">{{ (item.quantity * item.price_at_time)|fcfa }} FCFA</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot class="table-light">
+                            <tr>
+                                <td colspan="3" class="text-end"><strong>Total Amount:</strong></td>
+                                <td class="text-end">
+                                    <strong class="text-success fs-5">{{ command.total_amount|fcfa }} FCFA</strong>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                
+                <!-- Additional Information 
+                <div class="mt-4 p-3 bg-light rounded-3">
+                    <div class="row text-center">
+                        <div class="col-md-4 mb-3 mb-md-0">
+                            <i class="bi bi-envelope-check fs-1 text-primary"></i>
+                            <p class="mt-2 mb-0">Confirmation email sent to</p>
+                            <small class="text-muted">{{ command.customer_email }}</small>
+                        </div>
+                        <div class="col-md-4 mb-3 mb-md-0">
+                            <i class="bi bi-truck fs-1 text-primary"></i>
+                            <p class="mt-2 mb-0">Track your order status</p>
+                            <small class="text-muted">Real-time updates available</small>
+                        </div>
+                        <div class="col-md-4">
+                            <i class="bi bi-headset fs-1 text-primary"></i>
+                            <p class="mt-2 mb-0">Need help?</p>
+                            <small class="text-muted">Contact our support team</small>
+                        </div>
+                    </div>
+                </div>
+            -->
+                <!-- Action Buttons -->
+                <div class="mt-5 text-center">
+                    <a href="{{ url_for('index') }}" class="btn btn-primary btn-lg px-4 me-2">
+                        <i class="bi bi-arrow-left me-2"></i>Continue Shopping
+                    </a>
+                    <a href="{{ url_for('commands_list') }}" class="btn btn-outline-secondary btn-lg px-4">
+                        <i class="bi bi-list-ul me-2"></i>View All Orders
+                    </a>
+                </div>
+                
+                <div class="mt-4 text-center text-muted">
+                    <small>
+                        <i class="bi bi-question-circle me-1"></i>
+                        For any questions about your order, please contact us at 
+                        <a href="mailto:support@shopmetuge.com" class="text-decoration-none">support@shopmetuge.com</a>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confetti Animation Script -->
+<script>
+    // Create confetti effect on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        // Create confetti container
+        const confettiContainer = document.createElement('div');
+        confettiContainer.className = 'confetti';
+        document.body.appendChild(confettiContainer);
+        
+        // Generate confetti pieces
+        const colors = ['#10b981', '#34d399', '#3b82f6', '#8b5cf6', '#f59e0b', '#ef4444'];
+        const numberOfPieces = 100;
+        
+        for (let i = 0; i < numberOfPieces; i++) {
+            setTimeout(() => {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti-piece';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.width = Math.random() * 8 + 4 + 'px';
+                confetti.style.height = Math.random() * 8 + 4 + 'px';
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDelay = Math.random() * 2 + 's';
+                confetti.style.animationDuration = Math.random() * 2 + 2 + 's';
+                confettiContainer.appendChild(confetti);
+                
+                // Remove confetti after animation
+                setTimeout(() => {
+                    confetti.remove();
+                }, 4000);
+            }, i * 30);
+        }
+        
+        // Remove confetti container after all confetti are gone
+        setTimeout(() => {
+            if (confettiContainer) {
+                confettiContainer.remove();
+            }
+        }, 5000);
+        
+        // Add animation to progress bar
+        const progressBar = document.getElementById('progressBar');
+        if (progressBar) {
+            const width = progressBar.style.width;
+            progressBar.style.setProperty('--progress-width', width);
+            progressBar.classList.add('animated');
+        }
+        
+        // Add hover animation to table rows
+        const tableRows = document.querySelectorAll('.table tbody tr');
+        tableRows.forEach((row, index) => {
+            row.style.animationDelay = (index * 0.05) + 's';
+        });
+        
+        // Add floating animation to success icon
+        const successIcon = document.querySelector('.bi-emoji-smile-fill');
+        if (successIcon) {
+            successIcon.classList.add('float-animation');
+        }
+        
+        // Smooth scroll to top on page load
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+        
+        // Add loading effect to buttons on click
+        const buttons = document.querySelectorAll('.btn');
+        buttons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                if (!this.classList.contains('btn-loading') && 
+                    !this.getAttribute('href')?.startsWith('#') &&
+                    !this.hasAttribute('data-bs-toggle')) {
+                    const originalText = this.innerHTML;
+                    this.classList.add('btn-loading');
+                    this.innerHTML = '<span class="opacity-0">' + originalText + '</span>';
+                    
+                    setTimeout(() => {
+                        this.classList.remove('btn-loading');
+                        this.innerHTML = originalText;
+                    }, 1000);
+                }
+            });
+        });
+        
+        // Add tooltip functionality
+        const tooltipElements = document.querySelectorAll('[data-tooltip]');
+        tooltipElements.forEach(element => {
+            element.addEventListener('mouseenter', function(e) {
+                const tooltip = document.createElement('div');
+                tooltip.className = 'custom-tooltip';
+                tooltip.textContent = this.getAttribute('data-tooltip');
+                tooltip.style.position = 'absolute';
+                tooltip.style.background = '#1f2937';
+                tooltip.style.color = 'white';
+                tooltip.style.padding = '4px 8px';
+                tooltip.style.borderRadius = '6px';
+                tooltip.style.fontSize = '12px';
+                tooltip.style.zIndex = '1000';
+                tooltip.style.whiteSpace = 'nowrap';
+                
+                const rect = this.getBoundingClientRect();
+                tooltip.style.left = rect.left + 'px';
+                tooltip.style.top = (rect.top - 30) + 'px';
+                
+                document.body.appendChild(tooltip);
+                
+                this.addEventListener('mouseleave', function() {
+                    tooltip.remove();
+                });
+            });
+        });
+    });
+    
+    // Function to print order details
+    function printOrder() {
+        window.print();
+    }
+    
+    // Function to share order confirmation
+    function shareOrder() {
+        if (navigator.share) {
+            navigator.share({
+                title: 'Order Confirmation - ShopMetuge',
+                text: 'My order has been confirmed! Order #{{ command.command_number }}',
+                url: window.location.href
+            }).catch(console.error);
+        } else {
+            // Fallback - copy to clipboard
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                showToast('Order link copied to clipboard!', 'success', 'bi-check-circle');
+            });
+        }
+    }
+    
+    // Toast notification function
+    function showToast(message, type = 'success', icon = 'bi-check-circle') {
+        const toastContainer = document.getElementById('toastContainer');
+        if (!toastContainer) {
+            const container = document.createElement('div');
+            container.id = 'toastContainer';
+            container.style.position = 'fixed';
+            container.style.bottom = '20px';
+            container.style.right = '20px';
+            container.style.zIndex = '9999';
+            document.body.appendChild(container);
+        }
+        
+        const toast = document.createElement('div');
+        toast.className = `toast-notification ${type}`;
+        toast.style.background = type === 'success' ? 'linear-gradient(135deg, #10b981, #059669)' : 
+                                 type === 'error' ? 'linear-gradient(135deg, #ef4444, #dc2626)' :
+                                 'linear-gradient(135deg, #3b82f6, #2563eb)';
+        toast.style.color = 'white';
+        toast.style.padding = '12px 20px';
+        toast.style.borderRadius = '12px';
+        toast.style.marginTop = '10px';
+        toast.style.display = 'flex';
+        toast.style.alignItems = 'center';
+        toast.style.gap = '12px';
+        toast.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+        toast.style.transform = 'translateX(400px)';
+        toast.style.transition = 'transform 0.3s ease';
+        toast.innerHTML = `<i class="bi ${icon} fs-5"></i><span>${message}</span>`;
+        
+        document.getElementById('toastContainer').appendChild(toast);
+        
+        setTimeout(() => {
+            toast.style.transform = 'translateX(0)';
+        }, 100);
+        
+        setTimeout(() => {
+            toast.style.transform = 'translateX(400px)';
+            setTimeout(() => toast.remove(), 300);
+        }, 5000);
+    }
+</script>
+{% endblock %}

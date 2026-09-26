@@ -1,0 +1,971 @@
+{% extends "base.html" %}
+
+{% block title %}Shopping Cart - Linux Shop{% endblock %}
+
+{% block content %}
+<style>
+    /* Modern Cart Page Styling */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+    :root {
+        --primary: #6366f1;
+        --primary-dark: #4f46e5;
+        --primary-light: #818cf8;
+        --success: #10b981;
+        --success-light: #d1fae5;
+        --danger: #ef4444;
+        --danger-light: #fee2e2;
+        --warning: #f59e0b;
+        --info: #3b82f6;
+        --gray-50: #f9fafb;
+        --gray-100: #f3f4f6;
+        --gray-200: #e5e7eb;
+        --gray-300: #d1d5db;
+        --gray-400: #9ca3af;
+        --gray-500: #6b7280;
+        --gray-600: #4b5563;
+        --gray-700: #374151;
+        --gray-800: #1f2937;
+        --gray-900: #111827;
+        
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+        
+        --radius-sm: 0.375rem;
+        --radius: 0.5rem;
+        --radius-md: 0.75rem;
+        --radius-lg: 1rem;
+        --radius-xl: 1.5rem;
+        --radius-full: 9999px;
+        
+        --transition-fast: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+        --transition: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+        --transition-bounce: 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* Page Header */
+    h1 {
+        font-size: clamp(2rem, 4vw, 2.5rem);
+        font-weight: 800;
+        color: var(--gray-900);
+        margin: 2rem 0;
+        position: relative;
+        display: inline-block;
+        animation: slideInDown 0.6s ease-out;
+    }
+
+    h1::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 80px;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary), var(--success));
+        border-radius: var(--radius-full);
+        animation: expandWidth 0.8s ease-out 0.3s both;
+    }
+
+    h1 i {
+        color: var(--primary);
+        margin-right: 0.5rem;
+    }
+
+    /* Cart Container */
+    .table-responsive {
+        background: white;
+        border-radius: var(--radius-xl);
+        padding: 1.5rem;
+        box-shadow: var(--shadow-xl);
+        animation: fadeInUp 0.8s ease-out;
+        border: 1px solid var(--gray-200);
+        overflow-x: auto;
+    }
+
+    /* Cart Table */
+    .table {
+        margin-bottom: 0;
+        min-width: 800px;
+    }
+
+    .table thead th {
+        background: linear-gradient(135deg, var(--gray-50), var(--gray-100));
+        color: var(--gray-700);
+        font-weight: 700;
+        font-size: 0.95rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 1.25rem 1rem;
+        border-bottom: 2px solid var(--gray-300);
+        border-top: none;
+    }
+
+    .table tbody tr {
+        transition: all var(--transition);
+        animation: fadeIn 0.5s ease-out;
+        animation-fill-mode: both;
+    }
+
+    {% for i in range(1, 11) %}
+    .table tbody tr:nth-child({{ i }}) {
+        animation-delay: {{ 0.1 * i }}s;
+    }
+    {% endfor %}
+
+    .table tbody tr:hover {
+        background: var(--gray-50) !important;
+        transform: scale(1.01);
+        box-shadow: var(--shadow-md);
+    }
+
+    .table tbody td {
+        padding: 1.25rem 1rem;
+        vertical-align: middle;
+        color: var(--gray-700);
+        font-weight: 500;
+        border-bottom: 1px solid var(--gray-200);
+    }
+
+    /* Product Name */
+    .table tbody td:first-child {
+        font-weight: 600;
+        color: var(--gray-900);
+    }
+
+    /* Price and Total */
+    .table tbody td:nth-child(2),
+    .table tbody td:nth-child(4) {
+        font-weight: 700;
+        color: var(--primary);
+    }
+
+    .table tbody td:nth-child(4) {
+        position: relative;
+    }
+
+    .table tbody td:nth-child(4)::before {
+        content: '💰';
+        position: absolute;
+        left: 0;
+        opacity: 0.3;
+        font-size: 1.2rem;
+    }
+
+    /* Quantity */
+    .table tbody td:nth-child(3) {
+        font-weight: 600;
+    }
+
+    /* Quantity Selector */
+    .quantity-control {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .quantity-btn {
+        width: 30px;
+        height: 30px;
+        border-radius: var(--radius);
+        border: none;
+        background: white;
+        color: var(--gray-700);
+        font-size: 1.25rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all var(--transition);
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--gray-300);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .quantity-btn:hover:not(:disabled) {
+        background: var(--primary);
+        color: white;
+        transform: scale(1.1);
+        border-color: var(--primary);
+    }
+
+    .quantity-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .quantity-input {
+        width: 60px;
+        height: 35px;
+        border: 2px solid var(--gray-200);
+        border-radius: var(--radius);
+        text-align: center;
+        font-weight: 600;
+        font-size: 1rem;
+        color: var(--gray-700);
+        transition: all var(--transition);
+    }
+
+    .quantity-input:focus {
+        border-color: var(--primary);
+        outline: none;
+        box-shadow: 0 0 0 3px var(--primary-light);
+    }
+
+    /* Remove Button */
+    .btn-danger {
+        background: linear-gradient(135deg, var(--danger), #dc2626);
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius);
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all var(--transition-bounce);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        box-shadow: var(--shadow);
+    }
+
+    .btn-danger:hover {
+        background: linear-gradient(135deg, #dc2626, var(--danger));
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: var(--shadow-xl);
+        color: white;
+    }
+
+    .btn-danger i {
+        font-size: 1.1rem;
+        transition: transform var(--transition);
+    }
+
+    .btn-danger:hover i {
+        transform: rotate(90deg) scale(1.2);
+    }
+
+    /* Table Footer */
+    .table tfoot tr {
+        background: linear-gradient(135deg, var(--gray-50), var(--gray-100));
+    }
+
+    .table tfoot td {
+        padding: 1.5rem 1rem;
+        font-size: 1.1rem;
+        border-bottom: none;
+    }
+
+    .table tfoot td:first-child {
+        text-align: right;
+        font-weight: 600;
+        color: var(--gray-800);
+    }
+
+    .table tfoot td:nth-child(2) {
+        font-weight: 800;
+        font-size: 1.25rem;
+        color: var(--success);
+        position: relative;
+    }
+
+    .table tfoot td:nth-child(2)::before {
+        content: '💰';
+        margin-right: 0.5rem;
+        opacity: 0.5;
+    }
+
+    /* Action Buttons */
+    .text-end.mt-4 {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-top: 2rem !important;
+        animation: fadeInUp 0.8s ease-out 0.6s both;
+    }
+
+    .btn {
+        padding: 0.875rem 2rem;
+        border-radius: var(--radius-lg);
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all var(--transition-bounce);
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        position: relative;
+        overflow: hidden;
+        text-decoration: none;
+        box-shadow: var(--shadow);
+    }
+
+    .btn::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+
+    .btn:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .btn-secondary {
+        background: linear-gradient(135deg, var(--gray-500), var(--gray-600));
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background: linear-gradient(135deg, var(--gray-600), var(--gray-700));
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-xl);
+    }
+
+    .btn-success {
+        background: linear-gradient(135deg, var(--success), #059669);
+        color: white;
+    }
+
+    .btn-success:hover {
+        background: linear-gradient(135deg, #059669, var(--success));
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: var(--shadow-xl);
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-xl);
+    }
+
+    .btn i {
+        font-size: 1.2rem;
+        transition: transform var(--transition);
+    }
+
+    .btn:hover i {
+        transform: translateX(5px) scale(1.2);
+    }
+
+    .btn-secondary:hover i {
+        transform: translateX(-5px) scale(1.2);
+    }
+
+    /* Empty Cart Alert */
+    .alert-info {
+        background: linear-gradient(135deg, var(--info), #2563eb);
+        color: white;
+        border: none;
+        border-radius: var(--radius-xl);
+        padding: 3rem;
+        text-align: center;
+        margin: 2rem 0;
+        animation: fadeInUp 0.8s ease-out;
+        box-shadow: var(--shadow-2xl);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .alert-info::before {
+        content: '🛒';
+        position: absolute;
+        top: -20px;
+        right: -20px;
+        font-size: 10rem;
+        opacity: 0.1;
+        transform: rotate(15deg);
+    }
+
+    .alert-info p {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+    }
+
+    .alert-info .btn-primary {
+        background: white;
+        color: var(--info);
+        padding: 1rem 2.5rem;
+        font-size: 1.1rem;
+        border: none;
+    }
+
+    .alert-info .btn-primary:hover {
+        background: var(--gray-100);
+        transform: translateY(-3px) scale(1.05);
+    }
+
+    /* Animations */
+    @keyframes slideInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes expandWidth {
+        from { width: 0; }
+        to { width: 80px; }
+    }
+
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    /* Toast Notification */
+    .toast-notification {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background: linear-gradient(135deg, var(--success), #059669);
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-2xl);
+        transform: translateX(400px);
+        transition: transform 0.3s ease;
+        z-index: 9999;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        animation: slideInRight 0.3s ease;
+    }
+
+    .toast-notification.show {
+        transform: translateX(0);
+    }
+
+    .toast-notification i {
+        font-size: 1.25rem;
+    }
+
+    /* Empty Cart Icon Animation */
+    .empty-cart-icon {
+        font-size: 5rem;
+        color: white;
+        margin-bottom: 1rem;
+        animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-20px); }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .table-responsive {
+            padding: 1rem;
+            border-radius: var(--radius-lg);
+        }
+
+        .table thead th {
+            padding: 1rem 0.75rem;
+            font-size: 0.85rem;
+        }
+
+        .table tbody td {
+            padding: 1rem 0.75rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .text-end.mt-4 {
+            justify-content: center;
+        }
+
+        .alert-info {
+            padding: 2rem;
+        }
+
+        .alert-info p {
+            font-size: 1.25rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .table thead th {
+            font-size: 0.75rem;
+            white-space: nowrap;
+        }
+
+        .table tbody td {
+            font-size: 0.9rem;
+        }
+
+        .btn {
+            width: 100%;
+            margin: 0.25rem 0;
+        }
+
+        .text-end.mt-4 {
+            flex-direction: column;
+        }
+
+        .quantity-control {
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .quantity-btn {
+            width: 25px;
+            height: 25px;
+            font-size: 1rem;
+        }
+
+        .quantity-input {
+            width: 50px;
+            height: 30px;
+        }
+    }
+
+    /* Dark Mode */
+    @media (prefers-color-scheme: dark) {
+        .table-responsive {
+            background: var(--gray-800);
+            border-color: var(--gray-700);
+        }
+
+        .table thead th {
+            background: linear-gradient(135deg, var(--gray-700), var(--gray-800));
+            color: var(--gray-300);
+            border-bottom-color: var(--gray-600);
+        }
+
+        .table tbody td {
+            color: var(--gray-300);
+            border-bottom-color: var(--gray-700);
+        }
+
+        .table tbody td:first-child {
+            color: white;
+        }
+
+        .table tbody tr:hover {
+            background: var(--gray-700) !important;
+        }
+
+        .table tfoot tr {
+            background: linear-gradient(135deg, var(--gray-700), var(--gray-800));
+        }
+
+        .table tfoot td {
+            color: var(--gray-300);
+        }
+
+        .table tfoot td:first-child {
+            color: white;
+        }
+
+        .quantity-input {
+            background: var(--gray-700);
+            border-color: var(--gray-600);
+            color: white;
+        }
+
+        .quantity-btn {
+            background: var(--gray-700);
+            border-color: var(--gray-600);
+            color: white;
+        }
+
+        .quantity-btn:hover:not(:disabled) {
+            background: var(--primary);
+        }
+    }
+
+    /* Loading State */
+    .loading {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .loading::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        animation: loading 1.5s infinite;
+    }
+
+    @keyframes loading {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+    }
+</style>
+
+<!-- Page Header -->
+<h1><i class="bi bi-cart"></i> Your Shopping Cart</h1>
+
+{% if cart %}
+<!-- Cart Table -->
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Total</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product_id, item in cart.items() %}
+            <tr data-product-id="{{ product_id }}" data-price="{{ item.price }}" data-name="{{ item.name }}">
+                <td>
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-box-seam me-2" style="color: var(--primary);"></i>
+                        {{ item.name }}
+                    </div>
+                </td>
+                <td class="item-price">{{ item.price|fcfa }} FCFA</td>
+                <td>
+                    <div class="quantity-control">
+                        <button class="quantity-btn minus-btn" onclick="updateQuantity('{{ product_id }}', 'decrease')" {% if item.quantity <= 1 %}disabled{% endif %}>−</button>
+                        <input type="number" class="quantity-input" value="{{ item.quantity }}" min="1" max="99" readonly id="qty-{{ product_id }}">
+                        <button class="quantity-btn plus-btn" onclick="updateQuantity('{{ product_id }}', 'increase')">+</button>
+                    </div>
+                </td>
+                <td class="item-total">{{ (item.price * item.quantity)|fcfa }} FCFA</td>
+                <td>
+                    <a href="{{ url_for('remove_from_cart', product_id=product_id) }}" class="btn-danger remove-item">
+                        <i class="bi bi-trash"></i> Remove
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                <td><strong class="cart-total">{{ total|fcfa }} FCFA</strong></td>
+                <td></td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+
+<!-- Action Buttons -->
+<div class="text-end mt-4">
+    <a href="{{ url_for('products') }}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Continue Shopping
+    </a>
+    <a href="{{ url_for('checkout') }}" class="btn btn-success" id="checkoutBtn">
+        <i class="bi bi-credit-card"></i> Proceed to Checkout
+    </a>
+</div>
+
+{% else %}
+<!-- Empty Cart -->
+<div class="alert-info">
+    <div class="empty-cart-icon">
+        <i class="bi bi-cart-x"></i>
+    </div>
+    <p>Your cart is empty!</p>
+    <a href="{{ url_for('products') }}" class="btn btn-primary">
+        <i class="bi bi-bag-check"></i> Start Shopping
+    </a>
+</div>
+{% endif %}
+
+<!-- Toast Container -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3"></div>
+
+<script>
+    // Modern JavaScript for Cart Page
+    (function() {
+        'use strict';
+
+        // Toast notification system
+        function showToast(message, type = 'success', icon = 'bi-check-circle-fill') {
+            const toastContainer = document.querySelector('.toast-container');
+            if (!toastContainer) return;
+
+            const colors = {
+                success: 'linear-gradient(135deg, #10b981, #059669)',
+                warning: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                danger: 'linear-gradient(135deg, #ef4444, #dc2626)',
+                info: 'linear-gradient(135deg, #3b82f6, #2563eb)'
+            };
+
+            const toastId = 'toast-' + Date.now();
+            const toastHtml = `
+                <div id="${toastId}" class="toast-notification show" style="background: ${colors[type] || colors.success}">
+                    <i class="bi ${icon}"></i>
+                    <div class="toast-message">${message}</div>
+                </div>
+            `;
+
+            toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+
+            setTimeout(() => {
+                const toast = document.getElementById(toastId);
+                if (toast) {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 300);
+                }
+            }, 3000);
+        }
+
+        // Format price with FCFA
+        function formatPrice(price) {
+            return new Intl.NumberFormat('fr-FR').format(price) + ' FCFA';
+        }
+
+        // Update cart total
+        function updateCartTotal() {
+            let total = 0;
+            document.querySelectorAll('tbody tr').forEach(row => {
+                const totalCell = row.querySelector('.item-total');
+                if (totalCell) {
+                    const priceText = totalCell.textContent.replace('FCFA', '').replace(/\s/g, '');
+                    const price = parseInt(priceText) || 0;
+                    total += price;
+                }
+            });
+
+            const totalElement = document.querySelector('.cart-total');
+            if (totalElement) {
+                totalElement.textContent = formatPrice(total);
+            }
+        }
+
+        // Update quantity via AJAX
+        window.updateQuantity = function(productId, action) {
+            const row = document.querySelector(`tr[data-product-id="${productId}"]`);
+            if (!row) return;
+
+            const price = parseFloat(row.dataset.price);
+            const qtyInput = document.getElementById(`qty-${productId}`);
+            const currentQty = parseInt(qtyInput.value);
+            const minusBtn = row.querySelector('.minus-btn');
+            const plusBtn = row.querySelector('.plus-btn');
+            
+            let newQty = currentQty;
+            if (action === 'increase') {
+                newQty = currentQty + 1;
+            } else if (action === 'decrease') {
+                newQty = currentQty - 1;
+            }
+
+            if (newQty < 1) return;
+
+            // Update buttons state
+            if (minusBtn) {
+                minusBtn.disabled = newQty <= 1;
+            }
+
+            // Show loading state
+            qtyInput.classList.add('loading');
+            plusBtn.disabled = true;
+            minusBtn.disabled = true;
+
+            // Simulate AJAX call (replace with actual fetch to your backend)
+            setTimeout(() => {
+                // Update quantity display
+                qtyInput.value = newQty;
+                
+                // Update item total
+                const totalCell = row.querySelector('.item-total');
+                const newTotal = price * newQty;
+                totalCell.textContent = formatPrice(newTotal);
+                
+                // Update cart total
+                updateCartTotal();
+                
+                // Remove loading state
+                qtyInput.classList.remove('loading');
+                plusBtn.disabled = false;
+                if (minusBtn) {
+                    minusBtn.disabled = newQty <= 1;
+                }
+
+                // Show toast
+                showToast(`Quantity updated to ${newQty}`, 'success', 'bi-cart-check');
+                
+                // Store cart in localStorage
+                saveCartToLocalStorage();
+            }, 500);
+        };
+
+        // Save cart to localStorage
+        function saveCartToLocalStorage() {
+            const cart = {};
+            document.querySelectorAll('tbody tr').forEach(row => {
+                const productId = row.dataset.productId;
+                const name = row.dataset.name;
+                const price = parseFloat(row.dataset.price);
+                const quantity = parseInt(row.querySelector('.quantity-input').value);
+                
+                cart[productId] = {
+                    name: name,
+                    price: price,
+                    quantity: quantity
+                };
+            });
+            
+            localStorage.setItem('shoppingCart', JSON.stringify(cart));
+        }
+
+        // Load cart from localStorage (optional - for persistence)
+        function loadCartFromLocalStorage() {
+            const savedCart = localStorage.getItem('shoppingCart');
+            if (savedCart && document.querySelector('tbody tr') === null) {
+                // Cart is empty but we have saved data - could implement restore functionality
+                console.log('Saved cart found:', JSON.parse(savedCart));
+            }
+        }
+
+        // Remove item with animation
+        document.querySelectorAll('.remove-item').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const row = this.closest('tr');
+                const productName = row.dataset.name;
+                
+                // Animate removal
+                row.style.transform = 'translateX(100px)';
+                row.style.opacity = '0';
+                row.style.transition = 'all 0.3s ease';
+                
+                setTimeout(() => {
+                    window.location.href = this.href;
+                }, 300);
+                
+                showToast(`${productName} removed from cart`, 'warning', 'bi-trash');
+            });
+        });
+
+        // Checkout button animation
+        const checkoutBtn = document.getElementById('checkoutBtn');
+        if (checkoutBtn) {
+            checkoutBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 200);
+                
+                showToast('Redirecting to checkout...', 'info', 'bi-credit-card');
+                
+                setTimeout(() => {
+                    window.location.href = this.href;
+                }, 500);
+            });
+        }
+
+        // Continue shopping button animation
+        document.querySelectorAll('.btn-secondary').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 200);
+                
+                setTimeout(() => {
+                    window.location.href = this.href;
+                }, 200);
+            });
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl + S for continue shopping
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                window.location.href = '/products';
+            }
+            // Ctrl + K for checkout
+            if (e.ctrlKey && e.key === 'k') {
+                e.preventDefault();
+                const checkoutBtn = document.getElementById('checkoutBtn');
+                if (checkoutBtn) {
+                    checkoutBtn.click();
+                }
+            }
+            // Delete key to remove last item (just for fun)
+            if (e.key === 'Delete' && e.shiftKey) {
+                const lastRow = document.querySelector('tbody tr:last-child .remove-item');
+                if (lastRow) {
+                    lastRow.click();
+                }
+            }
+        });
+
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function(tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        // Load saved cart on page load
+        loadCartFromLocalStorage();
+
+        // Update total on page load
+        updateCartTotal();
+
+        // Console greeting
+        console.log('🛒 Cart page loaded - Happy shopping!');
+
+        // Expose functions globally
+        window.showToast = showToast;
+    })();
+</script>
+{% endblock %}

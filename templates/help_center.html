@@ -1,0 +1,1612 @@
+{% extends "base.html" %}
+
+{% block title %}Help Center - Linux Shop{% endblock %}
+
+{% block content %}
+<style>
+    /* ============================================
+       HELP CENTER PAGE — FULLY RESPONSIVE
+       ============================================ */
+
+    /* ---------- Hero Section ---------- */
+    .help-hero {
+        text-align: center;
+        padding: clamp(1.5rem, 4vw, 2.5rem) 0 clamp(2rem, 5vw, 3rem);
+        animation: fadeInDown 0.6s ease-out;
+    }
+
+    .help-hero-icon {
+        width: clamp(64px, 14vw, 80px);
+        height: clamp(64px, 14vw, 80px);
+        border-radius: 50%;
+        background: linear-gradient(135deg, rgba(67, 97, 238, 0.15), rgba(67, 97, 238, 0.06));
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: clamp(1.75rem, 4vw, 2.25rem);
+        color: var(--primary-color);
+        margin-bottom: clamp(0.85rem, 2.5vw, 1.25rem);
+        transition: transform 0.4s ease;
+    }
+
+    .help-hero-icon:hover {
+        transform: rotate(-10deg) scale(1.08);
+    }
+
+    .help-hero h1 {
+        font-size: clamp(1.5rem, 4.5vw, 2.3rem);
+        font-weight: 800;
+        color: var(--gray-900);
+        margin-bottom: 0.6rem;
+        position: relative;
+        display: inline-block;
+    }
+
+    .help-hero h1::after {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 70px;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-color), #7209b7);
+        border-radius: 999px;
+        animation: expandWidth 0.8s ease-out 0.3s both;
+    }
+
+    @keyframes expandWidth {
+        from { width: 0; }
+        to   { width: 70px; }
+    }
+
+    .help-hero .lead {
+        color: var(--gray-600);
+        font-size: clamp(0.9rem, 2.2vw, 1.05rem);
+        margin-bottom: clamp(1rem, 2.5vw, 1.5rem);
+        max-width: 640px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    /* ---------- Search Bar ---------- */
+    .search-container {
+        max-width: 640px;
+        margin: 0 auto;
+    }
+
+    .search-group {
+        display: flex;
+        align-items: stretch;
+        background: white;
+        border: 2px solid var(--gray-200);
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: var(--shadow-md);
+        transition: all 0.2s ease;
+    }
+
+    .search-group:focus-within {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.12);
+    }
+
+    .search-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 clamp(0.75rem, 2vw, 1rem);
+        background: white;
+        color: var(--gray-400);
+        font-size: clamp(0.95rem, 2.3vw, 1.1rem);
+        flex-shrink: 0;
+    }
+
+    .search-input {
+        flex: 1;
+        border: none;
+        outline: none;
+        padding: clamp(0.65rem, 1.8vw, 0.85rem) clamp(0.6rem, 1.5vw, 0.75rem);
+        font-size: clamp(0.85rem, 2vw, 1rem);
+        color: var(--gray-800);
+        background: transparent;
+        min-width: 0;
+        font-family: inherit;
+    }
+
+    .search-input::placeholder {
+        color: var(--gray-400);
+    }
+
+    .search-btn {
+        padding: clamp(0.65rem, 1.8vw, 0.85rem) clamp(1rem, 2.5vw, 1.5rem);
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: white;
+        border: none;
+        font-weight: 600;
+        font-size: clamp(0.85rem, 2vw, 0.95rem);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+    }
+
+    .search-btn:hover {
+        background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+    }
+
+    .search-hint {
+        text-align: left;
+        color: var(--gray-500);
+        font-size: clamp(0.72rem, 1.8vw, 0.8rem);
+        margin-top: 0.65rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.35rem;
+    }
+
+    .search-hint i {
+        color: var(--warning-color);
+        flex-shrink: 0;
+        margin-top: 1px;
+    }
+
+    /* ---------- Section Headings ---------- */
+    .section-heading {
+        font-size: clamp(1.1rem, 2.8vw, 1.35rem);
+        font-weight: 700;
+        color: var(--gray-800);
+        margin-bottom: clamp(1rem, 2.5vw, 1.35rem);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .section-heading i {
+        color: var(--primary-color);
+        font-size: 1.05em;
+    }
+
+    /* ---------- Category Grid ---------- */
+    .category-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: clamp(0.85rem, 2vw, 1.15rem);
+        margin-bottom: clamp(2rem, 5vw, 3rem);
+    }
+
+    @media (max-width: 575.98px) {
+        .category-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    @media (max-width: 380px) {
+        .category-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .category-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: clamp(0.9rem, 2.5vw, 1.15rem);
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        text-decoration: none;
+        color: inherit;
+        transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+        position: relative;
+        overflow: hidden;
+        animation: fadeInUp 0.5s ease-out both;
+    }
+
+    .category-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--primary-color), #7209b7);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.4s ease;
+    }
+
+    .category-card:hover {
+        transform: translateY(-6px);
+        box-shadow: var(--shadow-xl);
+        border-color: transparent;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .category-card:hover::before {
+        transform: scaleX(1);
+    }
+
+    .category-icon {
+        width: clamp(44px, 10vw, 54px);
+        height: clamp(44px, 10vw, 54px);
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: clamp(1.1rem, 2.6vw, 1.35rem);
+        margin-bottom: 0.6rem;
+        transition: transform 0.3s ease;
+    }
+
+    .category-card:hover .category-icon {
+        transform: rotate(-8deg) scale(1.08);
+    }
+
+    .category-icon.primary   { background: rgba(67, 97, 238, 0.12); color: var(--primary-color); }
+    .category-icon.success   { background: rgba(6, 214, 160, 0.12); color: var(--success-color); }
+    .category-icon.warning   { background: rgba(255, 209, 102, 0.18); color: #d97706; }
+    .category-icon.info      { background: rgba(76, 201, 240, 0.12); color: var(--info-color); }
+    .category-icon.danger    { background: rgba(239, 68, 68, 0.12); color: var(--danger-color); }
+    .category-icon.secondary { background: rgba(108, 117, 125, 0.12); color: var(--gray-600); }
+
+    .category-title {
+        font-size: clamp(0.85rem, 2vw, 0.95rem);
+        font-weight: 700;
+        color: var(--gray-800);
+        margin-bottom: 0.25rem;
+        line-height: 1.3;
+    }
+
+    .category-desc {
+        font-size: clamp(0.72rem, 1.7vw, 0.78rem);
+        color: var(--gray-500);
+        line-height: 1.45;
+    }
+
+    /* Stagger categories */
+    .category-grid > *:nth-child(1) .category-card { animation-delay: 0.03s; }
+    .category-grid > *:nth-child(2) .category-card { animation-delay: 0.06s; }
+    .category-grid > *:nth-child(3) .category-card { animation-delay: 0.09s; }
+    .category-grid > *:nth-child(4) .category-card { animation-delay: 0.12s; }
+    .category-grid > *:nth-child(5) .category-card { animation-delay: 0.15s; }
+    .category-grid > *:nth-child(6) .category-card { animation-delay: 0.18s; }
+
+    /* ---------- Accordion ---------- */
+    .help-accordion {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-bottom: clamp(2rem, 5vw, 3rem);
+    }
+
+    .accordion-item {
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: 12px !important;
+        overflow: hidden;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .accordion-item:hover {
+        border-color: var(--primary-color);
+        box-shadow: var(--shadow-md);
+    }
+
+    .accordion-button {
+        font-weight: 600;
+        color: var(--gray-800);
+        background: white;
+        padding: clamp(0.85rem, 2.5vw, 1.1rem) clamp(1rem, 2.5vw, 1.25rem);
+        font-size: clamp(0.85rem, 2vw, 0.95rem);
+        border: none;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        width: 100%;
+        text-align: left;
+        cursor: pointer;
+        transition: background 0.2s ease, color 0.2s ease;
+        line-height: 1.4;
+    }
+
+    .accordion-button:not(.collapsed) {
+        background: linear-gradient(135deg, rgba(67, 97, 238, 0.1), rgba(114, 9, 183, 0.08));
+        color: var(--primary-dark);
+        font-weight: 700;
+    }
+
+    .accordion-button:focus {
+        outline: none;
+        box-shadow: none;
+    }
+
+    .accordion-button i.accordion-icon {
+        color: var(--primary-color);
+        flex-shrink: 0;
+        font-size: 1.05em;
+    }
+
+    .accordion-button::after {
+        margin-left: auto;
+        transition: transform 0.25s ease;
+        flex-shrink: 0;
+    }
+
+    .accordion-button:not(.collapsed)::after {
+        transform: rotate(180deg);
+    }
+
+    .accordion-body {
+        padding: clamp(0.9rem, 2.5vw, 1.25rem) clamp(1rem, 2.5vw, 1.25rem);
+        background: var(--gray-100);
+        color: var(--gray-700);
+        font-size: clamp(0.82rem, 2vw, 0.9rem);
+        line-height: 1.65;
+    }
+
+    /* Feedback buttons inside accordion */
+    .feedback-row {
+        margin-top: 0.85rem;
+        padding-top: 0.75rem;
+        border-top: 1px dashed var(--gray-300);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .feedback-row .feedback-label {
+        font-size: clamp(0.75rem, 1.8vw, 0.82rem);
+        color: var(--gray-500);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .btn-feedback {
+        padding: 0.3rem 0.7rem;
+        border-radius: 8px;
+        border: 1.5px solid;
+        background: transparent;
+        font-size: clamp(0.72rem, 1.8vw, 0.8rem);
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        white-space: nowrap;
+    }
+
+    .btn-feedback.yes {
+        border-color: var(--success-color);
+        color: var(--success-color);
+    }
+    .btn-feedback.yes:hover:not(:disabled) {
+        background: var(--success-color);
+        color: white;
+    }
+
+    .btn-feedback.no {
+        border-color: var(--danger-color);
+        color: var(--danger-color);
+    }
+    .btn-feedback.no:hover:not(:disabled) {
+        background: var(--danger-color);
+        color: white;
+    }
+
+    .btn-feedback:disabled {
+        opacity: 0.7;
+        cursor: default;
+    }
+
+    /* ---------- Two-Column Help Sections ---------- */
+    .help-sections {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: clamp(1rem, 2.5vw, 1.5rem);
+        margin-bottom: clamp(2rem, 5vw, 3rem);
+    }
+
+    @media (min-width: 992px) {
+        .help-sections {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    .help-section-card {
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        transition: box-shadow 0.25s ease;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .help-section-card:hover {
+        box-shadow: var(--shadow-lg);
+    }
+
+    .help-section-header {
+        padding: clamp(1rem, 2.5vw, 1.35rem) clamp(1.1rem, 2.5vw, 1.4rem);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        border-bottom: 1px solid var(--gray-100);
+    }
+
+    .help-section-icon {
+        width: clamp(40px, 9vw, 48px);
+        height: clamp(40px, 9vw, 48px);
+        min-width: clamp(40px, 9vw, 48px);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: clamp(1rem, 2.4vw, 1.2rem);
+        transition: transform 0.3s ease;
+        flex-shrink: 0;
+    }
+
+    .help-section-card:hover .help-section-icon {
+        transform: rotate(-8deg) scale(1.05);
+    }
+
+    .help-section-icon.primary { background: rgba(67, 97, 238, 0.12); color: var(--primary-color); }
+    .help-section-icon.success { background: rgba(6, 214, 160, 0.12); color: var(--success-color); }
+    .help-section-icon.warning { background: rgba(255, 209, 102, 0.18); color: #d97706; }
+    .help-section-icon.info    { background: rgba(76, 201, 240, 0.12); color: var(--info-color); }
+
+    .help-section-title {
+        font-size: clamp(1rem, 2.4vw, 1.15rem);
+        font-weight: 700;
+        color: var(--gray-800);
+        margin: 0;
+        line-height: 1.3;
+    }
+
+    .help-section-body {
+        padding: clamp(0.85rem, 2.5vw, 1.25rem);
+        flex: 1;
+    }
+
+    /* Flush accordion inside help section */
+    .help-section-body .accordion-item {
+        border-radius: 0 !important;
+        border: none;
+        border-bottom: 1px solid var(--gray-100);
+    }
+
+    .help-section-body .accordion-item:last-child {
+        border-bottom: none;
+    }
+
+    .help-section-body .accordion-button {
+        padding: clamp(0.65rem, 2vw, 0.85rem) 0;
+        font-size: clamp(0.82rem, 2vw, 0.9rem);
+        background: transparent;
+    }
+
+    .help-section-body .accordion-button:not(.collapsed) {
+        background: transparent;
+    }
+
+    .help-section-body .accordion-body {
+        background: transparent;
+        padding: 0.5rem 0 0.85rem;
+    }
+
+    .help-section-footer {
+        padding: clamp(0.75rem, 2vw, 1rem) clamp(1.1rem, 2.5vw, 1.4rem);
+        border-top: 1px solid var(--gray-100);
+        text-align: center;
+    }
+
+    .view-more-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.4rem 0.85rem;
+        border-radius: 10px;
+        border: 1.5px solid;
+        background: transparent;
+        font-size: clamp(0.78rem, 1.9vw, 0.85rem);
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+    .view-more-btn.primary { color: var(--primary-color); border-color: var(--primary-color); }
+    .view-more-btn.success { color: var(--success-color); border-color: var(--success-color); }
+    .view-more-btn.warning { color: #d97706; border-color: var(--warning-color); }
+    .view-more-btn.info    { color: var(--info-color); border-color: var(--info-color); }
+
+    .view-more-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .view-more-btn.primary:hover { background: var(--primary-color); color: white; }
+    .view-more-btn.success:hover { background: var(--success-color); color: white; }
+    .view-more-btn.warning:hover { background: var(--warning-color); color: white; }
+    .view-more-btn.info:hover    { background: var(--info-color); color: white; }
+
+    /* ---------- Contact Section ---------- */
+    .contact-section {
+        background: white;
+        border: 2px solid var(--primary-color);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-lg);
+        padding: clamp(1.25rem, 3.5vw, 2rem);
+        margin-bottom: clamp(2rem, 5vw, 3rem);
+        position: relative;
+    }
+
+    .contact-section h2 {
+        font-size: clamp(1.15rem, 3vw, 1.5rem);
+        font-weight: 800;
+        color: var(--gray-900);
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .contact-section h2 i {
+        color: var(--primary-color);
+    }
+
+    .contact-section > p {
+        color: var(--gray-600);
+        font-size: clamp(0.85rem, 2vw, 0.95rem);
+        margin-bottom: clamp(1rem, 2.5vw, 1.5rem);
+    }
+
+    .contact-options {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: clamp(1rem, 2.5vw, 1.5rem);
+    }
+
+    @media (min-width: 768px) {
+        .contact-options {
+            grid-template-columns: 1.35fr 1fr;
+            align-items: center;
+        }
+    }
+
+    .contact-list {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+
+    @media (min-width: 480px) {
+        .contact-list {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    @media (min-width: 768px) {
+        .contact-list {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (min-width: 992px) {
+        .contact-list {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+    }
+
+    .contact-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.65rem;
+        border-radius: 11px;
+        cursor: pointer;
+        transition: background 0.2s ease, transform 0.2s ease;
+        background: var(--gray-100);
+    }
+
+    .contact-item:hover {
+        background: var(--gray-200);
+        transform: translateX(3px);
+    }
+
+    .contact-item-icon {
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
+        border-radius: 11px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.05rem;
+        flex-shrink: 0;
+    }
+
+    .contact-item-icon.email    { background: rgba(67, 97, 238, 0.12); color: var(--primary-color); }
+    .contact-item-icon.phone    { background: rgba(6, 214, 160, 0.12); color: var(--success-color); }
+    .contact-item-icon.whatsapp { background: rgba(37, 211, 102, 0.15); color: #128C7E; }
+
+    .contact-item-text {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .contact-item-text h6 {
+        font-size: clamp(0.82rem, 2vw, 0.92rem);
+        font-weight: 700;
+        color: var(--gray-800);
+        margin: 0 0 0.1rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .contact-item-text small {
+        font-size: clamp(0.72rem, 1.8vw, 0.8rem);
+        color: var(--gray-500);
+        word-break: break-word;
+    }
+
+    /* Live chat box */
+    .live-chat-box {
+        background: linear-gradient(135deg, rgba(67, 97, 238, 0.08), rgba(114, 9, 183, 0.06));
+        border: 1px solid rgba(67, 97, 238, 0.2);
+        border-radius: var(--radius-lg);
+        padding: clamp(1.25rem, 3vw, 1.75rem);
+        text-align: center;
+    }
+
+    .live-chat-icon {
+        width: clamp(56px, 12vw, 68px);
+        height: clamp(56px, 12vw, 68px);
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: white;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: clamp(1.4rem, 3.5vw, 1.75rem);
+        margin-bottom: 0.85rem;
+        box-shadow: 0 8px 20px rgba(67, 97, 238, 0.3);
+    }
+
+    .live-chat-box h5 {
+        font-size: clamp(1rem, 2.4vw, 1.15rem);
+        font-weight: 700;
+        color: var(--gray-800);
+        margin-bottom: 0.4rem;
+    }
+
+    .live-chat-box p {
+        font-size: clamp(0.78rem, 2vw, 0.85rem);
+        color: var(--gray-500);
+        margin-bottom: 1rem;
+    }
+
+    .live-chat-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: clamp(0.65rem, 1.8vw, 0.8rem) clamp(1.25rem, 3vw, 1.65rem);
+        border-radius: 12px;
+        border: none;
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: white;
+        font-weight: 700;
+        font-size: clamp(0.85rem, 2vw, 0.95rem);
+        cursor: pointer;
+        transition: all 0.25s ease;
+        box-shadow: 0 4px 14px rgba(67, 97, 238, 0.35);
+    }
+
+    .live-chat-btn:hover:not(:disabled) {
+        background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(67, 97, 238, 0.5);
+    }
+
+    .live-chat-btn:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    /* ---------- Support Stats ---------- */
+    .support-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: clamp(0.75rem, 2vw, 1.15rem);
+        margin-top: clamp(1.25rem, 3vw, 1.75rem);
+    }
+
+    .support-stat {
+        background: var(--gray-100);
+        border-radius: 12px;
+        padding: clamp(0.85rem, 2vw, 1.1rem);
+        text-align: center;
+        transition: transform 0.25s ease, background 0.25s ease;
+    }
+
+    .support-stat:hover {
+        transform: translateY(-3px);
+        background: var(--gray-200);
+    }
+
+    .support-stat i {
+        font-size: clamp(1.5rem, 4vw, 1.85rem);
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .support-stat.primary i { color: var(--primary-color); }
+    .support-stat.success i { color: var(--success-color); }
+    .support-stat.warning i { color: var(--warning-color); }
+
+    .support-stat h6 {
+        font-size: clamp(0.8rem, 2vw, 0.9rem);
+        font-weight: 700;
+        color: var(--gray-800);
+        margin-bottom: 0.25rem;
+    }
+
+    .support-stat p {
+        font-size: clamp(0.72rem, 1.8vw, 0.8rem);
+        color: var(--gray-500);
+        margin: 0;
+        line-height: 1.45;
+    }
+
+    /* ---------- Community & Resources ---------- */
+    .resources-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: clamp(0.85rem, 2vw, 1.15rem);
+        margin-bottom: clamp(2rem, 5vw, 3rem);
+    }
+
+    @media (min-width: 768px) {
+        .resources-grid {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+    }
+
+    .resource-card {
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        padding: clamp(1.1rem, 2.5vw, 1.5rem);
+        box-shadow: var(--shadow-sm);
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .resource-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-xl);
+    }
+
+    .resource-icon {
+        width: clamp(44px, 10vw, 52px);
+        height: clamp(44px, 10vw, 52px);
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: clamp(1.1rem, 2.6vw, 1.3rem);
+        margin-bottom: 0.85rem;
+        transition: transform 0.3s ease;
+    }
+
+    .resource-card:hover .resource-icon {
+        transform: rotate(-8deg) scale(1.08);
+    }
+
+    .resource-icon.info    { background: rgba(76, 201, 240, 0.12); color: var(--info-color); }
+    .resource-icon.success { background: rgba(6, 214, 160, 0.12); color: var(--success-color); }
+    .resource-icon.warning { background: rgba(255, 209, 102, 0.18); color: #d97706; }
+
+    .resource-card h5 {
+        font-size: clamp(0.95rem, 2.3vw, 1.1rem);
+        font-weight: 700;
+        color: var(--gray-800);
+        margin-bottom: 0.4rem;
+    }
+
+    .resource-card p {
+        color: var(--gray-500);
+        font-size: clamp(0.78rem, 2vw, 0.85rem);
+        margin-bottom: 1rem;
+        flex: 1;
+        line-height: 1.5;
+    }
+
+    .resource-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: clamp(0.5rem, 1.5vw, 0.65rem) clamp(0.9rem, 2.5vw, 1.15rem);
+        border-radius: 10px;
+        border: 1.5px solid;
+        background: transparent;
+        font-size: clamp(0.78rem, 1.9vw, 0.85rem);
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+        align-self: flex-start;
+    }
+
+    .resource-btn.info    { color: var(--info-color); border-color: var(--info-color); }
+    .resource-btn.success { color: var(--success-color); border-color: var(--success-color); }
+    .resource-btn.warning { color: #d97706; border-color: var(--warning-color); }
+
+    .resource-btn:hover {
+        transform: translateY(-2px);
+        color: white;
+    }
+    .resource-btn.info:hover    { background: var(--info-color); }
+    .resource-btn.success:hover { background: var(--success-color); }
+    .resource-btn.warning:hover { background: var(--warning-color); }
+
+    /* ---------- Feedback Section ---------- */
+    .feedback-section {
+        background: linear-gradient(135deg, var(--gray-100), var(--gray-200));
+        border-radius: var(--radius-lg);
+        padding: clamp(1.5rem, 4vw, 2.25rem);
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .feedback-section h3 {
+        font-size: clamp(1.1rem, 2.8vw, 1.4rem);
+        font-weight: 800;
+        color: var(--gray-800);
+        margin-bottom: 0.5rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .feedback-section h3 i {
+        color: var(--danger-color);
+    }
+
+    .feedback-section > p {
+        color: var(--gray-600);
+        font-size: clamp(0.85rem, 2vw, 0.95rem);
+        margin-bottom: clamp(1rem, 2.5vw, 1.5rem);
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .feedback-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+        justify-content: center;
+    }
+
+    .btn-feedback-main {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: clamp(0.6rem, 1.7vw, 0.75rem) clamp(1rem, 2.5vw, 1.35rem);
+        border-radius: 11px;
+        border: none;
+        font-weight: 600;
+        font-size: clamp(0.8rem, 2vw, 0.9rem);
+        cursor: pointer;
+        transition: all 0.25s ease;
+        white-space: nowrap;
+    }
+
+    .btn-feedback-main.success {
+        background: linear-gradient(135deg, var(--success-color), #059669);
+        color: white;
+        box-shadow: 0 4px 12px rgba(6, 214, 160, 0.3);
+    }
+    .btn-feedback-main.success:hover {
+        background: linear-gradient(135deg, #059669, var(--success-color));
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(6, 214, 160, 0.45);
+    }
+
+    .btn-feedback-main.outline {
+        background: white;
+        color: var(--gray-700);
+        border: 1.5px solid var(--gray-300) !important;
+    }
+    .btn-feedback-main.outline:hover {
+        background: var(--gray-100);
+        border-color: var(--gray-500);
+        transform: translateY(-2px);
+    }
+
+    .btn-feedback-main.primary {
+        background: white;
+        color: var(--primary-color);
+        border: 1.5px solid var(--primary-color) !important;
+    }
+    .btn-feedback-main.primary:hover {
+        background: var(--primary-color);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    /* ---------- Animations ---------- */
+    @keyframes fadeInDown {
+        from { opacity: 0; transform: translateY(-20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Inline spinner */
+    .spinner-inline {
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        border: 2px solid rgba(255,255,255,0.4);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    /* ---------- Reduced Motion ---------- */
+    @media (prefers-reduced-motion: reduce) {
+        .help-hero,
+        .category-card,
+        .help-section-card {
+            animation: none !important;
+        }
+        .category-card:hover,
+        .contact-item:hover {
+            transform: none;
+        }
+        .help-hero-icon:hover,
+        .category-card:hover .category-icon,
+        .help-section-card:hover .help-section-icon,
+        .resource-card:hover .resource-icon {
+            transform: none;
+        }
+    }
+
+    /* ---------- Dark Mode ---------- */
+    body.dark-mode .help-hero h1 { color: var(--gray-100); }
+    body.dark-mode .help-hero .lead { color: var(--gray-400); }
+
+    body.dark-mode .search-group {
+        background: var(--gray-800);
+        border-color: var(--gray-700);
+    }
+
+    body.dark-mode .search-icon {
+        background: var(--gray-800);
+        color: var(--gray-500);
+    }
+
+    body.dark-mode .search-input {
+        background: var(--gray-800);
+        color: white;
+    }
+
+    body.dark-mode .section-heading { color: var(--gray-100); }
+
+    body.dark-mode .category-card,
+    body.dark-mode .help-section-card,
+    body.dark-mode .resource-card,
+    body.dark-mode .accordion-item {
+        background: var(--gray-800);
+        border-color: var(--gray-700);
+    }
+
+    body.dark-mode .category-title,
+    body.dark-mode .help-section-title,
+    body.dark-mode .resource-card h5,
+    body.dark-mode .accordion-button,
+    body.dark-mode .support-stat h6,
+    body.dark-mode .live-chat-box h5,
+    body.dark-mode .contact-section h2,
+    body.dark-mode .feedback-section h3 {
+        color: var(--gray-100);
+    }
+
+    body.dark-mode .category-desc,
+    body.dark-mode .resource-card p,
+    body.dark-mode .live-chat-box p,
+    body.dark-mode .contact-section > p,
+    body.dark-mode .feedback-section > p,
+    body.dark-mode .support-stat p {
+        color: var(--gray-400);
+    }
+
+    body.dark-mode .accordion-button {
+        background: var(--gray-800);
+    }
+
+    body.dark-mode .accordion-button:not(.collapsed) {
+        background: linear-gradient(135deg, rgba(67, 97, 238, 0.2), rgba(114, 9, 183, 0.15));
+        color: var(--primary-light);
+    }
+
+    body.dark-mode .accordion-body {
+        background: var(--gray-700);
+        color: var(--gray-300);
+    }
+
+    body.dark-mode .help-section-body .accordion-body { background: transparent; }
+
+    body.dark-mode .contact-section {
+        background: var(--gray-800);
+        border-color: var(--primary-color);
+    }
+
+    body.dark-mode .contact-item {
+        background: var(--gray-700);
+    }
+    body.dark-mode .contact-item:hover {
+        background: var(--gray-600);
+    }
+    body.dark-mode .contact-item-text h6 { color: var(--gray-100); }
+    body.dark-mode .contact-item-text small { color: var(--gray-400); }
+
+    body.dark-mode .live-chat-box {
+        background: linear-gradient(135deg, rgba(67, 97, 238, 0.15), rgba(114, 9, 183, 0.1));
+        border-color: rgba(67, 97, 238, 0.3);
+    }
+
+    body.dark-mode .support-stat {
+        background: var(--gray-700);
+    }
+    body.dark-mode .support-stat:hover { background: var(--gray-600); }
+
+    body.dark-mode .feedback-section {
+        background: linear-gradient(135deg, var(--gray-800), var(--gray-900));
+    }
+
+    body.dark-mode .btn-feedback-main.outline {
+        background: var(--gray-700);
+        color: var(--gray-200);
+        border-color: var(--gray-600) !important;
+    }
+
+    body.dark-mode .help-section-header,
+    body.dark-mode .help-section-footer {
+        border-color: var(--gray-700);
+    }
+
+    body.dark-mode .help-section-body .accordion-item {
+        border-bottom-color: var(--gray-700);
+    }
+</style>
+
+<div class="container">
+
+    <!-- ============ HERO ============ -->
+    <section class="help-hero">
+        <div class="help-hero-icon">
+            <i class="bi bi-headset"></i>
+        </div>
+        <h1>How can we help you?</h1>
+        <p class="lead">Find answers, guides, and support for all your questions</p>
+
+        <!-- Search -->
+        <div class="search-container">
+            <div class="search-group">
+                <span class="search-icon"><i class="bi bi-search"></i></span>
+                <input type="text" 
+                       class="search-input" 
+                       id="searchInput" 
+                       placeholder="Search for answers (e.g., 'track order', 'returns')"
+                       maxlength="100">
+                <button class="search-btn" type="button" id="searchBtn">
+                    <i class="bi bi-search"></i> <span class="d-none d-sm-inline">Search</span>
+                </button>
+            </div>
+            <div class="search-hint">
+                <i class="bi bi-lightbulb-fill"></i>
+                <span>Try searching for: "delivery time", "refund policy", "change password"</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ CATEGORIES ============ -->
+    <h3 class="section-heading"><i class="bi bi-grid-3x3-gap-fill"></i> Browse by Category</h3>
+
+    {% set categories = [
+        ('Orders & Shipping', 'bi-cart-check-fill', 'primary', 'Track orders, shipping info, delivery', 'orders-shipping'),
+        ('Returns & Refunds', 'bi-arrow-return-left', 'success', 'Return process, refunds, exchanges', 'returns-refunds'),
+        ('Payments & Billing', 'bi-credit-card-fill', 'warning', 'Payment methods, billing issues', 'payments-billing'),
+        ('Account & Security', 'bi-person-shield', 'info', 'Login, password, account settings', 'account-security'),
+        ('Products & Quality', 'bi-box-seam-fill', 'danger', 'Product info, quality, warranties', 'products-quality'),
+        ('Website Help', 'bi-globe2', 'secondary', 'Technical issues, browsing help', 'website-help')
+    ] %}
+
+    <div class="category-grid">
+        {% for title, icon, color, description, anchor in categories %}
+        <a href="#{{ anchor }}" 
+           class="category-card category-link" 
+           data-category="{{ title }}">
+            <div class="category-icon {{ color }}">
+                <i class="bi {{ icon }}"></i>
+            </div>
+            <div class="category-title">{{ title }}</div>
+            <div class="category-desc">{{ description }}</div>
+        </a>
+        {% endfor %}
+    </div>
+
+    <!-- ============ POPULAR QUESTIONS ============ -->
+    <h3 class="section-heading"><i class="bi bi-star-fill" style="color: var(--warning-color);"></i> Popular Questions</h3>
+
+    {% set popular_questions = [
+        ('How can I track my order?', 'Once your order is shipped, you will receive a tracking number via email. You can also check your order status in the "My Orders" section of your account.', 'tracking'),
+        ('What is your return policy?', 'We offer a 30-day return policy for most items. Items must be unused, in original packaging with tags attached. Some items may be excluded — see the full policy for details.', 'returns'),
+        ('How long does shipping take?', 'Standard shipping takes 3–5 business days. Express delivers in 1–2 business days. International shipping typically takes 7–14 business days.', 'shipping-time'),
+        ('Can I change or cancel my order?', 'You can change or cancel your order within 2 hours of placement. After that, orders begin processing and cannot be modified. Contact support immediately if needed.', 'order-change'),
+        ('What payment methods do you accept?', 'We accept Visa, MasterCard, American Express, PayPal, Apple Pay, Google Pay, MTN Mobile Money, and Orange Money. All payments are processed securely.', 'payments'),
+        ('How do I reset my password?', 'Click "Forgot Password" on the login page. Enter your email address and follow the instructions sent to your inbox.', 'password-reset')
+    ] %}
+
+    <div class="help-accordion" id="popularQuestions">
+        {% for question, answer, id in popular_questions %}
+        <div class="accordion-item">
+            <button class="accordion-button collapsed" type="button" 
+                    data-bs-toggle="collapse" 
+                    data-bs-target="#popularQuestion{{ loop.index }}"
+                    aria-expanded="false">
+                <i class="bi bi-question-circle-fill accordion-icon"></i>
+                <span>{{ question }}</span>
+            </button>
+            <div id="popularQuestion{{ loop.index }}" 
+                 class="accordion-collapse collapse" 
+                 data-bs-parent="#popularQuestions">
+                <div class="accordion-body">
+                    {{ answer }}
+                    <div class="feedback-row">
+                        <span class="feedback-label">
+                            <i class="bi bi-hand-thumbs-up"></i> Was this helpful?
+                        </span>
+                        <button class="btn-feedback yes helpful-yes" data-question="{{ question }}">
+                            <i class="bi bi-hand-thumbs-up"></i> Yes
+                        </button>
+                        <button class="btn-feedback no helpful-no" data-question="{{ question }}">
+                            <i class="bi bi-hand-thumbs-down"></i> No
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- ============ DETAILED HELP SECTIONS ============ -->
+    <h3 class="section-heading"><i class="bi bi-journal-text"></i> Detailed Help</h3>
+
+    {% set help_sections = [
+        ('orders-shipping', 'Orders & Shipping', 'primary', 'cart-check-fill', [
+            ('How do I place an order?', 'Browse products, add to cart, proceed to checkout, enter shipping details, and complete payment.'),
+            ('How can I track my order?', 'Use the tracking number from your confirmation email or check "My Orders" in your account.'),
+            ('What are the shipping costs?', 'Free shipping on orders over 20,000 FCFA. Standard, Express, and International rates available.'),
+            ('Do you ship internationally?', 'Yes, we ship to 50+ countries. International shipping takes 7–14 business days.'),
+            ('What if my package is lost or damaged?', 'Contact us immediately. We\'ll investigate with the carrier and arrange a replacement or refund.')
+        ]),
+        ('returns-refunds', 'Returns & Refunds', 'success', 'arrow-return-left', [
+            ('What is your return policy?', '30-day return window for most items. Items must be unused with original packaging.'),
+            ('How do I start a return?', 'Go to "My Orders", select the item, choose return reason, and print the return label.'),
+            ('How long do refunds take?', 'Refunds are processed within 5–7 business days after we receive the returned item.'),
+            ('Who pays for return shipping?', 'We provide free return labels for defective or incorrect items. Otherwise, customer pays.'),
+            ('Can I exchange an item?', 'Yes! Select "Exchange" instead of "Return" when initiating the return process.')
+        ]),
+        ('payments-billing', 'Payments & Billing', 'warning', 'credit-card-fill', [
+            ('What payment methods are accepted?', 'Credit cards, PayPal, Apple Pay, Google Pay, MTN Mobile Money, Orange Money, and gift cards.'),
+            ('Is my payment information secure?', 'Yes! We use SSL encryption and never store complete credit card information.'),
+            ('Why was my payment declined?', 'Common reasons: insufficient funds, incorrect card details, or security blocks by your bank.'),
+            ('Can I use multiple payment methods?', 'Currently, only one payment method per order is supported.'),
+            ('When will I be charged?', 'You\'re charged when your order is placed. For pre-orders, charged when shipped.')
+        ]),
+        ('account-security', 'Account & Security', 'info', 'person-shield', [
+            ('How do I create an account?', 'Click "Register" in the top right corner and follow the simple registration process.'),
+            ('I forgot my password. How do I reset it?', 'Use the "Forgot Password" link on the login page to reset via email.'),
+            ('How do I update my account information?', 'Log in, go to "My Account" → "Profile" to update your details.'),
+            ('Is my personal information safe?', 'We use industry-standard security measures to protect your data. Read our Privacy Policy.'),
+            ('Can I delete my account?', 'Yes, contact our support team to request account deletion. This action cannot be undone.')
+        ])
+    ] %}
+
+    <div class="help-sections">
+        {% for section_id, title, color, icon, questions in help_sections %}
+        <div id="{{ section_id }}" class="help-section-card">
+            <div class="help-section-header">
+                <div class="help-section-icon {{ color }}">
+                    <i class="bi bi-{{ icon }}"></i>
+                </div>
+                <h4 class="help-section-title">{{ title }}</h4>
+            </div>
+            <div class="help-section-body">
+                {% for q, a in questions %}
+                <div class="accordion-item">
+                    <button class="accordion-button collapsed" type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#{{ section_id }}-{{ loop.index }}"
+                            aria-expanded="false">
+                        <span>{{ q }}</span>
+                    </button>
+                    <div id="{{ section_id }}-{{ loop.index }}"
+                         class="accordion-collapse collapse"
+                         data-bs-parent="#accordion-{{ section_id }}">
+                        <div class="accordion-body">{{ a }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="help-section-footer">
+                <a href="#" class="view-more-btn {{ color }} view-more" data-section="{{ title }}">
+                    <i class="bi bi-arrow-right"></i> View More {{ title }} Questions
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- ============ CONTACT SECTION ============ -->
+    <section class="contact-section">
+        <h2><i class="bi bi-chat-dots-fill"></i> Still Need Help?</h2>
+        <p>Our support team is available to assist you with any questions or concerns.</p>
+
+        <div class="contact-options">
+            <div class="contact-list">
+                <div class="contact-item" data-contact="email">
+                    <div class="contact-item-icon email"><i class="bi bi-envelope-fill"></i></div>
+                    <div class="contact-item-text">
+                        <h6>Email Support</h6>
+                        <small>metugenkwelle8@gmail.com</small>
+                    </div>
+                </div>
+                <div class="contact-item" data-contact="phone">
+                    <div class="contact-item-icon phone"><i class="bi bi-telephone-fill"></i></div>
+                    <div class="contact-item-text">
+                        <h6>Phone Support</h6>
+                        <small>650970291</small>
+                    </div>
+                </div>
+                <div class="contact-item" data-contact="whatsapp">
+                    <div class="contact-item-icon whatsapp"><i class="bi bi-whatsapp"></i></div>
+                    <div class="contact-item-text">
+                        <h6>WhatsApp</h6>
+                        <small>673552890</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="live-chat-box">
+                <div class="live-chat-icon">
+                    <i class="bi bi-headset"></i>
+                </div>
+                <h5>Live Chat Support</h5>
+                <p>Available 9AM – 6PM (Mon – Fri)</p>
+                <button class="live-chat-btn" id="liveChatBtn">
+                    <i class="bi bi-chat-left-text-fill"></i> Start Live Chat
+                </button>
+            </div>
+        </div>
+
+        <div class="support-stats">
+            <div class="support-stat primary">
+                <i class="bi bi-clock-history"></i>
+                <h6>Response Time</h6>
+                <p>Email: Within 24 hours<br>Phone: Immediate</p>
+            </div>
+            <div class="support-stat success">
+                <i class="bi bi-translate"></i>
+                <h6>Multilingual Support</h6>
+                <p>English, Spanish, and French</p>
+            </div>
+            <div class="support-stat warning">
+                <i class="bi bi-award-fill"></i>
+                <h6>Customer Satisfaction</h6>
+                <p>98% of issues resolved on first contact</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ RESOURCES ============ -->
+    <h3 class="section-heading"><i class="bi bi-people-fill"></i> Community & Resources</h3>
+
+    <div class="resources-grid">
+        <div class="resource-card">
+            <div class="resource-icon info"><i class="bi bi-book-fill"></i></div>
+            <h5>User Guides</h5>
+            <p>Step-by-step tutorials and product guides to help you get the most out of your purchases.</p>
+            <button class="resource-btn info resource-btn" data-resource="guides">
+                <i class="bi bi-arrow-right"></i> Browse Guides
+            </button>
+        </div>
+        <div class="resource-card">
+            <div class="resource-icon success"><i class="bi bi-camera-video-fill"></i></div>
+            <h5>Video Tutorials</h5>
+            <p>Watch how-to videos and product demos to learn visually and quickly.</p>
+            <button class="resource-btn success resource-btn" data-resource="videos">
+                <i class="bi bi-arrow-right"></i> Watch Videos
+            </button>
+        </div>
+        <div class="resource-card">
+            <div class="resource-icon warning"><i class="bi bi-chat-square-text-fill"></i></div>
+            <h5>Community Forum</h5>
+            <p>Connect with other Linux Shop users, share tips, and get answers from the community.</p>
+            <button class="resource-btn warning resource-btn" data-resource="forum">
+                <i class="bi bi-arrow-right"></i> Join Discussion
+            </button>
+        </div>
+    </div>
+
+    <!-- ============ FEEDBACK ============ -->
+    <section class="feedback-section">
+        <h3><i class="bi bi-chat-square-heart-fill"></i> Help Us Improve</h3>
+        <p>Was this Help Center useful? Let us know how we can make it better.</p>
+        <div class="feedback-buttons">
+            <button class="btn-feedback-main success feedback-btn" data-feedback="helpful">
+                <i class="bi bi-hand-thumbs-up-fill"></i> Yes, it was helpful
+            </button>
+            <button class="btn-feedback-main outline feedback-btn" data-feedback="needs-improvement">
+                <i class="bi bi-hand-thumbs-down-fill"></i> Needs improvement
+            </button>
+            <button class="btn-feedback-main primary feedback-btn" data-feedback="suggest-edit">
+                <i class="bi bi-pencil-square"></i> Suggest edit
+            </button>
+        </div>
+    </section>
+
+</div>
+
+<script>
+/* ============================================
+   HELP CENTER PAGE SCRIPT
+   ============================================ */
+(function() {
+    'use strict';
+
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn   = document.getElementById('searchBtn');
+
+    // ---------- Search ----------
+    function performSearch() {
+        const term = (searchInput.value || '').trim().toLowerCase();
+        if (!term) {
+            if (typeof showToast === 'function') {
+                showToast('Please enter a search term.', 'warning', 'bi-exclamation-triangle-fill');
+            }
+            searchInput.focus();
+            return;
+        }
+
+        // Find and open matching accordion items
+        let matches = 0;
+        let firstMatch = null;
+
+        document.querySelectorAll('.accordion-button').forEach(btn => {
+            const text = btn.textContent.toLowerCase();
+            const item = btn.closest('.accordion-item');
+            if (text.includes(term)) {
+                matches++;
+                // Highlight briefly
+                item.style.transition = 'background 0.4s ease';
+                item.style.background = 'rgba(255, 209, 102, 0.25)';
+                setTimeout(() => { item.style.background = ''; }, 2200);
+
+                if (!firstMatch) firstMatch = btn;
+            }
+        });
+
+        if (matches > 0) {
+            if (typeof showToast === 'function') {
+                showToast(`Found ${matches} matching question${matches !== 1 ? 's' : ''}`, 'success', 'bi-search');
+            }
+            // Auto-open the first matching question
+            if (firstMatch && firstMatch.classList.contains('collapsed')) {
+                firstMatch.click();
+            }
+            setTimeout(() => {
+                firstMatch?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 200);
+        } else {
+            if (typeof showToast === 'function') {
+                showToast(`No results for "${term}" — try different keywords`, 'info', 'bi-info-circle-fill');
+            }
+        }
+    }
+
+    if (searchBtn) searchBtn.addEventListener('click', performSearch);
+    if (searchInput) {
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                performSearch();
+            }
+        });
+    }
+
+    // ---------- Category Links ----------
+    document.querySelectorAll('.category-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            const anchor = this.getAttribute('href');
+            const target = anchor && anchor !== '#' ? document.querySelector(anchor) : null;
+
+            if (target) {
+                e.preventDefault();
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                if (typeof showToast === 'function') {
+                    showToast(`Browsing: ${this.dataset.category}`, 'info', 'bi-folder-fill');
+                }
+            }
+        });
+    });
+
+    // ---------- Helpful feedback (inside accordions) ----------
+    document.querySelectorAll('.helpful-yes').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const question = this.dataset.question || '';
+            if (typeof showToast === 'function') {
+                showToast(`Thanks for your feedback!`, 'success', 'bi-hand-thumbs-up-fill');
+            }
+            this.innerHTML = '<i class="bi bi-check-lg"></i> Thanks!';
+            this.disabled = true;
+
+            // Also disable the paired "No" button
+            const parent = this.closest('.feedback-row');
+            if (parent) {
+                const noBtn = parent.querySelector('.helpful-no');
+                if (noBtn) noBtn.disabled = true;
+            }
+        });
+    });
+
+    document.querySelectorAll('.helpful-no').forEach(btn => {
+        btn.addEventListener('click', function() {
+            if (typeof showToast === 'function') {
+                showToast(`We'll work on improving this answer.`, 'info', 'bi-hand-thumbs-down-fill');
+            }
+            this.innerHTML = '<i class="bi bi-check-lg"></i> Noted';
+            this.disabled = true;
+
+            const parent = this.closest('.feedback-row');
+            if (parent) {
+                const yesBtn = parent.querySelector('.helpful-yes');
+                if (yesBtn) yesBtn.disabled = true;
+            }
+        });
+    });
+
+    // ---------- View More ----------
+    document.querySelectorAll('.view-more').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const section = this.dataset.section || 'this';
+            if (typeof showToast === 'function') {
+                showToast(`Loading more ${section} questions…`, 'info', 'bi-arrow-right');
+            }
+        });
+    });
+
+    // ---------- Contact Items ----------
+    document.querySelectorAll('.contact-item').forEach(item => {
+        item.addEventListener('click', function() {
+            const type = this.dataset.contact;
+            const infoEl = this.querySelector('small');
+            const info = infoEl ? infoEl.textContent.trim() : '';
+
+            const messages = {
+                email:    'Opening email client…',
+                phone:    'Opening phone app…',
+                whatsapp: 'Opening WhatsApp…'
+            };
+
+            if (typeof showToast === 'function') {
+                showToast(messages[type] || 'Contacting support…', 'info', 'bi-telephone-fill');
+            }
+
+            if (type === 'email') {
+                window.location.href = `mailto:${info}`;
+            } else if (type === 'phone') {
+                const digits = info.replace(/[^\d+]/g, '');
+                if (digits) window.location.href = `tel:${digits}`;
+            } else if (type === 'whatsapp') {
+                const digits = info.replace(/[^\d]/g, '');
+                if (digits) window.open(`https://wa.me/${digits}`, '_blank', 'noopener');
+            }
+        });
+    });
+
+    // ---------- Live Chat ----------
+    const liveChatBtn = document.getElementById('liveChatBtn');
+    if (liveChatBtn) {
+        liveChatBtn.addEventListener('click', function() {
+            const originalHtml = this.innerHTML;
+            this.innerHTML = '<span class="spinner-inline"></span> Connecting…';
+            this.disabled = true;
+
+            if (typeof showToast === 'function') {
+                showToast('Connecting to live chat…', 'info', 'bi-chat-dots-fill');
+            }
+
+            setTimeout(() => {
+                this.innerHTML = originalHtml;
+                this.disabled = false;
+                if (typeof showToast === 'function') {
+                    showToast('Live chat is offline. Please email us or try again during business hours.', 'warning', 'bi-clock-history');
+                }
+            }, 2400);
+        });
+    }
+
+    // ---------- Resource Buttons ----------
+    document.querySelectorAll('.resource-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const resource = this.dataset.resource;
+            const messages = {
+                guides: 'Opening user guides…',
+                videos: 'Loading video tutorials…',
+                forum:  'Connecting to community forum…'
+            };
+            if (typeof showToast === 'function') {
+                showToast(messages[resource] || 'Loading resource…', 'info', 'bi-box-arrow-up-right');
+            }
+        });
+    });
+
+    // ---------- Feedback Buttons (bottom) ----------
+    document.querySelectorAll('.feedback-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const feedback = this.dataset.feedback;
+            const messages = {
+                'helpful':           'Thanks for the positive feedback! 🌟',
+                'needs-improvement': 'We appreciate your honesty — we\'ll work on it!',
+                'suggest-edit':      'Thanks! Please share your suggestions.'
+            };
+
+            if (typeof showToast === 'function') {
+                showToast(messages[feedback] || 'Thank you!', 'success', 'bi-chat-square-heart-fill');
+            }
+
+            // Disable all feedback buttons to prevent duplicate submissions
+            document.querySelectorAll('.feedback-btn').forEach(b => b.disabled = true);
+        });
+    });
+
+    // ---------- Welcome Toast ----------
+    if (typeof showToast === 'function') {
+        setTimeout(() => {
+            showToast('👋 Welcome to the Help Center!', 'info', 'bi-headset');
+        }, 900);
+    }
+
+    console.log('📚 Help Center page loaded');
+})();
+</script>
+{% endblock %}

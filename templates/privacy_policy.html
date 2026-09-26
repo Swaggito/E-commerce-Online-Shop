@@ -1,0 +1,1359 @@
+{% extends "base.html" %}
+
+{% block title %}Privacy Policy - Linux Shop{% endblock %}
+
+{% block content %}
+<style>
+    /* ============================================
+       PRIVACY POLICY PAGE — FULLY RESPONSIVE
+       ============================================ */
+
+    /* ---------- Page Wrapper ---------- */
+    .policy-wrapper {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    /* ---------- Page Header ---------- */
+    .page-header {
+        text-align: center;
+        padding: clamp(1.5rem, 4vw, 2.5rem) 0 clamp(1.75rem, 4.5vw, 2.5rem);
+        animation: fadeInDown 0.6s ease-out;
+    }
+
+    .page-header-icon {
+        width: clamp(64px, 14vw, 80px);
+        height: clamp(64px, 14vw, 80px);
+        border-radius: 50%;
+        background: linear-gradient(135deg, rgba(67, 97, 238, 0.15), rgba(67, 97, 238, 0.06));
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: clamp(1.75rem, 4vw, 2.25rem);
+        color: var(--primary-color);
+        margin-bottom: clamp(0.85rem, 2.5vw, 1.15rem);
+        animation: shieldPulse 3s ease-in-out infinite;
+    }
+
+    @keyframes shieldPulse {
+        0%, 100% { transform: scale(1); }
+        50%      { transform: scale(1.06); }
+    }
+
+    .page-header h1 {
+        font-size: clamp(1.5rem, 4.5vw, 2.3rem);
+        font-weight: 800;
+        color: var(--gray-900);
+        margin-bottom: 0.6rem;
+        position: relative;
+        display: inline-block;
+    }
+
+    .page-header h1::after {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 70px;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-color), #7209b7);
+        border-radius: 999px;
+        animation: expandWidth 0.8s ease-out 0.3s both;
+    }
+
+    @keyframes expandWidth {
+        from { width: 0; }
+        to   { width: 70px; }
+    }
+
+    .page-header .last-updated {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.4rem 0.9rem;
+        background: var(--gray-100);
+        border-radius: 999px;
+        font-size: clamp(0.75rem, 1.9vw, 0.85rem);
+        color: var(--gray-600);
+        font-weight: 600;
+        margin-top: 0.6rem;
+    }
+
+    .page-header .last-updated i {
+        color: var(--primary-color);
+    }
+
+    /* ---------- Quick Navigation ---------- */
+    .quick-nav-card {
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        padding: clamp(1rem, 2.5vw, 1.35rem);
+        margin-bottom: clamp(1.25rem, 3vw, 1.75rem);
+        animation: fadeInUp 0.6s ease-out 0.1s both;
+    }
+
+    .quick-nav-title {
+        font-size: clamp(1rem, 2.4vw, 1.15rem);
+        font-weight: 700;
+        color: var(--gray-800);
+        margin-bottom: clamp(0.85rem, 2vw, 1.1rem);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .quick-nav-title i {
+        color: var(--primary-color);
+    }
+
+    .quick-nav-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: clamp(0.6rem, 1.8vw, 0.85rem);
+    }
+
+    @media (min-width: 768px) {
+        .quick-nav-grid {
+            grid-template-columns: repeat(4, 1fr);
+        }
+    }
+
+    .quick-nav-link {
+        display: block;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .quick-nav-item {
+        padding: clamp(0.75rem, 2vw, 1rem) clamp(0.5rem, 1.5vw, 0.75rem);
+        text-align: center;
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: 12px;
+        transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+        position: relative;
+        overflow: hidden;
+        height: 100%;
+    }
+
+    .quick-nav-item::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--primary-color), #7209b7);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.35s ease;
+    }
+
+    .quick-nav-link:hover .quick-nav-item {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-md);
+        border-color: transparent;
+    }
+
+    .quick-nav-link:hover .quick-nav-item::before {
+        transform: scaleX(1);
+    }
+
+    .quick-nav-item i {
+        display: block;
+        font-size: clamp(1.35rem, 3.2vw, 1.6rem);
+        margin-bottom: 0.4rem;
+        transition: transform 0.3s ease;
+    }
+
+    .quick-nav-item i.primary { color: var(--primary-color); }
+    .quick-nav-item i.success { color: var(--success-color); }
+    .quick-nav-item i.warning { color: #d97706; }
+    .quick-nav-item i.danger  { color: var(--danger-color); }
+
+    .quick-nav-link:hover .quick-nav-item i {
+        transform: scale(1.15) rotate(-8deg);
+    }
+
+    .quick-nav-item small {
+        display: block;
+        font-size: clamp(0.7rem, 1.7vw, 0.78rem);
+        font-weight: 700;
+        color: var(--gray-600);
+        line-height: 1.35;
+    }
+
+    .quick-nav-link:hover .quick-nav-item small {
+        color: var(--primary-color);
+    }
+
+    /* ---------- Section Cards ---------- */
+    .policy-card {
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        padding: clamp(1.1rem, 3vw, 1.75rem);
+        margin-bottom: clamp(1rem, 2.5vw, 1.5rem);
+        transition: box-shadow 0.25s ease;
+        animation: fadeInUp 0.6s ease-out both;
+        scroll-margin-top: 90px; /* Offset for sticky navbar */
+    }
+
+    .policy-card:hover {
+        box-shadow: var(--shadow-md);
+    }
+
+    .policy-card:nth-of-type(1) { animation-delay: 0.05s; }
+    .policy-card:nth-of-type(2) { animation-delay: 0.10s; }
+    .policy-card:nth-of-type(3) { animation-delay: 0.15s; }
+    .policy-card:nth-of-type(4) { animation-delay: 0.20s; }
+    .policy-card:nth-of-type(5) { animation-delay: 0.25s; }
+
+    .policy-title {
+        font-size: clamp(1.05rem, 2.7vw, 1.3rem);
+        font-weight: 700;
+        color: var(--gray-800);
+        margin-bottom: clamp(0.85rem, 2.5vw, 1.15rem);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        padding-bottom: 0.6rem;
+        border-bottom: 2px solid var(--gray-100);
+    }
+
+    .policy-title i {
+        color: var(--primary-color);
+        font-size: 1.05em;
+    }
+
+    .policy-subtitle {
+        font-size: clamp(0.9rem, 2.3vw, 1.05rem);
+        font-weight: 700;
+        color: var(--gray-700);
+        margin: clamp(0.9rem, 2.5vw, 1.25rem) 0 clamp(0.6rem, 1.8vw, 0.85rem);
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .policy-card p {
+        color: var(--gray-600);
+        font-size: clamp(0.85rem, 2vw, 0.92rem);
+        line-height: 1.7;
+        margin-bottom: 0.75rem;
+    }
+
+    .policy-card p:last-child {
+        margin-bottom: 0;
+    }
+
+    /* Bullet lists */
+    .policy-list {
+        list-style: none;
+        padding: 0;
+        margin: clamp(0.6rem, 1.8vw, 0.9rem) 0;
+    }
+
+    .policy-list li {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.55rem;
+        padding: 0.4rem 0;
+        font-size: clamp(0.82rem, 2vw, 0.9rem);
+        color: var(--gray-600);
+        line-height: 1.55;
+        transition: transform 0.2s ease;
+    }
+
+    .policy-list li:hover {
+        transform: translateX(4px);
+    }
+
+    .policy-list li i {
+        color: var(--success-color);
+        flex-shrink: 0;
+        margin-top: 3px;
+        font-size: 0.95em;
+    }
+
+    .policy-list li strong {
+        color: var(--gray-800);
+        font-weight: 700;
+    }
+
+    /* Info tiles */
+    .info-tiles {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: clamp(0.6rem, 1.8vw, 0.85rem);
+        margin: clamp(0.75rem, 2vw, 1rem) 0;
+    }
+
+    @media (min-width: 576px) {
+        .info-tiles.cols-2 { grid-template-columns: repeat(2, 1fr); }
+        .info-tiles.cols-3 { grid-template-columns: repeat(2, 1fr); }
+        .info-tiles.cols-4 { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (min-width: 768px) {
+        .info-tiles.cols-3 { grid-template-columns: repeat(3, 1fr); }
+        .info-tiles.cols-4 { grid-template-columns: repeat(4, 1fr); }
+    }
+
+    .info-tile {
+        padding: clamp(0.75rem, 2vw, 1rem);
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: 12px;
+        transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .info-tile:hover {
+        transform: translateY(-3px);
+        border-color: var(--primary-color);
+        box-shadow: var(--shadow-md);
+    }
+
+    .info-tile h6 {
+        font-size: clamp(0.82rem, 2vw, 0.9rem);
+        font-weight: 700;
+        color: var(--gray-800);
+        margin: 0 0 0.35rem;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .info-tile h6 i {
+        color: var(--primary-color);
+        font-size: 1.05em;
+    }
+
+    .info-tile p {
+        font-size: clamp(0.75rem, 1.9vw, 0.82rem);
+        color: var(--gray-500);
+        margin: 0;
+        line-height: 1.5;
+    }
+
+    /* Icon tiles (data security) */
+    .icon-tile {
+        text-align: center;
+        padding: clamp(0.85rem, 2vw, 1.1rem) clamp(0.5rem, 1.5vw, 0.75rem);
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: 12px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .icon-tile:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .icon-tile i {
+        font-size: clamp(1.6rem, 4vw, 2rem);
+        display: block;
+        margin-bottom: 0.4rem;
+        transition: transform 0.3s ease;
+    }
+
+    .icon-tile:hover i {
+        transform: scale(1.15) rotate(-8deg);
+    }
+
+    .icon-tile i.primary { color: var(--primary-color); }
+    .icon-tile i.success { color: var(--success-color); }
+    .icon-tile i.warning { color: #d97706; }
+    .icon-tile i.info    { color: var(--info-color); }
+
+    .icon-tile h6 {
+        font-size: clamp(0.78rem, 2vw, 0.85rem);
+        font-weight: 700;
+        color: var(--gray-800);
+        margin: 0;
+        line-height: 1.3;
+    }
+
+    /* Table */
+    .policy-table-wrap {
+        overflow-x: auto;
+        border-radius: 12px;
+        margin: clamp(0.75rem, 2vw, 1rem) 0;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .policy-table {
+        width: 100%;
+        min-width: 520px;
+        border-collapse: collapse;
+        background: white;
+        font-size: clamp(0.78rem, 2vw, 0.88rem);
+    }
+
+    .policy-table thead th {
+        background: linear-gradient(135deg, var(--gray-100), var(--gray-200));
+        color: var(--gray-700);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        font-size: clamp(0.7rem, 1.8vw, 0.78rem);
+        padding: clamp(0.65rem, 1.8vw, 0.85rem) clamp(0.6rem, 1.5vw, 0.9rem);
+        text-align: left;
+        border-bottom: 2px solid var(--gray-300);
+        white-space: nowrap;
+    }
+
+    .policy-table tbody td {
+        padding: clamp(0.65rem, 1.8vw, 0.85rem) clamp(0.6rem, 1.5vw, 0.9rem);
+        border-bottom: 1px solid var(--gray-200);
+        color: var(--gray-700);
+        transition: background 0.2s ease;
+        vertical-align: middle;
+    }
+
+    .policy-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .policy-table tbody tr:hover td {
+        background: var(--gray-100);
+    }
+
+    /* Badges */
+    .policy-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.25rem 0.65rem;
+        border-radius: 999px;
+        font-size: clamp(0.65rem, 1.5vw, 0.72rem);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        color: white;
+        white-space: nowrap;
+    }
+
+    .policy-badge.contractual    { background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); }
+    .policy-badge.legitimate      { background: linear-gradient(135deg, var(--success-color), #059669); }
+    .policy-badge.consent         { background: linear-gradient(135deg, var(--warning-color), #d97706); }
+    .policy-badge.legal           { background: linear-gradient(135deg, var(--danger-color), #dc2626); }
+
+    /* Border-left accent sections */
+    .accent-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: clamp(0.75rem, 2vw, 1rem);
+        margin: clamp(0.75rem, 2vw, 1rem) 0;
+    }
+
+    @media (min-width: 768px) {
+        .accent-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    .accent-block {
+        padding: clamp(0.75rem, 2vw, 1rem) clamp(0.85rem, 2vw, 1.15rem);
+        background: var(--gray-100);
+        border-left: 4px solid;
+        border-radius: 10px;
+        transition: transform 0.25s ease, background 0.25s ease;
+    }
+
+    .accent-block:hover {
+        transform: translateX(4px);
+        background: var(--gray-200);
+    }
+
+    .accent-block.primary { border-left-color: var(--primary-color); }
+    .accent-block.success { border-left-color: var(--success-color); }
+    .accent-block.info    { border-left-color: var(--info-color); }
+
+    .accent-block h6 {
+        font-size: clamp(0.85rem, 2.1vw, 0.95rem);
+        font-weight: 700;
+        color: var(--gray-800);
+        margin: 0 0 0.3rem;
+    }
+
+    .accent-block p {
+        font-size: clamp(0.78rem, 2vw, 0.85rem);
+        color: var(--gray-500);
+        margin: 0;
+        line-height: 1.5;
+    }
+
+    /* Alert boxes */
+    .policy-alert {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.55rem;
+        padding: clamp(0.75rem, 2vw, 1rem) clamp(0.9rem, 2.5vw, 1.15rem);
+        border-radius: 10px;
+        font-size: clamp(0.82rem, 2vw, 0.9rem);
+        line-height: 1.55;
+        margin: clamp(0.75rem, 2vw, 1rem) 0;
+    }
+
+    .policy-alert.info {
+        background: linear-gradient(135deg, rgba(76, 201, 240, 0.14), rgba(76, 201, 240, 0.05));
+        color: #0369a1;
+    }
+
+    .policy-alert.warning {
+        background: linear-gradient(135deg, rgba(255, 209, 102, 0.22), rgba(255, 209, 102, 0.1));
+        color: #92400e;
+    }
+
+    .policy-alert i {
+        flex-shrink: 0;
+        margin-top: 2px;
+        font-size: 1.05em;
+    }
+
+    .policy-alert.info i    { color: var(--info-color); }
+    .policy-alert.warning i { color: #d97706; }
+
+    /* Rights grid */
+    .rights-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: clamp(0.6rem, 1.8vw, 0.85rem);
+        margin: clamp(0.85rem, 2vw, 1.1rem) 0;
+    }
+
+    @media (min-width: 576px) {
+        .rights-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .right-card {
+        padding: clamp(0.75rem, 2vw, 1rem);
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: 12px;
+        transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .right-card:hover {
+        transform: translateY(-3px);
+        border-color: var(--primary-color);
+        box-shadow: var(--shadow-md);
+    }
+
+    .right-card-header {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        margin-bottom: 0.4rem;
+    }
+
+    .right-card-icon {
+        width: clamp(34px, 8vw, 40px);
+        height: clamp(34px, 8vw, 40px);
+        min-width: clamp(34px, 8vw, 40px);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: clamp(0.85rem, 2vw, 1rem);
+        transition: transform 0.3s ease;
+    }
+
+    .right-card:hover .right-card-icon {
+        transform: rotate(-8deg) scale(1.08);
+    }
+
+    .right-card-icon.primary   { background: rgba(67, 97, 238, 0.12); color: var(--primary-color); }
+    .right-card-icon.success   { background: rgba(6, 214, 160, 0.14); color: var(--success-color); }
+    .right-card-icon.danger    { background: rgba(239, 68, 68, 0.12); color: var(--danger-color); }
+    .right-card-icon.warning   { background: rgba(255, 209, 102, 0.2); color: #d97706; }
+    .right-card-icon.info      { background: rgba(76, 201, 240, 0.14); color: var(--info-color); }
+    .right-card-icon.secondary { background: rgba(108, 117, 125, 0.14); color: var(--gray-600); }
+    .right-card-icon.dark      { background: rgba(33, 37, 41, 0.14); color: var(--gray-800); }
+
+    .right-card h6 {
+        font-size: clamp(0.82rem, 2vw, 0.92rem);
+        font-weight: 700;
+        color: var(--gray-800);
+        margin: 0;
+    }
+
+    .right-card p {
+        font-size: clamp(0.75rem, 1.9vw, 0.82rem);
+        color: var(--gray-500);
+        margin: 0;
+        line-height: 1.5;
+    }
+
+    /* Cookie cards */
+    .cookie-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: clamp(0.75rem, 2vw, 1rem);
+        margin: clamp(0.85rem, 2vw, 1.1rem) 0;
+    }
+
+    @media (min-width: 768px) {
+        .cookie-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    .cookie-card {
+        padding: clamp(0.85rem, 2vw, 1.1rem);
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: 12px;
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+        border-top-width: 3px;
+    }
+
+    .cookie-card.primary { border-top-color: var(--primary-color); }
+    .cookie-card.success { border-top-color: var(--success-color); }
+    .cookie-card.warning { border-top-color: var(--warning-color); }
+
+    .cookie-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .cookie-card h6 {
+        font-size: clamp(0.82rem, 2vw, 0.92rem);
+        font-weight: 700;
+        margin: 0 0 0.4rem;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .cookie-card.primary h6 { color: var(--primary-color); }
+    .cookie-card.success h6 { color: var(--success-color); }
+    .cookie-card.warning h6 { color: #d97706; }
+
+    .cookie-card p {
+        font-size: clamp(0.75rem, 1.9vw, 0.82rem);
+        color: var(--gray-500);
+        margin: 0;
+        line-height: 1.5;
+    }
+
+    /* Contact card */
+    .contact-card {
+        border: 2px solid var(--primary-color);
+        border-radius: var(--radius-lg);
+        background: white;
+        padding: clamp(1.1rem, 3vw, 1.5rem);
+    }
+
+    .contact-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .contact-list li {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5rem;
+        padding: 0.45rem 0;
+        font-size: clamp(0.82rem, 2vw, 0.88rem);
+        color: var(--gray-600);
+        line-height: 1.5;
+        word-break: break-word;
+    }
+
+    .contact-list li i {
+        color: var(--primary-color);
+        flex-shrink: 0;
+        margin-top: 3px;
+        font-size: 1.05em;
+    }
+
+    .contact-list li a {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .contact-list li a:hover {
+        text-decoration: underline;
+    }
+
+    .dpo-box {
+        padding: clamp(0.85rem, 2vw, 1rem);
+        background: var(--gray-100);
+        border-radius: 10px;
+        border: 1px solid var(--gray-200);
+    }
+
+    .dpo-box h6 {
+        font-size: clamp(0.85rem, 2.1vw, 0.95rem);
+        font-weight: 700;
+        color: var(--gray-800);
+        margin: 0 0 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .dpo-box h6 i {
+        color: var(--primary-color);
+    }
+
+    .dpo-box p {
+        font-size: clamp(0.78rem, 2vw, 0.85rem);
+        color: var(--gray-600);
+        margin: 0 0 0.35rem;
+    }
+
+    .dpo-box p:last-child {
+        margin-bottom: 0;
+    }
+
+    .dpo-box a {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .dpo-box a:hover {
+        text-decoration: underline;
+    }
+
+    /* Updates box */
+    .updates-box {
+        background: var(--gray-100);
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        padding: clamp(1rem, 2.5vw, 1.5rem);
+        text-align: center;
+        margin-top: clamp(1.5rem, 4vw, 2rem);
+    }
+
+    .updates-box h5 {
+        font-size: clamp(0.95rem, 2.3vw, 1.1rem);
+        font-weight: 700;
+        color: var(--gray-800);
+        margin-bottom: 0.6rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .updates-box h5 i {
+        color: var(--primary-color);
+    }
+
+    .updates-box p {
+        font-size: clamp(0.82rem, 2vw, 0.9rem);
+        color: var(--gray-500);
+        margin: 0;
+        line-height: 1.6;
+    }
+
+    /* Action buttons */
+    .action-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+        justify-content: center;
+        margin-top: clamp(1.25rem, 3vw, 1.75rem);
+    }
+
+    .btn-action {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: clamp(0.6rem, 1.8vw, 0.75rem) clamp(1.1rem, 2.8vw, 1.5rem);
+        border-radius: 11px;
+        font-weight: 600;
+        font-size: clamp(0.82rem, 2vw, 0.92rem);
+        cursor: pointer;
+        transition: all 0.25s ease;
+        text-decoration: none;
+        white-space: nowrap;
+        border: none;
+    }
+
+    .btn-action.primary {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: white;
+        box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+    }
+    .btn-action.primary:hover {
+        background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(67, 97, 238, 0.45);
+        color: white;
+    }
+
+    .btn-action.outline {
+        background: white;
+        color: var(--primary-color);
+        border: 2px solid var(--primary-color) !important;
+    }
+    .btn-action.outline:hover {
+        background: var(--primary-color);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .btn-action.secondary {
+        background: white;
+        color: var(--gray-700);
+        border: 2px solid var(--gray-300) !important;
+    }
+    .btn-action.secondary:hover {
+        background: var(--gray-100);
+        border-color: var(--gray-500);
+        color: var(--gray-900);
+        transform: translateY(-2px);
+    }
+
+    /* ---------- Animations ---------- */
+    @keyframes fadeInDown {
+        from { opacity: 0; transform: translateY(-20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ---------- Reduced Motion ---------- */
+    @media (prefers-reduced-motion: reduce) {
+        .page-header,
+        .page-header-icon,
+        .quick-nav-card,
+        .policy-card {
+            animation: none !important;
+        }
+        .quick-nav-link:hover .quick-nav-item,
+        .info-tile:hover,
+        .icon-tile:hover,
+        .right-card:hover,
+        .cookie-card:hover,
+        .accent-block:hover,
+        .policy-list li:hover {
+            transform: none;
+        }
+    }
+
+    /* ---------- Dark Mode ---------- */
+    body.dark-mode .page-header h1 { color: var(--gray-100); }
+    body.dark-mode .page-header .last-updated { background: var(--gray-800); color: var(--gray-300); }
+
+    body.dark-mode .quick-nav-card,
+    body.dark-mode .policy-card,
+    body.dark-mode .contact-card {
+        background: var(--gray-800);
+        border-color: var(--gray-700);
+    }
+
+    body.dark-mode .quick-nav-title,
+    body.dark-mode .policy-title,
+    body.dark-mode .policy-subtitle,
+    body.dark-mode .info-tile h6,
+    body.dark-mode .icon-tile h6,
+    body.dark-mode .right-card h6,
+    body.dark-mode .accent-block h6,
+    body.dark-mode .cookie-card h6,
+    body.dark-mode .updates-box h5,
+    body.dark-mode .dpo-box h6 {
+        color: var(--gray-100);
+    }
+
+    body.dark-mode .policy-card p,
+    body.dark-mode .policy-list li,
+    body.dark-mode .info-tile p,
+    body.dark-mode .right-card p,
+    body.dark-mode .accent-block p,
+    body.dark-mode .cookie-card p,
+    body.dark-mode .updates-box p,
+    body.dark-mode .dpo-box p,
+    body.dark-mode .contact-list li {
+        color: var(--gray-400);
+    }
+
+    body.dark-mode .policy-list li strong { color: var(--gray-100); }
+
+    body.dark-mode .quick-nav-item,
+    body.dark-mode .info-tile,
+    body.dark-mode .icon-tile,
+    body.dark-mode .right-card,
+    body.dark-mode .cookie-card {
+        background: var(--gray-800);
+        border-color: var(--gray-700);
+    }
+
+    body.dark-mode .quick-nav-item small { color: var(--gray-400); }
+
+    body.dark-mode .policy-table {
+        background: var(--gray-800);
+    }
+
+    body.dark-mode .policy-table thead th {
+        background: linear-gradient(135deg, var(--gray-700), var(--gray-800));
+        color: var(--gray-300);
+        border-bottom-color: var(--gray-600);
+    }
+
+    body.dark-mode .policy-table tbody td {
+        color: var(--gray-300);
+        border-bottom-color: var(--gray-700);
+    }
+
+    body.dark-mode .policy-table tbody tr:hover td {
+        background: var(--gray-700);
+    }
+
+    body.dark-mode .accent-block,
+    body.dark-mode .dpo-box,
+    body.dark-mode .updates-box {
+        background: var(--gray-700);
+        border-color: var(--gray-600);
+    }
+
+    body.dark-mode .dpo-box a,
+    body.dark-mode .contact-list li a {
+        color: var(--primary-light);
+    }
+
+    body.dark-mode .btn-action.outline {
+        background: var(--gray-800);
+        color: var(--primary-light);
+        border-color: var(--primary-color) !important;
+    }
+
+    body.dark-mode .btn-action.secondary {
+        background: var(--gray-800);
+        color: var(--gray-200);
+        border-color: var(--gray-600) !important;
+    }
+</style>
+
+<div class="container py-3 py-md-4">
+    <div class="policy-wrapper">
+
+        <!-- ============ PAGE HEADER ============ -->
+        <header class="page-header">
+            <div class="page-header-icon">
+                <i class="bi bi-shield-check"></i>
+            </div>
+            <h1>Privacy Policy</h1>
+            <div class="last-updated">
+                <i class="bi bi-calendar-event-fill"></i>
+                Last Updated: <strong>{{ current_date.strftime('%B %d, %Y') if current_date else 'January 1, 2024' }}</strong>
+            </div>
+        </header>
+
+        <!-- ============ QUICK NAVIGATION ============ -->
+        <div class="quick-nav-card">
+            <h5 class="quick-nav-title">
+                <i class="bi bi-list-ul"></i> Quick Navigation
+            </h5>
+            <div class="quick-nav-grid">
+                <a href="#information-collection" class="quick-nav-link">
+                    <div class="quick-nav-item">
+                        <i class="bi bi-collection-fill primary"></i>
+                        <small>Information We Collect</small>
+                    </div>
+                </a>
+                <a href="#data-usage" class="quick-nav-link">
+                    <div class="quick-nav-item">
+                        <i class="bi bi-gear-fill success"></i>
+                        <small>How We Use Data</small>
+                    </div>
+                </a>
+                <a href="#data-sharing" class="quick-nav-link">
+                    <div class="quick-nav-item">
+                        <i class="bi bi-share-fill warning"></i>
+                        <small>Data Sharing</small>
+                    </div>
+                </a>
+                <a href="#your-rights" class="quick-nav-link">
+                    <div class="quick-nav-item">
+                        <i class="bi bi-shield-lock-fill danger"></i>
+                        <small>Your Rights</small>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- ============ INTRODUCTION ============ -->
+        <section class="policy-card">
+            <h3 class="policy-title"><i class="bi bi-info-circle-fill"></i> Introduction</h3>
+            <p>
+                At Linux Shop, we are committed to protecting your privacy and ensuring the security of your personal information. 
+                This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website 
+                <strong>shopmetuge.com</strong> or make a purchase from us.
+            </p>
+            <p>
+                Please read this Privacy Policy carefully. If you do not agree with its terms, please do not access the site or use our services.
+            </p>
+        </section>
+
+        <!-- ============ INFORMATION WE COLLECT ============ -->
+        <section id="information-collection" class="policy-card">
+            <h3 class="policy-title"><i class="bi bi-collection-fill"></i> Information We Collect</h3>
+
+            <h5 class="policy-subtitle"><i class="bi bi-person-fill"></i> Personal Information You Provide</h5>
+            <ul class="policy-list">
+                <li>
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span><strong>Account Information:</strong> Name, email address, phone number, shipping/billing address</span>
+                </li>
+                <li>
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span><strong>Payment Information:</strong> Card details processed securely through payment processors</span>
+                </li>
+                <li>
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span><strong>Communication Data:</strong> Messages, feedback, and inquiries sent to our support team</span>
+                </li>
+                <li>
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span><strong>Preferences:</strong> Communication preferences and marketing choices</span>
+                </li>
+            </ul>
+
+            <h5 class="policy-subtitle"><i class="bi bi-cpu-fill"></i> Automatically Collected Information</h5>
+            <div class="info-tiles cols-2">
+                <div class="info-tile">
+                    <h6><i class="bi bi-laptop"></i> Device Information</h6>
+                    <p>IP address, browser type, device type, operating system.</p>
+                </div>
+                <div class="info-tile">
+                    <h6><i class="bi bi-bar-chart"></i> Usage Information</h6>
+                    <p>Pages visited, time spent, clicks, referral URLs.</p>
+                </div>
+                <div class="info-tile">
+                    <h6><i class="bi bi-cookie"></i> Cookies &amp; Tracking</h6>
+                    <p>Session cookies, persistent cookies, analytics cookies.</p>
+                </div>
+                <div class="info-tile">
+                    <h6><i class="bi bi-geo-alt"></i> Location Data</h6>
+                    <p>General location (country, city) for tax and shipping purposes.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ HOW WE USE YOUR INFORMATION ============ -->
+        <section id="data-usage" class="policy-card">
+            <h3 class="policy-title"><i class="bi bi-gear-fill"></i> How We Use Your Information</h3>
+
+            <div class="policy-table-wrap">
+                <table class="policy-table">
+                    <thead>
+                        <tr>
+                            <th>Purpose</th>
+                            <th>Description</th>
+                            <th>Legal Basis</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Order Processing</td>
+                            <td>Process and fulfill your purchases</td>
+                            <td><span class="policy-badge contractual">Contractual</span></td>
+                        </tr>
+                        <tr>
+                            <td>Customer Service</td>
+                            <td>Respond to inquiries and provide support</td>
+                            <td><span class="policy-badge contractual">Contractual</span></td>
+                        </tr>
+                        <tr>
+                            <td>Website Improvement</td>
+                            <td>Analyze usage patterns to enhance user experience</td>
+                            <td><span class="policy-badge legitimate">Legitimate Interest</span></td>
+                        </tr>
+                        <tr>
+                            <td>Marketing Communications</td>
+                            <td>Send promotional emails (with consent)</td>
+                            <td><span class="policy-badge consent">Consent</span></td>
+                        </tr>
+                        <tr>
+                            <td>Security &amp; Fraud Prevention</td>
+                            <td>Protect our website and users</td>
+                            <td><span class="policy-badge legal">Legal Obligation</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ============ DATA SHARING & DISCLOSURE ============ -->
+        <section id="data-sharing" class="policy-card">
+            <h3 class="policy-title"><i class="bi bi-share-fill"></i> Data Sharing &amp; Disclosure</h3>
+
+            <p>We may share your information with third parties only in the following circumstances:</p>
+
+            <div class="accent-grid cols-3">
+                <div class="accent-block primary">
+                    <h6><i class="bi bi-people-fill me-1"></i> Service Providers</h6>
+                    <p>Payment processors, shipping carriers, IT services.</p>
+                </div>
+                <div class="accent-block success">
+                    <h6><i class="bi bi-shield-fill-check me-1"></i> Legal Requirements</h6>
+                    <p>When required by law or to protect our rights.</p>
+                </div>
+                <div class="accent-block info">
+                    <h6><i class="bi bi-briefcase-fill me-1"></i> Business Transfers</h6>
+                    <p>In connection with a merger, sale, or acquisition.</p>
+                </div>
+            </div>
+
+            <div class="policy-alert warning">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <div>
+                    <strong>Important:</strong> We never sell your personal information to third parties for marketing purposes.
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ DATA SECURITY ============ -->
+        <section class="policy-card">
+            <h3 class="policy-title"><i class="bi bi-lock-fill"></i> Data Security</h3>
+
+            <p>
+                We implement appropriate technical and organizational security measures to protect your personal information 
+                against unauthorized access, alteration, disclosure, or destruction.
+            </p>
+
+            <div class="info-tiles cols-4">
+                <div class="icon-tile">
+                    <i class="bi bi-shield-lock-fill primary"></i>
+                    <h6>SSL Encryption</h6>
+                </div>
+                <div class="icon-tile">
+                    <i class="bi bi-database-fill-check success"></i>
+                    <h6>Secure Storage</h6>
+                </div>
+                <div class="icon-tile">
+                    <i class="bi bi-shield-fill-check warning"></i>
+                    <h6>Regular Audits</h6>
+                </div>
+                <div class="icon-tile">
+                    <i class="bi bi-person-fill-check info"></i>
+                    <h6>Access Controls</h6>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ YOUR RIGHTS ============ -->
+        <section id="your-rights" class="policy-card">
+            <h3 class="policy-title"><i class="bi bi-shield-lock-fill"></i> Your Rights &amp; Choices</h3>
+
+            <p>Depending on your location, you may have the following rights regarding your personal information:</p>
+
+            <div class="rights-grid">
+                {% set rights = [
+                    ('Access', 'bi-eye-fill', 'primary', 'Right to access your personal data'),
+                    ('Rectification', 'bi-pencil-fill', 'success', 'Right to correct inaccurate data'),
+                    ('Erasure', 'bi-trash-fill', 'danger', 'Right to be forgotten'),
+                    ('Restriction', 'bi-pause-fill', 'warning', 'Right to restrict processing'),
+                    ('Portability', 'bi-arrow-left-right', 'info', 'Right to data portability'),
+                    ('Objection', 'bi-slash-circle-fill', 'secondary', 'Right to object to processing'),
+                    ('Withdraw Consent', 'bi-x-circle-fill', 'dark', 'Right to withdraw consent')
+                ] %}
+                {% for right, icon, color, description in rights %}
+                <div class="right-card">
+                    <div class="right-card-header">
+                        <div class="right-card-icon {{ color }}"><i class="bi {{ icon }}"></i></div>
+                        <h6>{{ right }}</h6>
+                    </div>
+                    <p>{{ description }}</p>
+                </div>
+                {% endfor %}
+            </div>
+
+            <p style="margin-top: 1rem;">To exercise any of these rights, please contact us using the information provided below.</p>
+        </section>
+
+        <!-- ============ COOKIES POLICY ============ -->
+        <section class="policy-card">
+            <h3 class="policy-title"><i class="bi bi-cookie"></i> Cookies &amp; Tracking Technologies</h3>
+
+            <p>
+                We use cookies and similar tracking technologies to track activity on our website and hold certain information. 
+                Cookies are files with small amounts of data that may include an anonymous unique identifier.
+            </p>
+
+            <div class="cookie-grid">
+                <div class="cookie-card primary">
+                    <h6><i class="bi bi-check-circle-fill"></i> Essential Cookies</h6>
+                    <p>Required for website functionality. Cannot be disabled.</p>
+                </div>
+                <div class="cookie-card success">
+                    <h6><i class="bi bi-bar-chart-fill"></i> Analytics Cookies</h6>
+                    <p>Help us understand how visitors use our site.</p>
+                </div>
+                <div class="cookie-card warning">
+                    <h6><i class="bi bi-megaphone-fill"></i> Marketing Cookies</h6>
+                    <p>Used to track advertising effectiveness.</p>
+                </div>
+            </div>
+
+            <p>
+                You can instruct your browser to refuse all cookies or to indicate when a cookie is being sent. 
+                However, if you do not accept cookies, you may not be able to use some portions of our service.
+            </p>
+        </section>
+
+        <!-- ============ CONTACT US ============ -->
+        <section class="policy-card contact-card">
+            <h3 class="policy-title"><i class="bi bi-envelope-fill"></i> Contact Us</h3>
+
+            <p>If you have any questions about this Privacy Policy, please contact us:</p>
+
+            <div class="accent-grid cols-2" style="grid-template-columns: 1fr; gap: 1rem; margin-top: 1rem;">
+                <ul class="contact-list">
+                    <li>
+                        <i class="bi bi-envelope-fill"></i>
+                        <span><strong>Email:</strong> <a href="mailto:support@shopmetuge.com">support@shopmetuge.com</a></span>
+                    </li>
+                    <li>
+                        <i class="bi bi-geo-alt-fill"></i>
+                        <span><strong>Address:</strong> Hilltop, Isokolo, Limbe</span>
+                    </li>
+                    <li>
+                        <i class="bi bi-telephone-fill"></i>
+                        <span>
+                            <strong>Phone:</strong>
+                            <a href="tel:+237650970291">+237 650-970-291</a> /
+                            <a href="tel:+237678964511">+237 678-964-511</a>
+                        </span>
+                    </li>
+                </ul>
+
+                <div class="dpo-box">
+                    <h6><i class="bi bi-shield-check"></i> Data Protection Officer</h6>
+                    <p><strong>Name:</strong> Pauli Michel</p>
+                    <p><strong>Email:</strong> <a href="mailto:lug.limbe@gmail.com">lug.limbe@gmail.com</a></p>
+                </div>
+            </div>
+
+            <div class="policy-alert info" style="margin-top: 1rem;">
+                <i class="bi bi-clock-history"></i>
+                <div>
+                    <strong>Response Time:</strong> We aim to respond to all privacy-related inquiries within 48 hours during business days.
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ POLICY UPDATES ============ -->
+        <div class="updates-box">
+            <h5><i class="bi bi-arrow-repeat"></i> Policy Updates</h5>
+            <p>
+                We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new 
+                Privacy Policy on this page and updating the "Last Updated" date at the top of this policy.
+            </p>
+        </div>
+
+        <!-- ============ ACTION BUTTONS ============ -->
+        <div class="action-buttons">
+            <button class="btn-action outline" id="backToTop" type="button">
+                <i class="bi bi-arrow-up"></i> Back to Top
+            </button>
+            <button class="btn-action secondary" id="printBtn" type="button">
+                <i class="bi bi-printer"></i> Print Policy
+            </button>
+            <a href="{{ url_for('index') }}" class="btn-action primary">
+                <i class="bi bi-house-fill"></i> Return to Home
+            </a>
+        </div>
+
+    </div>
+</div>
+
+<script>
+/* ============================================
+   PRIVACY POLICY PAGE SCRIPT
+   ============================================ */
+(function() {
+    'use strict';
+
+    // ---------- Smooth Scroll for Quick Nav ----------
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            const targetId = this.getAttribute('href');
+            if (!targetId || targetId === '#') return;
+
+            const target = document.querySelector(targetId);
+            if (!target) return;
+
+            e.preventDefault();
+
+            const sectionName = target.querySelector('.policy-title')?.textContent?.trim() || 'section';
+
+            if (typeof showToast === 'function') {
+                showToast(`Navigating to ${sectionName}…`, 'info', 'bi-arrow-right');
+            }
+
+            target.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        });
+    });
+
+    // ---------- Back to Top ----------
+    const backToTop = document.getElementById('backToTop');
+    if (backToTop) {
+        backToTop.addEventListener('click', function() {
+            if (typeof showToast === 'function') {
+                showToast('Returning to top…', 'info', 'bi-arrow-up');
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+
+    // ---------- Print ----------
+    const printBtn = document.getElementById('printBtn');
+    if (printBtn) {
+        printBtn.addEventListener('click', function() {
+            if (typeof showToast === 'function') {
+                showToast('Preparing document for printing…', 'info', 'bi-printer-fill');
+            }
+            setTimeout(() => window.print(), 600);
+        });
+    }
+
+    // ---------- Copy email on double-click ----------
+    document.querySelectorAll('a[href^="mailto:"]').forEach(link => {
+        link.addEventListener('dblclick', function(e) {
+            e.preventDefault();
+            const email = this.href.replace('mailto:', '');
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(email)
+                    .then(() => {
+                        if (typeof showToast === 'function') {
+                            showToast(`Email copied: ${email}`, 'success', 'bi-clipboard-check-fill');
+                        }
+                    })
+                    .catch(() => {});
+            }
+        });
+    });
+
+    // ---------- Quick nav hover preview ----------
+    document.querySelectorAll('.quick-nav-link').forEach(link => {
+        link.addEventListener('mouseenter', function() {
+            const label = this.querySelector('small')?.textContent?.trim();
+            if (label) console.log('🔗 Hovering quick nav:', label);
+        });
+    });
+
+    // ---------- Welcome Toast ----------
+    if (typeof showToast === 'function') {
+        setTimeout(() => {
+            showToast('🔒 Your privacy is important to us', 'info', 'bi-shield-check');
+        }, 900);
+    }
+
+    console.log('🔒 Privacy Policy page loaded');
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,827 @@
+{% extends "base.html" %}
+
+{% block title %}Wishlist - ShopMetuge{% endblock %}
+
+{% block content %}
+<style>
+    /* Modern Wishlist Page Styling */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+    :root {
+        --primary: #6366f1;
+        --primary-dark: #4f46e5;
+        --primary-light: #818cf8;
+        --secondary: #8b5cf6;
+        --success: #10b981;
+        --success-light: #d1fae5;
+        --danger: #ef4444;
+        --danger-light: #fee2e2;
+        --warning: #f59e0b;
+        --info: #3b82f6;
+        --gray-50: #f9fafb;
+        --gray-100: #f3f4f6;
+        --gray-200: #e5e7eb;
+        --gray-300: #d1d5db;
+        --gray-400: #9ca3af;
+        --gray-500: #6b7280;
+        --gray-600: #4b5563;
+        --gray-700: #374151;
+        --gray-800: #1f2937;
+        --gray-900: #111827;
+        
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+        
+        --radius-sm: 0.375rem;
+        --radius: 0.5rem;
+        --radius-md: 0.75rem;
+        --radius-lg: 1rem;
+        --radius-xl: 1.5rem;
+        --radius-2xl: 2rem;
+        --radius-full: 9999px;
+        
+        --transition-fast: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+        --transition: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+        --transition-bounce: 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* Page Header */
+    h1 {
+        font-size: clamp(2rem, 4vw, 2.5rem);
+        font-weight: 800;
+        color: var(--gray-900);
+        margin: 2rem 0;
+        position: relative;
+        display: inline-block;
+        animation: slideInDown 0.6s ease-out;
+    }
+
+    h1::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 80px;
+        height: 4px;
+        background: linear-gradient(90deg, var(--danger), var(--warning));
+        border-radius: var(--radius-full);
+        animation: expandWidth 0.8s ease-out 0.3s both;
+    }
+
+    h1 i {
+        color: var(--danger);
+        margin-right: 0.5rem;
+        animation: heartbeat 1.5s ease infinite;
+    }
+
+    @keyframes heartbeat {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.2); }
+    }
+
+    /* Product Grid */
+    .row.mt-3 {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 2rem;
+        margin: 0 !important;
+        animation: fadeIn 1s ease-out;
+    }
+
+    .col-md-4 {
+        padding: 0 !important;
+        width: 100% !important;
+        animation: fadeInUp 0.6s ease-out;
+        animation-fill-mode: both;
+    }
+
+    {% for i in range(1, 13) %}
+    .col-md-4:nth-child({{ i }}) {
+        animation-delay: {{ 0.1 * i }}s;
+    }
+    {% endfor %}
+
+    /* Wishlist Card */
+    .card {
+        background: white;
+        border: 1px solid var(--gray-200) !important;
+        border-radius: var(--radius-xl) !important;
+        overflow: hidden;
+        transition: all var(--transition);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        box-shadow: var(--shadow);
+    }
+
+    .card:hover {
+        transform: translateY(-8px);
+        box-shadow: var(--shadow-xl);
+        border-color: transparent !important;
+    }
+
+    .card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--danger), var(--warning));
+        transform: scaleX(0);
+        transition: transform 0.5s ease;
+        transform-origin: left;
+        z-index: 2;
+    }
+
+    .card:hover::before {
+        transform: scaleX(1);
+    }
+
+    /* Heart Badge */
+    .wishlist-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: linear-gradient(135deg, var(--danger), #dc2626);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius-full);
+        font-size: 0.875rem;
+        font-weight: 600;
+        z-index: 10;
+        box-shadow: var(--shadow-lg);
+        animation: pulse 2s infinite;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .wishlist-badge i {
+        animation: heartbeat 1.5s ease infinite;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+
+    /* Product Image */
+    .card-img-top {
+        height: 250px !important;
+        width: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+        border-bottom: 1px solid var(--gray-200);
+    }
+
+    .card:hover .card-img-top {
+        transform: scale(1.05);
+    }
+
+    /* No Image Placeholder */
+    .card-img-top:not([src]), 
+    .card-img-top[src=""] {
+        background: linear-gradient(135deg, var(--gray-200), var(--gray-300));
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .card-img-top:not([src])::before,
+    .card-img-top[src=""]::before {
+        content: '❤️';
+        font-size: 3rem;
+        opacity: 0.3;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    /* Card Body */
+    .card-body {
+        padding: 1.5rem !important;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        background: linear-gradient(180deg, white 0%, var(--gray-50) 100%);
+    }
+
+    .card-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--gray-900);
+        margin-bottom: 0.75rem;
+        line-height: 1.4;
+        transition: color var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .card-title::before {
+        content: '❤️';
+        font-size: 1rem;
+        opacity: 0.7;
+    }
+
+    .card:hover .card-title {
+        color: var(--danger);
+    }
+
+    /* Price */
+    .h5.text-success {
+        font-size: 1.5rem !important;
+        font-weight: 700;
+        color: var(--primary) !important;
+        margin: 0.5rem 0 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 0;
+        border-top: 2px dashed var(--gray-200);
+        border-bottom: 2px dashed var(--gray-200);
+    }
+
+    .h5.text-success::before {
+        content: '💰';
+        font-size: 1.25rem;
+        opacity: 0.8;
+    }
+
+    /* Button Grid */
+    .d-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem !important;
+        margin-top: auto;
+    }
+
+    /* Buttons */
+    .btn {
+        padding: 0.875rem 1rem;
+        border-radius: var(--radius-lg);
+        font-weight: 600;
+        font-size: 0.95rem;
+        transition: all var(--transition-bounce);
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+        text-decoration: none;
+        box-shadow: var(--shadow);
+    }
+
+    .btn::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+
+    .btn:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-xl);
+    }
+
+    .btn-primary i {
+        transition: transform var(--transition);
+    }
+
+    .btn-primary:hover i {
+        transform: scale(1.2) rotate(-5deg);
+    }
+
+    .btn-outline-danger {
+        background: transparent;
+        color: var(--danger);
+        border: 2px solid var(--danger);
+    }
+
+    .btn-outline-danger:hover {
+        background: linear-gradient(135deg, var(--danger), #dc2626);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-xl);
+        border-color: transparent;
+    }
+
+    .btn-outline-danger i {
+        transition: all var(--transition);
+    }
+
+    .btn-outline-danger:hover i {
+        transform: rotate(90deg) scale(1.2);
+    }
+
+    .btn-sm {
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    /* Empty Wishlist */
+    .empty-wishlist {
+        background: linear-gradient(135deg, var(--gray-50), var(--gray-100));
+        border: 2px dashed var(--gray-300);
+        border-radius: var(--radius-2xl);
+        padding: 4rem 2rem;
+        text-align: center;
+        margin: 2rem 0;
+        animation: fadeInUp 0.8s ease-out;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .empty-wishlist::before {
+        content: '❤️';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 8rem;
+        opacity: 0.1;
+        animation: float 3s ease infinite;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translate(-50%, -50%) translateY(0); }
+        50% { transform: translate(-50%, -50%) translateY(-20px); }
+    }
+
+    .empty-wishlist p {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--gray-600);
+        margin-bottom: 2rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .empty-wishlist .btn-primary {
+        background: linear-gradient(135deg, var(--danger), #dc2626);
+        padding: 1rem 2.5rem;
+        font-size: 1.1rem;
+        position: relative;
+        z-index: 1;
+        margin-top: 1rem;
+    }
+
+    .empty-wishlist .btn-primary:hover {
+        background: linear-gradient(135deg, #dc2626, var(--danger));
+    }
+
+    /* Animations */
+    @keyframes slideInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes expandWidth {
+        from { width: 0; }
+        to { width: 80px; }
+    }
+
+    /* Toast Notification */
+    .toast-notification {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background: linear-gradient(135deg, var(--success), #059669);
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-2xl);
+        transform: translateX(400px);
+        transition: transform 0.3s ease;
+        z-index: 9999;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .toast-notification.show {
+        transform: translateX(0);
+    }
+
+    .toast-notification i {
+        font-size: 1.25rem;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .row.mt-3 {
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        
+        .card-img-top {
+            height: 200px !important;
+        }
+        
+        .card-body {
+            padding: 1rem !important;
+        }
+        
+        .h5.text-success {
+            font-size: 1.25rem !important;
+        }
+        
+        .btn {
+            padding: 0.75rem 0.875rem;
+            font-size: 0.9rem;
+        }
+        
+        .empty-wishlist {
+            padding: 3rem 1rem;
+        }
+        
+        .empty-wishlist p {
+            font-size: 1.25rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        h1 {
+            font-size: 1.75rem;
+        }
+        
+        .row.mt-3 {
+            grid-template-columns: 1fr;
+        }
+        
+        .card-title {
+            font-size: 1.1rem;
+        }
+        
+        .wishlist-badge {
+            padding: 0.35rem 0.75rem;
+            font-size: 0.8rem;
+        }
+        
+        .empty-wishlist .btn-primary {
+            padding: 0.875rem 1.5rem;
+            font-size: 1rem;
+        }
+    }
+
+    /* Dark Mode */
+    @media (prefers-color-scheme: dark) {
+        .card {
+            background: var(--gray-800);
+            border-color: var(--gray-700) !important;
+        }
+        
+        .card-body {
+            background: linear-gradient(180deg, var(--gray-800), var(--gray-900));
+        }
+        
+        .card-title {
+            color: white;
+        }
+        
+        .h5.text-success {
+            color: var(--primary-light) !important;
+            border-color: var(--gray-700);
+        }
+        
+        .empty-wishlist {
+            background: linear-gradient(135deg, var(--gray-800), var(--gray-900));
+            border-color: var(--gray-700);
+        }
+        
+        .empty-wishlist p {
+            color: var(--gray-400);
+        }
+        
+        .card-img-top:not([src])::before,
+        .card-img-top[src=""]::before {
+            color: var(--gray-600);
+        }
+    }
+</style>
+
+<!-- Page Header -->
+<h1>
+    <i class="bi bi-heart-fill"></i> 
+    Your Wishlist
+    {% if items %}
+    <span class="badge bg-danger ms-2" style="font-size: 1rem;">{{ items|length }} items</span>
+    {% endif %}
+</h1>
+
+<div class="row mt-3">
+    {% for item in items %}
+    <div class="col-md-4 mb-3" data-product-id="{{ item.product.id }}" data-product-name="{{ item.product.name }}">
+        <div class="card h-100">
+            <!-- Wishlist Badge -->
+            <div class="wishlist-badge">
+                <i class="bi bi-heart-fill"></i>
+                <span>In Wishlist</span>
+            </div>
+
+            <!-- Product Image -->
+            {% if item.product.image_url %}
+            <img src="{{ item.product.image_url.replace('.','_med.') }}" 
+                 class="card-img-top" 
+                 alt="{{ item.product.name }}"
+                 loading="lazy"
+                 onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
+            {% else %}
+            <div class="card-img-top" style="background: linear-gradient(135deg, var(--gray-200), var(--gray-300)); height:200px;"></div>
+            {% endif %}
+            
+            <div class="card-body">
+                <h5 class="card-title">{{ item.product.name }}</h5>
+                <p class="h5 text-success">{{ item.product.price|fcfa }} FCFA</p>
+                
+                <div class="d-grid gap-2">
+                    <!-- Add to Cart Button -->
+                    <a href="{{ url_for('add_to_cart', product_id=item.product.id) }}" 
+                       class="btn btn-primary btn-sm add-to-cart"
+                       data-product-id="{{ item.product.id }}">
+                        <i class="bi bi-cart-plus"></i> 
+                        Add to Cart
+                    </a>
+                    
+                    <!-- Remove from Wishlist Form -->
+                    <form method="post" 
+                          action="{{ url_for('remove_from_wishlist', product_id=item.product.id) }}" 
+                          class="d-inline remove-form"
+                          onsubmit="return confirmRemove(this, '{{ item.product.name }}');">
+                        <button class="btn btn-outline-danger btn-sm remove-btn">
+                            <i class="bi bi-heartbreak"></i> 
+                            Remove
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <!-- Empty Wishlist State -->
+    <div class="empty-wishlist">
+        <p>❤️ Your wishlist is empty ❤️</p>
+        <p class="text-muted" style="font-size: 1rem;">Save your favorite items here to buy them later!</p>
+        <a href="{{ url_for('products') }}" class="btn btn-primary">
+            <i class="bi bi-bag-check"></i> Browse Products
+        </a>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3"></div>
+
+<script>
+    // Modern JavaScript for Wishlist Page
+    (function() {
+        'use strict';
+
+        // Toast notification system
+        function showToast(message, type = 'success', icon = 'bi-check-circle-fill') {
+            const toastContainer = document.querySelector('.toast-container');
+            if (!toastContainer) return;
+
+            const colors = {
+                success: 'linear-gradient(135deg, #10b981, #059669)',
+                warning: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                danger: 'linear-gradient(135deg, #ef4444, #dc2626)',
+                info: 'linear-gradient(135deg, #3b82f6, #2563eb)',
+                love: 'linear-gradient(135deg, #ef4444, #ec4899)'
+            };
+
+            const toastId = 'toast-' + Date.now();
+            const toastHtml = `
+                <div id="${toastId}" class="toast-notification show" style="background: ${colors[type] || colors.success}">
+                    <i class="bi ${icon}"></i>
+                    <div class="toast-message">${message}</div>
+                </div>
+            `;
+
+            toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+
+            setTimeout(() => {
+                const toast = document.getElementById(toastId);
+                if (toast) {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 300);
+                }
+            }, 3000);
+        }
+
+        // Confirm remove from wishlist
+        window.confirmRemove = function(form, productName) {
+            // Animate the card before removal
+            const card = form.closest('.col-md-4');
+            
+            // Show custom confirmation with animation
+            return new Promise((resolve) => {
+                // Create custom confirmation dialog
+                const confirmed = confirm(`Remove ${productName} from your wishlist?`);
+                
+                if (confirmed) {
+                    // Animate removal
+                    card.style.transform = 'scale(0.8)';
+                    card.style.opacity = '0';
+                    card.style.transition = 'all 0.3s ease';
+                    
+                    // Show toast
+                    showToast(`${productName} removed from wishlist`, 'love', 'bi-heartbreak');
+                    
+                    // Submit form after animation
+                    setTimeout(() => {
+                        form.submit();
+                    }, 300);
+                }
+                return confirmed;
+            });
+        };
+
+        // Add to cart with animation
+        document.querySelectorAll('.add-to-cart').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const productName = this.closest('.card-body')?.querySelector('.card-title')?.textContent || 'Product';
+                
+                // Animate button
+                this.style.transform = 'scale(0.95)';
+                this.innerHTML = '<i class="bi bi-check-lg"></i> Adding...';
+                
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 200);
+                
+                // Show toast
+                showToast(`${productName} added to cart!`, 'success', 'bi-cart-check');
+                
+                // Navigate after animation
+                setTimeout(() => {
+                    window.location.href = this.href;
+                }, 500);
+            });
+        });
+
+        // Remove button hover animation
+        document.querySelectorAll('.remove-btn').forEach(button => {
+            button.addEventListener('mouseenter', function() {
+                const heart = this.querySelector('i');
+                if (heart) {
+                    heart.style.transform = 'rotate(90deg) scale(1.2)';
+                }
+            });
+            
+            button.addEventListener('mouseleave', function() {
+                const heart = this.querySelector('i');
+                if (heart) {
+                    heart.style.transform = '';
+                }
+            });
+        });
+
+        // Save wishlist to localStorage
+        function saveWishlistToLocalStorage() {
+            const wishlist = [];
+            document.querySelectorAll('[data-product-id]').forEach(item => {
+                wishlist.push({
+                    id: item.dataset.productId,
+                    name: item.dataset.productName
+                });
+            });
+            localStorage.setItem('wishlist', JSON.stringify(wishlist));
+        }
+
+        // Load wishlist from localStorage (for reference)
+        function loadWishlistFromLocalStorage() {
+            const savedWishlist = localStorage.getItem('wishlist');
+            if (savedWishlist && document.querySelector('[data-product-id]')) {
+                console.log('💝 Wishlist items:', JSON.parse(savedWishlist));
+            }
+        }
+
+        // Share wishlist
+        function shareWishlist() {
+            const items = [];
+            document.querySelectorAll('.card-title').forEach(title => {
+                items.push(title.textContent.trim());
+            });
+            
+            if (items.length > 0) {
+                const wishlistText = `My ShopMetuge Wishlist: ${items.join(', ')}`;
+                navigator.clipboard.writeText(wishlistText).then(() => {
+                    showToast('Wishlist copied to clipboard!', 'success', 'bi-share');
+                });
+            }
+        }
+
+        // Add share button to header
+        if (document.querySelector('[data-product-id]')) {
+            const header = document.querySelector('h1');
+            const shareBtn = document.createElement('button');
+            shareBtn.className = 'btn btn-outline-danger btn-sm ms-3';
+            shareBtn.innerHTML = '<i class="bi bi-share"></i> Share';
+            shareBtn.onclick = shareWishlist;
+            shareBtn.style.verticalAlign = 'middle';
+            header.appendChild(shareBtn);
+        }
+
+        // Heart animation on page load
+        document.querySelectorAll('.card').forEach(card => {
+            const heart = card.querySelector('.wishlist-badge i');
+            if (heart) {
+                setInterval(() => {
+                    heart.style.transform = 'scale(1.2)';
+                    setTimeout(() => {
+                        heart.style.transform = '';
+                    }, 200);
+                }, 3000);
+            }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Alt + W to go to wishlist (refresh)
+            if (e.altKey && e.key === 'w') {
+                e.preventDefault();
+                window.location.reload();
+            }
+            // Alt + P to go to products
+            if (e.altKey && e.key === 'p') {
+                e.preventDefault();
+                window.location.href = '/products';
+            }
+        });
+
+        // Save wishlist on page load
+        saveWishlistToLocalStorage();
+        loadWishlistFromLocalStorage();
+
+        // Show welcome message
+        const itemCount = document.querySelectorAll('[data-product-id]').length;
+        if (itemCount > 0) {
+            setTimeout(() => {
+                showToast(`💝 You have ${itemCount} item${itemCount > 1 ? 's' : ''} in your wishlist`, 'love', 'bi-heart-fill');
+            }, 500);
+        }
+
+        // Console greeting
+        console.log('💝 Wishlist page loaded - Love is in the air!');
+
+        // Expose functions globally
+        window.showToast = showToast;
+        window.shareWishlist = shareWishlist;
+    })();
+</script>
+{% endblock %}

@@ -1,0 +1,839 @@
+{% extends 'base.html' %}
+
+{% block title %}Contact Us - Linux Shop{% endblock %}
+
+{% block content %}
+<style>
+    /* ============================================
+       CONTACT PAGE — FULLY RESPONSIVE
+       ============================================ */
+
+    /* ---------- Page Header ---------- */
+    .page-header {
+        margin: clamp(0.75rem, 2vw, 1.5rem) 0 clamp(1.25rem, 3vw, 2rem);
+        animation: slideInDown 0.6s ease-out;
+    }
+
+    .page-header h1 {
+        font-size: clamp(1.5rem, 4.5vw, 2.25rem);
+        font-weight: 800;
+        color: var(--gray-900);
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .page-header h1 i {
+        color: var(--primary-color);
+        font-size: clamp(1.35rem, 4vw, 2rem);
+    }
+
+    .page-header .lead {
+        font-size: clamp(0.9rem, 2.2vw, 1.05rem);
+        color: var(--gray-600);
+        line-height: 1.6;
+        margin-bottom: 0;
+    }
+
+    /* ---------- Breadcrumb ---------- */
+    .breadcrumb-custom {
+        background: transparent;
+        padding: 0;
+        margin-bottom: clamp(1rem, 2.5vw, 1.5rem);
+        font-size: clamp(0.82rem, 2vw, 0.92rem);
+    }
+
+    .breadcrumb-custom .breadcrumb-item + .breadcrumb-item::before {
+        content: '›';
+        color: var(--gray-400);
+        font-weight: 700;
+        padding: 0 0.4rem;
+    }
+
+    .breadcrumb-custom a {
+        color: var(--primary-color);
+        text-decoration: none;
+        transition: color 0.2s ease;
+        font-weight: 500;
+    }
+
+    .breadcrumb-custom a:hover {
+        color: var(--primary-dark);
+        text-decoration: underline;
+    }
+
+    .breadcrumb-custom .active {
+        color: var(--gray-500);
+    }
+
+    /* ---------- Info Cards (Left Column) ---------- */
+    .info-card {
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-md);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        margin-bottom: clamp(1rem, 2.5vw, 1.5rem);
+    }
+
+    .info-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-xl);
+    }
+
+    .info-card-header {
+        padding: clamp(0.85rem, 2vw, 1.1rem) clamp(1rem, 2.5vw, 1.25rem);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: white;
+        font-weight: 700;
+        font-size: clamp(0.95rem, 2.3vw, 1.05rem);
+    }
+
+    .info-card-header.primary { background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); }
+    .info-card-header.success { background: linear-gradient(135deg, var(--success-color), #059669); }
+    .info-card-header.warning { background: linear-gradient(135deg, var(--warning-color), #d97706); color: var(--gray-900); }
+
+    .info-card-body {
+        padding: clamp(1rem, 3vw, 1.5rem);
+    }
+
+    /* ---------- Contact Method Rows ---------- */
+    .contact-method {
+        display: flex;
+        align-items: flex-start;
+        gap: clamp(0.75rem, 2vw, 1rem);
+        padding: clamp(0.65rem, 1.8vw, 0.85rem) 0;
+        border-bottom: 1px solid var(--gray-100);
+        transition: transform 0.25s ease;
+    }
+
+    .contact-method:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .contact-method:hover {
+        transform: translateX(4px);
+    }
+
+    .contact-icon-wrap {
+        width: clamp(42px, 10vw, 50px);
+        height: clamp(42px, 10vw, 50px);
+        min-width: clamp(42px, 10vw, 50px);
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: clamp(1.05rem, 2.6vw, 1.2rem);
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+    }
+
+    .contact-icon-wrap.phone   { background: rgba(67, 97, 238, 0.12); color: var(--primary-color); }
+    .contact-icon-wrap.email   { background: rgba(6, 214, 160, 0.12); color: var(--success-color); }
+    .contact-icon-wrap.location { background: rgba(255, 209, 102, 0.18); color: #d97706; }
+    .contact-icon-wrap.hours   { background: rgba(76, 201, 240, 0.12); color: var(--info-color); }
+
+    .contact-method:hover .contact-icon-wrap {
+        transform: scale(1.08) rotate(-5deg);
+    }
+
+    .contact-method-text {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .contact-method-text h6 {
+        font-size: clamp(0.85rem, 2vw, 0.95rem);
+        font-weight: 700;
+        color: var(--gray-800);
+        margin-bottom: 0.2rem;
+    }
+
+    .contact-method-text p,
+    .contact-method-text a {
+        font-size: clamp(0.82rem, 2vw, 0.9rem);
+        color: var(--gray-600);
+        margin-bottom: 0;
+        line-height: 1.5;
+        text-decoration: none;
+        word-break: break-word;
+        transition: color 0.2s ease;
+    }
+
+    .contact-method-text a:hover {
+        color: var(--primary-color);
+        text-decoration: underline;
+    }
+
+    /* ---------- Quick Action Buttons ---------- */
+    .quick-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        padding: clamp(0.65rem, 1.8vw, 0.85rem) 0;
+        border-bottom: 1px solid var(--gray-100);
+        transition: transform 0.25s ease;
+    }
+
+    .quick-actions:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .quick-actions:hover {
+        transform: translateX(4px);
+    }
+
+    .quick-btn {
+        width: clamp(42px, 10vw, 48px);
+        height: clamp(42px, 10vw, 48px);
+        min-width: clamp(42px, 10vw, 48px);
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: clamp(1rem, 2.4vw, 1.15rem);
+        border: 2px solid;
+        background: transparent;
+        text-decoration: none;
+        transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        flex-shrink: 0;
+    }
+
+    .quick-btn.email-btn   { border-color: var(--primary-color); color: var(--primary-color); }
+    .quick-btn.whatsapp-btn { border-color: var(--success-color); color: var(--success-color); }
+    .quick-btn.call-btn    { border-color: var(--info-color); color: var(--info-color); }
+
+    .quick-btn:hover {
+        color: white;
+        transform: translateY(-3px) scale(1.1);
+    }
+
+    .quick-btn.email-btn:hover   { background: var(--primary-color); }
+    .quick-btn.whatsapp-btn:hover { background: var(--success-color); }
+    .quick-btn.call-btn:hover    { background: var(--info-color); }
+
+    .quick-action-text {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .quick-action-text h6 {
+        font-size: clamp(0.85rem, 2vw, 0.95rem);
+        font-weight: 700;
+        color: var(--gray-800);
+        margin-bottom: 0.15rem;
+    }
+
+    .quick-action-text a {
+        font-size: clamp(0.82rem, 2vw, 0.9rem);
+        color: var(--gray-600);
+        text-decoration: none;
+        transition: color 0.2s ease;
+        word-break: break-word;
+    }
+
+    .quick-action-text a:hover {
+        color: var(--primary-color);
+        text-decoration: underline;
+    }
+
+    /* ---------- Contact Form ---------- */
+    .form-card {
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-md);
+        transition: box-shadow 0.3s ease;
+    }
+
+    .form-card:hover {
+        box-shadow: var(--shadow-lg);
+    }
+
+    .form-card-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: white;
+        padding: clamp(0.9rem, 2.5vw, 1.15rem) clamp(1rem, 3vw, 1.5rem);
+        font-weight: 700;
+        font-size: clamp(0.95rem, 2.3vw, 1.1rem);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .form-card-body {
+        padding: clamp(1rem, 3vw, 1.75rem);
+    }
+
+    /* Form fields */
+    .form-group-modern {
+        margin-bottom: clamp(0.9rem, 2.5vw, 1.15rem);
+    }
+
+    .form-group-modern label {
+        font-weight: 600;
+        color: var(--gray-700);
+        font-size: clamp(0.82rem, 2vw, 0.9rem);
+        margin-bottom: 0.4rem;
+        display: block;
+    }
+
+    .form-group-modern label .required {
+        color: var(--danger-color);
+        margin-left: 2px;
+    }
+
+    .input-group-modern {
+        display: flex;
+        align-items: stretch;
+        border: 2px solid var(--gray-200);
+        border-radius: 12px;
+        overflow: hidden;
+        background: var(--gray-100);
+        transition: all 0.2s ease;
+    }
+
+    .input-group-modern:focus-within {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.12);
+        background: white;
+    }
+
+    .input-group-modern.is-invalid {
+        border-color: var(--danger-color);
+    }
+
+    .input-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: clamp(42px, 10vw, 48px);
+        min-width: clamp(42px, 10vw, 48px);
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: white;
+        font-size: clamp(0.95rem, 2.3vw, 1.05rem);
+    }
+
+    .input-group-modern input,
+    .input-group-modern textarea,
+    .input-group-modern select {
+        flex: 1;
+        border: none;
+        outline: none;
+        background: transparent;
+        padding: clamp(0.55rem, 1.6vw, 0.7rem) clamp(0.75rem, 2vw, 1rem);
+        font-size: clamp(0.85rem, 2vw, 0.95rem);
+        color: var(--gray-800);
+        font-family: inherit;
+        width: 100%;
+        resize: vertical;
+        min-height: 44px;
+    }
+
+    .input-group-modern textarea {
+        min-height: 140px;
+    }
+
+    .input-group-modern input::placeholder,
+    .input-group-modern textarea::placeholder {
+        color: var(--gray-400);
+    }
+
+    .form-help {
+        display: block;
+        font-size: clamp(0.72rem, 1.8vw, 0.8rem);
+        color: var(--gray-500);
+        margin-top: 0.35rem;
+    }
+
+    .char-count {
+        text-align: right;
+        transition: color 0.2s ease;
+    }
+
+    .char-count.warn { color: #d97706; }
+    .char-count.danger { color: var(--danger-color); font-weight: 600; }
+
+    /* Form actions */
+    .form-actions {
+        display: flex;
+        gap: 0.65rem;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        margin-top: clamp(1rem, 2.5vw, 1.25rem);
+    }
+
+    .form-actions .btn-action {
+        padding: clamp(0.6rem, 1.7vw, 0.75rem) clamp(1rem, 3vw, 1.75rem);
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: clamp(0.85rem, 2vw, 0.95rem);
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.45rem;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+    .btn-action-secondary {
+        background: transparent;
+        color: var(--gray-700);
+        border: 2px solid var(--gray-300) !important;
+    }
+
+    .btn-action-secondary:hover {
+        background: var(--gray-100);
+        border-color: var(--gray-500);
+        color: var(--gray-800);
+        transform: translateY(-2px);
+    }
+
+    .btn-action-primary {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: white;
+        box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+    }
+
+    .btn-action-primary:hover {
+        background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(67, 97, 238, 0.45);
+        color: white;
+    }
+
+    .btn-action-primary:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    /* Info notice */
+    .notice-box {
+        margin-top: clamp(1rem, 2.5vw, 1.25rem);
+        padding: clamp(0.75rem, 2vw, 1rem) clamp(0.9rem, 2.5vw, 1.15rem);
+        background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+        color: #0c4a6e;
+        border-radius: 12px;
+        font-size: clamp(0.8rem, 2vw, 0.9rem);
+        line-height: 1.55;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.6rem;
+    }
+
+    .notice-box i {
+        font-size: clamp(1rem, 2.4vw, 1.15rem);
+        flex-shrink: 0;
+        margin-top: 1px;
+        color: var(--primary-color);
+    }
+
+    /* ---------- Animations ---------- */
+    @keyframes slideInDown {
+        from { opacity: 0; transform: translateY(-20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    .spinner-inline {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(255,255,255,0.4);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        vertical-align: middle;
+    }
+
+    /* ---------- Reduced Motion ---------- */
+    @media (prefers-reduced-motion: reduce) {
+        .page-header,
+        .info-card,
+        .form-card {
+            animation: none !important;
+        }
+        .info-card:hover,
+        .quick-btn:hover,
+        .contact-method:hover {
+            transform: none;
+        }
+    }
+
+    /* ---------- Dark Mode ---------- */
+    body.dark-mode .info-card,
+    body.dark-mode .form-card {
+        background: var(--gray-800);
+        border-color: var(--gray-700);
+    }
+
+    body.dark-mode .page-header h1 { color: var(--gray-100); }
+    body.dark-mode .page-header .lead { color: var(--gray-400); }
+    body.dark-mode .contact-method-text h6,
+    body.dark-mode .quick-action-text h6 { color: var(--gray-100); }
+    body.dark-mode .contact-method-text p,
+    body.dark-mode .contact-method-text a,
+    body.dark-mode .quick-action-text a { color: var(--gray-400); }
+
+    body.dark-mode .input-group-modern {
+        background: var(--gray-700);
+        border-color: var(--gray-600);
+    }
+
+    body.dark-mode .input-group-modern:focus-within {
+        background: var(--gray-600);
+    }
+
+    body.dark-mode .input-group-modern input,
+    body.dark-mode .input-group-modern textarea {
+        color: white;
+    }
+
+    body.dark-mode .form-group-modern label {
+        color: var(--gray-300);
+    }
+
+    body.dark-mode .notice-box {
+        background: linear-gradient(135deg, #1e3a5f, #0c4a6e);
+        color: #bae6fd;
+    }
+
+    body.dark-mode .contact-method,
+    body.dark-mode .quick-actions {
+        border-color: var(--gray-700);
+    }
+</style>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-11 col-xl-10 mx-auto">
+
+            <!-- Page Header -->
+            <div class="page-header">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb breadcrumb-custom">
+                        <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Contact Us</li>
+                    </ol>
+                </nav>
+                <h1><i class="bi bi-envelope-fill"></i> Contact Us</h1>
+                <p class="lead">
+                    Have a question or feedback? We'd love to hear from you! Use the form below 
+                    to send us an email directly.
+                </p>
+            </div>
+
+            <div class="row g-4">
+                <!-- Contact Form Column -->
+                <div class="col-lg-7 col-md-6 col-12">
+                    <div class="form-card">
+                        <div class="form-card-header">
+                            <i class="bi bi-chat-dots-fill"></i> Send us a Message
+                        </div>
+                        <div class="form-card-body">
+                            <form id="contactForm" onsubmit="sendEmail(event)">
+                                <!-- Name -->
+                                <div class="form-group-modern">
+                                    <label for="name">Full Name <span class="required">*</span></label>
+                                    <div class="input-group-modern">
+                                        <span class="input-icon"><i class="bi bi-person"></i></span>
+                                        <input type="text" id="name" name="name" 
+                                               placeholder="Enter your full name" required>
+                                    </div>
+                                </div>
+
+                                <!-- Email -->
+                                <div class="form-group-modern">
+                                    <label for="email">Email Address <span class="required">*</span></label>
+                                    <div class="input-group-modern" id="emailGroup">
+                                        <span class="input-icon"><i class="bi bi-envelope"></i></span>
+                                        <input type="email" id="email" name="email" 
+                                               placeholder="your@email.com" required>
+                                    </div>
+                                    <small class="form-help">We'll respond to this email address.</small>
+                                </div>
+
+                                <!-- Subject -->
+                                <div class="form-group-modern">
+                                    <label for="subject">Subject <span class="required">*</span></label>
+                                    <div class="input-group-modern">
+                                        <span class="input-icon"><i class="bi bi-tag"></i></span>
+                                        <input type="text" id="subject" name="subject" 
+                                               placeholder="What is this about?" required>
+                                    </div>
+                                </div>
+
+                                <!-- Message -->
+                                <div class="form-group-modern">
+                                    <label for="message">Message <span class="required">*</span></label>
+                                    <div class="input-group-modern">
+                                        <span class="input-icon"><i class="bi bi-chat-text"></i></span>
+                                        <textarea id="message" name="message" rows="6" maxlength="1000"
+                                                  placeholder="Please tell us what's on your mind..." required></textarea>
+                                    </div>
+                                    <small class="form-help char-count" id="charCount">0 / 1000</small>
+                                </div>
+
+                                <!-- Actions -->
+                                <div class="form-actions">
+                                    <a href="{{ url_for('index') }}" class="btn-action btn-action-secondary">
+                                        <i class="bi bi-x-lg"></i> Cancel
+                                    </a>
+                                    <button type="submit" id="submitBtn" class="btn-action btn-action-primary">
+                                        <i class="bi bi-send-fill"></i> Send via Gmail
+                                    </button>
+                                </div>
+                            </form>
+
+                            <!-- Notice -->
+                            <div class="notice-box">
+                                <i class="bi bi-info-circle-fill"></i>
+                                <div>
+                                    <strong>Note:</strong> This will open your default email client (Gmail) 
+                                    with the form data. Please review and send the email from your email application.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Info Column -->
+                <div class="col-lg-5 col-md-6 col-12">
+
+                    <!-- Quick Contact Card -->
+                    <div class="info-card">
+                        <div class="info-card-header success">
+                            <i class="bi bi-info-circle-fill"></i> Quick Contact
+                        </div>
+                        <div class="info-card-body">
+                            <div class="contact-method">
+                                <div class="contact-icon-wrap phone"><i class="bi bi-telephone-fill"></i></div>
+                                <div class="contact-method-text">
+                                    <h6>Phone</h6>
+                                    <p>
+                                        <a href="tel:+237678964511">+237 678-964-511</a><br>
+                                        <a href="tel:+237650970291">+237 650-970-291</a>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="contact-method">
+                                <div class="contact-icon-wrap email"><i class="bi bi-envelope-fill"></i></div>
+                                <div class="contact-method-text">
+                                    <h6>Email</h6>
+                                    <p><a href="mailto:metugenkwelle8@gmail.com">metugenkwelle8@gmail.com</a></p>
+                                </div>
+                            </div>
+
+                            <div class="contact-method">
+                                <div class="contact-icon-wrap location"><i class="bi bi-geo-alt-fill"></i></div>
+                                <div class="contact-method-text">
+                                    <h6>Location</h6>
+                                    <p>Hilltop, Isokolo<br>Limbe, Cameroon</p>
+                                </div>
+                            </div>
+
+                            <div class="contact-method">
+                                <div class="contact-icon-wrap hours"><i class="bi bi-clock-fill"></i></div>
+                                <div class="contact-method-text">
+                                    <h6>Business Hours</h6>
+                                    <p>Monday – Friday<br>9:00 AM – 11:00 PM</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Alternative Contact Methods -->
+                    <div class="info-card">
+                        <div class="info-card-header warning">
+                            <i class="bi bi-share-fill"></i> Other Ways to Connect
+                        </div>
+                        <div class="info-card-body">
+                            <div class="quick-actions">
+                                <a href="mailto:support@shopmetuge.com" class="quick-btn email-btn" aria-label="Email us">
+                                    <i class="bi bi-envelope-fill"></i>
+                                </a>
+                                <div class="quick-action-text">
+                                    <h6>Direct Email</h6>
+                                    <a href="mailto:support@shopmetuge.com">support@shopmetuge.com</a>
+                                </div>
+                            </div>
+
+                            <div class="quick-actions">
+                                <a href="https://wa.me/237678964511" class="quick-btn whatsapp-btn" 
+                                   target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+                                    <i class="bi bi-whatsapp"></i>
+                                </a>
+                                <div class="quick-action-text">
+                                    <h6>WhatsApp</h6>
+                                    <a href="https://wa.me/237678964511" target="_blank" rel="noopener noreferrer">
+                                        +237 678-964-511
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div class="quick-actions">
+                                <a href="tel:+237650970291" class="quick-btn call-btn" aria-label="Call us">
+                                    <i class="bi bi-telephone-fill"></i>
+                                </a>
+                                <div class="quick-action-text">
+                                    <h6>Call Us</h6>
+                                    <a href="tel:+237650970291">+237 650-970-291</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+/* ============================================
+   CONTACT PAGE SCRIPT
+   ============================================ */
+(function() {
+    'use strict';
+
+    const messageField = document.getElementById('message');
+    const charCount    = document.getElementById('charCount');
+    const emailField   = document.getElementById('email');
+    const emailGroup   = document.getElementById('emailGroup');
+
+    // ---------- Character Counter ----------
+    if (messageField && charCount) {
+        const updateCount = () => {
+            const length = messageField.value.length;
+            charCount.textContent = `${length} / 1000`;
+
+            charCount.classList.remove('warn', 'danger');
+            if (length > 950) charCount.classList.add('danger');
+            else if (length > 850) charCount.classList.add('warn');
+        };
+        messageField.addEventListener('input', updateCount);
+        updateCount();
+    }
+
+    // ---------- Auto-resize textarea ----------
+    if (messageField) {
+        messageField.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 320) + 'px';
+        });
+    }
+
+    // ---------- Live Email Validation ----------
+    if (emailField && emailGroup) {
+        const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        emailField.addEventListener('input', function() {
+            const value = this.value.trim();
+            if (value && !pattern.test(value)) {
+                emailGroup.classList.add('is-invalid');
+                this.setCustomValidity('Please enter a valid email address');
+            } else {
+                emailGroup.classList.remove('is-invalid');
+                this.setCustomValidity('');
+            }
+        });
+    }
+
+    // ---------- Send Email via mailto ----------
+    window.sendEmail = function(event) {
+        event.preventDefault();
+
+        const name    = document.getElementById('name').value.trim();
+        const email   = document.getElementById('email').value.trim();
+        const subject = document.getElementById('subject').value.trim();
+        const message = document.getElementById('message').value.trim();
+
+        // Validation
+        if (!name || !email || !subject || !message) {
+            if (typeof showToast === 'function') {
+                showToast('Please fill in all required fields.', 'warning', 'bi-exclamation-triangle-fill');
+            } else {
+                alert('Please fill in all required fields');
+            }
+            return false;
+        }
+
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(email)) {
+            if (typeof showToast === 'function') {
+                showToast('Please enter a valid email address.', 'error', 'bi-exclamation-circle-fill');
+            } else {
+                alert('Please enter a valid email address');
+            }
+            emailField.focus();
+            return false;
+        }
+
+        // Show loading state
+        const submitBtn = document.getElementById('submitBtn');
+        const originalHtml = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<span class="spinner-inline"></span> Opening Gmail...';
+        submitBtn.disabled = true;
+
+        // Build mailto body
+        const emailBody =
+            `Name: ${name}\n` +
+            `Email: ${email}\n\n` +
+            `Message:\n${message}\n\n` +
+            `---\nThis email was sent from the Linux Shop contact form.`;
+
+        const mailtoLink =
+            `mailto:metugenkwelle8@gmail.com` +
+            `?subject=${encodeURIComponent(subject)}` +
+            `&body=${encodeURIComponent(emailBody)}`;
+
+        // Open mail client
+        window.location.href = mailtoLink;
+
+        // Show toast feedback
+        if (typeof showToast === 'function') {
+            showToast('Email client opened — please review and send.', 'info', 'bi-envelope-check-fill');
+        }
+
+        // Restore button after a delay
+        setTimeout(() => {
+            submitBtn.innerHTML = originalHtml;
+            submitBtn.disabled = false;
+        }, 2500);
+
+        return false;
+    };
+
+    // ---------- Ctrl+Enter to Send ----------
+    document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey && e.key === 'Enter') {
+            const form = document.getElementById('contactForm');
+            if (form && document.activeElement && form.contains(document.activeElement)) {
+                e.preventDefault();
+                form.requestSubmit();
+            }
+        }
+    });
+
+    // ---------- Prevent Resubmission on Refresh ----------
+    if (window.history.replaceState) {
+        window.history.replaceState(null, null, window.location.href);
+    }
+
+    console.log('✨ Contact page loaded');
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,1207 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Product - Linux Shop{% endblock %}
+
+{% block content %}
+<style>
+    /* ============================================
+       EDIT PRODUCT PAGE — FULLY RESPONSIVE
+       ============================================ */
+
+    /* ---------- Page Header ---------- */
+    .page-header {
+        margin: clamp(1rem, 3vw, 2rem) 0 clamp(1.25rem, 3vw, 1.75rem);
+        animation: slideInDown 0.6s ease-out;
+    }
+
+    .page-header h1 {
+        font-size: clamp(1.4rem, 4.5vw, 2.2rem);
+        font-weight: 800;
+        color: var(--gray-900);
+        margin: 0;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        position: relative;
+    }
+
+    .page-header h1 i {
+        color: var(--primary-color);
+        font-size: clamp(1.25rem, 3.5vw, 1.75rem);
+    }
+
+    .page-header h1::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 70px;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-color), #7209b7);
+        border-radius: 999px;
+        animation: expandWidth 0.8s ease-out 0.3s both;
+    }
+
+    @keyframes expandWidth {
+        from { width: 0; }
+        to   { width: 70px; }
+    }
+
+    /* ---------- Main Card ---------- */
+    .edit-card {
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        overflow: hidden;
+        max-width: 900px;
+        margin: 0 auto;
+        animation: fadeInUp 0.6s ease-out 0.1s both;
+    }
+
+    .edit-card-header {
+        background: linear-gradient(135deg, var(--primary-color), #7209b7);
+        color: white;
+        padding: clamp(1rem, 2.5vw, 1.25rem) clamp(1.1rem, 3vw, 1.5rem);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 700;
+        font-size: clamp(0.95rem, 2.3vw, 1.1rem);
+    }
+
+    .edit-card-header i {
+        font-size: 1.15em;
+    }
+
+    .edit-card-body {
+        padding: clamp(1.1rem, 3vw, 1.75rem);
+    }
+
+    /* ---------- Form Groups ---------- */
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: clamp(0.85rem, 2.5vw, 1.15rem);
+        margin-bottom: clamp(0.85rem, 2.5vw, 1.15rem);
+    }
+
+    @media (min-width: 576px) {
+        .form-row.cols-2 {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    .form-group-modern {
+        margin-bottom: clamp(0.85rem, 2.5vw, 1.15rem);
+    }
+
+    .form-group-modern:last-child {
+        margin-bottom: 0;
+    }
+
+    .form-label {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-weight: 600;
+        color: var(--gray-700);
+        font-size: clamp(0.78rem, 2vw, 0.88rem);
+        margin-bottom: 0.4rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .form-label i {
+        color: var(--primary-color);
+        font-size: 0.95em;
+    }
+
+    /* ---------- Input Wrapper ---------- */
+    .input-wrap {
+        position: relative;
+        display: flex;
+        align-items: stretch;
+        background: var(--gray-100);
+        border: 2px solid var(--gray-200);
+        border-radius: 12px;
+        transition: all 0.2s ease;
+        overflow: hidden;
+    }
+
+    .input-wrap:focus-within {
+        border-color: var(--primary-color);
+        background: white;
+        box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.12);
+    }
+
+    .input-wrap.is-invalid {
+        border-color: var(--danger-color);
+    }
+
+    .input-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: clamp(38px, 9vw, 44px);
+        min-width: clamp(38px, 9vw, 44px);
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: white;
+        font-size: clamp(0.85rem, 2vw, 0.95rem);
+    }
+
+    .input-wrap input,
+    .input-wrap textarea {
+        flex: 1;
+        border: none;
+        outline: none;
+        background: transparent;
+        padding: clamp(0.55rem, 1.6vw, 0.7rem) clamp(0.75rem, 2vw, 1rem);
+        font-size: clamp(0.85rem, 2vw, 0.95rem);
+        color: var(--gray-800);
+        font-family: inherit;
+        width: 100%;
+        min-height: 42px;
+    }
+
+    .input-wrap textarea {
+        resize: vertical;
+        min-height: 100px;
+        line-height: 1.5;
+        padding-top: 0.7rem;
+    }
+
+    .input-wrap input::placeholder,
+    .input-wrap textarea::placeholder {
+        color: var(--gray-400);
+    }
+
+    /* Field help text */
+    .form-help {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.35rem;
+        font-size: clamp(0.72rem, 1.8vw, 0.8rem);
+        color: var(--gray-500);
+        margin-top: 0.4rem;
+        line-height: 1.5;
+    }
+
+    .form-help i {
+        color: var(--info-color);
+        flex-shrink: 0;
+        margin-top: 1px;
+    }
+
+    /* Field errors */
+    .field-errors {
+        margin-top: 0.4rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .field-error {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: clamp(0.75rem, 1.9vw, 0.82rem);
+        color: var(--danger-color);
+        font-weight: 500;
+    }
+
+    .field-error i {
+        flex-shrink: 0;
+    }
+
+    /* ---------- File Input ---------- */
+    .file-input-wrap {
+        border: 2px dashed var(--gray-300);
+        border-radius: 12px;
+        padding: clamp(0.6rem, 2vw, 0.85rem);
+        background: white;
+        transition: all 0.2s ease;
+    }
+
+    .file-input-wrap:hover,
+    .file-input-wrap.drag-over {
+        border-color: var(--primary-color);
+        background: rgba(67, 97, 238, 0.04);
+    }
+
+    .file-input-wrap input[type="file"] {
+        width: 100%;
+        font-size: clamp(0.8rem, 2vw, 0.9rem);
+        color: var(--gray-700);
+        cursor: pointer;
+    }
+
+    .file-input-wrap input[type="file"]::file-selector-button {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: white;
+        border: none;
+        padding: clamp(0.4rem, 1.2vw, 0.5rem) clamp(0.75rem, 2vw, 1rem);
+        border-radius: 8px;
+        margin-right: 0.75rem;
+        font-weight: 600;
+        font-size: clamp(0.78rem, 1.9vw, 0.85rem);
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .file-input-wrap input[type="file"]::file-selector-button:hover {
+        background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+        transform: translateY(-1px);
+    }
+
+    /* ---------- Current Image Display ---------- */
+    .current-image {
+        margin-top: 0.85rem;
+        padding: clamp(0.75rem, 2vw, 1rem);
+        background: var(--gray-100);
+        border: 2px dashed var(--gray-300);
+        border-radius: 12px;
+        text-align: center;
+    }
+
+    .current-image-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: clamp(0.75rem, 1.9vw, 0.82rem);
+        color: var(--gray-600);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .current-image img {
+        max-width: 100%;
+        max-height: 180px;
+        border-radius: 10px;
+        box-shadow: var(--shadow-md);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        display: block;
+        margin: 0 auto;
+    }
+
+    .current-image img:hover {
+        transform: scale(1.04);
+        box-shadow: var(--shadow-xl);
+    }
+
+    /* ---------- Preview Container ---------- */
+    .preview-container {
+        margin-top: 0.85rem;
+        background: linear-gradient(135deg, var(--gray-100), var(--gray-200));
+        border: 2px dashed var(--gray-300);
+        border-radius: 12px;
+        padding: clamp(1rem, 2.5vw, 1.5rem);
+        text-align: center;
+        min-height: 100px;
+        display: none; /* Hidden until image loaded */
+        align-items: center;
+        justify-content: center;
+        transition: all 0.25s ease;
+    }
+
+    .preview-container.active {
+        display: flex;
+    }
+
+    .preview-container:hover {
+        border-color: var(--primary-color);
+    }
+
+    #editPreviewImage {
+        max-width: 100%;
+        max-height: 260px;
+        border-radius: 10px;
+        box-shadow: var(--shadow-lg);
+        display: block;
+    }
+
+    /* ---------- Image Actions ---------- */
+    .image-actions {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 0.75rem;
+    }
+
+    /* ---------- Buttons ---------- */
+    .btn-modern {
+        padding: clamp(0.5rem, 1.5vw, 0.65rem) clamp(1rem, 2.5vw, 1.35rem);
+        border-radius: 11px;
+        font-weight: 600;
+        font-size: clamp(0.82rem, 2vw, 0.9rem);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        border: none;
+        text-decoration: none;
+        white-space: nowrap;
+        line-height: 1.2;
+    }
+
+    .btn-outline-primary-modern {
+        background: transparent;
+        color: var(--primary-color);
+        border: 2px solid var(--primary-color);
+    }
+
+    .btn-outline-primary-modern:hover {
+        background: var(--primary-color);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+    }
+
+    .btn-outline-secondary-modern {
+        background: transparent;
+        color: var(--gray-600);
+        border: 2px solid var(--gray-300);
+    }
+
+    .btn-outline-secondary-modern:hover {
+        background: var(--gray-100);
+        color: var(--gray-800);
+        border-color: var(--gray-500);
+        transform: translateY(-2px);
+    }
+
+    /* ---------- Action Row ---------- */
+    .action-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+        align-items: center;
+        margin-top: clamp(1rem, 2.5vw, 1.5rem);
+        padding-top: clamp(1rem, 2.5vw, 1.25rem);
+        border-top: 1px solid var(--gray-200);
+    }
+
+    .btn-action {
+        padding: clamp(0.65rem, 1.8vw, 0.8rem) clamp(1.1rem, 2.8vw, 1.5rem);
+        border-radius: 11px;
+        font-weight: 600;
+        font-size: clamp(0.85rem, 2vw, 0.92rem);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.45rem;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        text-decoration: none;
+        white-space: nowrap;
+        border: none;
+    }
+
+    .btn-update {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: white;
+        box-shadow: 0 3px 10px rgba(67, 97, 238, 0.25);
+    }
+
+    .btn-update:hover:not(:disabled) {
+        background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+        transform: translateY(-2px);
+        box-shadow: 0 5px 16px rgba(67, 97, 238, 0.4);
+        color: white;
+    }
+
+    .btn-update:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .btn-cancel {
+        background: white;
+        color: var(--gray-700);
+        border: 2px solid var(--gray-300) !important;
+    }
+
+    .btn-cancel:hover {
+        background: var(--gray-100);
+        border-color: var(--gray-500);
+        color: var(--gray-900);
+        transform: translateY(-2px);
+    }
+
+    .btn-delete {
+        background: rgba(239, 68, 68, 0.08);
+        color: var(--danger-color);
+        border: 1.5px solid rgba(239, 68, 68, 0.35);
+        margin-left: auto;
+    }
+
+    .btn-delete:hover {
+        background: var(--danger-color);
+        color: white;
+        border-color: var(--danger-color);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+
+    /* Inline spinner */
+    .spinner-inline {
+        display: inline-block;
+        width: 15px;
+        height: 15px;
+        border: 2px solid rgba(255,255,255,0.4);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    /* ---------- Card Footer ---------- */
+    .edit-card-footer {
+        background: var(--gray-100);
+        border-top: 1px solid var(--gray-200);
+        padding: clamp(0.75rem, 2vw, 1rem) clamp(1.1rem, 3vw, 1.5rem);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.85rem 1.25rem;
+        align-items: center;
+        font-size: clamp(0.78rem, 1.9vw, 0.85rem);
+        color: var(--gray-600);
+    }
+
+    .edit-card-footer span {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+    }
+
+    .edit-card-footer i {
+        color: var(--primary-color);
+    }
+
+    /* ---------- Modal Enhancements ---------- */
+    .modal-content {
+        border: none;
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-2xl);
+    }
+
+    .modal-header.danger {
+        background: linear-gradient(135deg, var(--danger-color), #dc2626);
+        color: white;
+        border: none;
+        padding: clamp(0.9rem, 2.5vw, 1.15rem);
+    }
+
+    .modal-header .btn-close {
+        filter: brightness(0) invert(1);
+        opacity: 0.85;
+    }
+
+    .modal-title {
+        font-weight: 700;
+        font-size: clamp(0.95rem, 2.4vw, 1.1rem);
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        word-break: break-word;
+    }
+
+    .modal-body {
+        padding: clamp(1rem, 3vw, 1.5rem);
+    }
+
+    .modal-body p {
+        font-size: clamp(0.85rem, 2vw, 0.95rem);
+        color: var(--gray-700);
+        line-height: 1.55;
+    }
+
+    .modal-danger-note {
+        background: linear-gradient(135deg, #fee2e2, #fecaca);
+        color: #991b1b;
+        padding: 0.75rem 1rem;
+        border-radius: 10px;
+        font-size: clamp(0.82rem, 2vw, 0.9rem);
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5rem;
+        margin-top: 0.75rem;
+    }
+
+    .modal-warning-note {
+        background: linear-gradient(135deg, #fef3c7, #fde68a);
+        color: #92400e;
+        padding: 0.75rem 1rem;
+        border-radius: 10px;
+        font-size: clamp(0.82rem, 2vw, 0.9rem);
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5rem;
+        margin-top: 0.75rem;
+    }
+
+    .modal-footer {
+        border-top: 1px solid var(--gray-200);
+        padding: clamp(0.85rem, 2.5vw, 1.15rem);
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    /* Cropper custom styles */
+    .cropper-container {
+        border-radius: var(--radius-lg) !important;
+        overflow: hidden;
+    }
+    .cropper-view-box {
+        outline: 2px solid var(--primary-color) !important;
+    }
+    .cropper-line,
+    .cropper-point {
+        background-color: var(--primary-color) !important;
+    }
+
+    /* ---------- Animations ---------- */
+    @keyframes slideInDown {
+        from { opacity: 0; transform: translateY(-20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width: 575.98px) {
+        .action-row {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .action-row .btn-action {
+            width: 100%;
+        }
+
+        .btn-delete {
+            margin-left: 0;
+        }
+
+        .image-actions {
+            flex-direction: column;
+        }
+
+        .image-actions .btn-modern {
+            width: 100%;
+        }
+    }
+
+    /* ---------- Reduced Motion ---------- */
+    @media (prefers-reduced-motion: reduce) {
+        .page-header,
+        .edit-card {
+            animation: none !important;
+        }
+        .btn-action:hover,
+        .btn-modern:hover {
+            transform: none;
+        }
+    }
+
+    /* ---------- Dark Mode ---------- */
+    body.dark-mode .page-header h1 { color: var(--gray-100); }
+
+    body.dark-mode .edit-card {
+        background: var(--gray-800);
+        border-color: var(--gray-700);
+    }
+
+    body.dark-mode .form-label { color: var(--gray-300); }
+
+    body.dark-mode .input-wrap {
+        background: var(--gray-700);
+        border-color: var(--gray-600);
+    }
+
+    body.dark-mode .input-wrap:focus-within {
+        background: var(--gray-600);
+    }
+
+    body.dark-mode .input-wrap input,
+    body.dark-mode .input-wrap textarea {
+        color: white;
+    }
+
+    body.dark-mode .file-input-wrap {
+        background: var(--gray-700);
+        border-color: var(--gray-600);
+    }
+
+    body.dark-mode .file-input-wrap input[type="file"] {
+        color: var(--gray-200);
+    }
+
+    body.dark-mode .current-image,
+    body.dark-mode .preview-container {
+        background: var(--gray-700);
+        border-color: var(--gray-600);
+    }
+
+    body.dark-mode .current-image-label { color: var(--gray-300); }
+
+    body.dark-mode .action-row { border-top-color: var(--gray-700); }
+
+    body.dark-mode .btn-cancel {
+        background: var(--gray-700);
+        color: var(--gray-200);
+        border-color: var(--gray-600) !important;
+    }
+
+    body.dark-mode .btn-cancel:hover {
+        background: var(--gray-600);
+        color: white;
+    }
+
+    body.dark-mode .btn-delete {
+        background: rgba(239, 68, 68, 0.15);
+    }
+
+    body.dark-mode .edit-card-footer {
+        background: var(--gray-700);
+        border-top-color: var(--gray-600);
+        color: var(--gray-400);
+    }
+
+    body.dark-mode .modal-body p { color: var(--gray-300); }
+    body.dark-mode .modal-footer { border-top-color: var(--gray-700); }
+</style>
+
+<!-- Page Header -->
+<div class="page-header">
+    <h1><i class="bi bi-pencil-square"></i> Edit Product</h1>
+</div>
+
+<!-- Edit Card -->
+<div class="edit-card">
+
+    <div class="edit-card-header">
+        <i class="bi bi-box-seam-fill"></i>
+        Editing: {{ product.name }}
+    </div>
+
+    <div class="edit-card-body">
+        <form method="POST" enctype="multipart/form-data" id="editProductForm" novalidate>
+            {{ form.hidden_tag() }}
+
+            <!-- Row 1: Name + Price -->
+            <div class="form-row cols-2">
+                <div class="form-group-modern">
+                    {{ form.name.label(class="form-label") }}
+                    <div class="input-wrap" id="nameWrap">
+                        <span class="input-icon"><i class="bi bi-tag"></i></span>
+                        {{ form.name(class="form-control", placeholder="Enter product name") }}
+                    </div>
+                    {% if form.name.errors %}
+                    <div class="field-errors">
+                        {% for error in form.name.errors %}
+                        <div class="field-error"><i class="bi bi-exclamation-circle-fill"></i> {{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group-modern">
+                    {{ form.price.label(class="form-label") }}
+                    <div class="input-wrap" id="priceWrap">
+                        <span class="input-icon"><i class="bi bi-currency-exchange"></i></span>
+                        {{ form.price(class="form-control", placeholder="Enter price") }}
+                    </div>
+                    {% if form.price.errors %}
+                    <div class="field-errors">
+                        {% for error in form.price.errors %}
+                        <div class="field-error"><i class="bi bi-exclamation-circle-fill"></i> {{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="form-group-modern">
+                {{ form.description.label(class="form-label") }}
+                <div class="input-wrap" id="descriptionWrap">
+                    <span class="input-icon"><i class="bi bi-card-text"></i></span>
+                    {{ form.description(class="form-control", rows=4, placeholder="Enter product description") }}
+                </div>
+                {% if form.description.errors %}
+                <div class="field-errors">
+                    {% for error in form.description.errors %}
+                    <div class="field-error"><i class="bi bi-exclamation-circle-fill"></i> {{ error }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Row 2: Quantity + Image URL -->
+            <div class="form-row cols-2">
+                <div class="form-group-modern">
+                    {{ form.quantity.label(class="form-label") }}
+                    <div class="input-wrap" id="quantityWrap">
+                        <span class="input-icon"><i class="bi bi-calculator"></i></span>
+                        {{ form.quantity(class="form-control", placeholder="Enter quantity") }}
+                    </div>
+                    {% if form.quantity.errors %}
+                    <div class="field-errors">
+                        {% for error in form.quantity.errors %}
+                        <div class="field-error"><i class="bi bi-exclamation-circle-fill"></i> {{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group-modern">
+                    {{ form.image_url.label(class="form-label") }}
+                    <div class="input-wrap" id="imageUrlWrap">
+                        <span class="input-icon"><i class="bi bi-link-45deg"></i></span>
+                        {{ form.image_url(class="form-control", placeholder="Image URL (optional)") }}
+                    </div>
+                    {% if form.image_url.errors %}
+                    <div class="field-errors">
+                        {% for error in form.image_url.errors %}
+                        <div class="field-error"><i class="bi bi-exclamation-circle-fill"></i> {{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Image Upload Section -->
+            <div class="form-group-modern">
+                <label class="form-label" for="editImageInput">
+                    <i class="bi bi-upload"></i> Replace Image (optional)
+                </label>
+                <div class="file-input-wrap" id="fileInputWrap">
+                    <input type="file" name="image_file" id="editImageInput" accept="image/*">
+                </div>
+                <div class="form-help">
+                    <i class="bi bi-info-circle-fill"></i>
+                    Upload a new image to replace the current one. Supported: JPEG, PNG, GIF, WEBP (max 5MB).
+                </div>
+
+                <!-- Current image -->
+                {% if product.image_url %}
+                <div class="current-image">
+                    <span class="current-image-label">
+                        <i class="bi bi-image-fill"></i> Current image
+                    </span>
+                    <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                </div>
+                {% endif %}
+
+                <!-- Preview container -->
+                <div class="preview-container" id="previewContainer">
+                    <img id="editPreviewImage" src="" alt="Preview">
+                </div>
+
+                <!-- Image actions -->
+                <div class="image-actions">
+                    <button type="button" id="editCropBtn" class="btn-modern btn-outline-primary-modern" style="display:none;">
+                        <i class="bi bi-crop"></i> Crop &amp; Use
+                    </button>
+                    <button type="button" id="editResetCropBtn" class="btn-modern btn-outline-secondary-modern" style="display:none;">
+                        <i class="bi bi-arrow-counterclockwise"></i> Reset
+                    </button>
+                </div>
+            </div>
+
+            <!-- Action Row -->
+            <div class="action-row">
+                <button type="submit" class="btn-action btn-update" id="submitBtn">
+                    <i class="bi bi-save-fill"></i> Update Product
+                </button>
+                <a href="{{ url_for('products') }}" class="btn-action btn-cancel">
+                    <i class="bi bi-x-lg"></i> Cancel
+                </a>
+                <button type="button" class="btn-action btn-delete" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                    <i class="bi bi-trash-fill"></i> Delete
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="edit-card-footer">
+        <span><i class="bi bi-upc-scan"></i> Product ID: <strong>#{{ product.id }}</strong></span>
+        <span><i class="bi bi-calendar3"></i> Created: {{ product.created_at.strftime('%b %d, %Y') }}</span>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header danger">
+                <h5 class="modal-title">
+                    <i class="bi bi-exclamation-triangle-fill"></i> Confirm Delete
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete <strong>{{ product.name }}</strong>?</p>
+
+                <div class="modal-danger-note">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <div><strong>Warning:</strong> This action cannot be undone!</div>
+                </div>
+
+                {% if product.command_items %}
+                <div class="modal-warning-note">
+                    <i class="bi bi-info-circle-fill"></i>
+                    <div>
+                        This product is in <strong>{{ product.command_items|length }} order(s)</strong>.
+                        Deleting it will remove it from those orders.
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-action btn-cancel" data-bs-dismiss="modal">
+                    <i class="bi bi-x-lg"></i> Cancel
+                </button>
+                <form action="{{ url_for('delete_product', id=product.id) }}" method="POST" id="deleteForm" style="display: inline;">
+                    <button type="submit" class="btn-action" style="background: linear-gradient(135deg, var(--danger-color), #dc2626); color: white;">
+                        <i class="bi bi-trash-fill"></i> Delete Permanently
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Cropper.js -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+<script>
+/* ============================================
+   EDIT PRODUCT PAGE SCRIPT
+   ============================================ */
+(function() {
+    'use strict';
+
+    // ---------- Elements ----------
+    const form            = document.getElementById('editProductForm');
+    const submitBtn       = document.getElementById('submitBtn');
+    const imageInput      = document.getElementById('editImageInput');
+    const previewImage    = document.getElementById('editPreviewImage');
+    const previewContainer = document.getElementById('previewContainer');
+    const cropBtn         = document.getElementById('editCropBtn');
+    const resetCropBtn    = document.getElementById('editResetCropBtn');
+    const fileInputWrap   = document.getElementById('fileInputWrap');
+
+    const nameInput       = document.querySelector('[name="name"]');
+    const priceInput      = document.querySelector('[name="price"]');
+    const quantityInput   = document.querySelector('[name="quantity"]');
+    const descriptionInput = document.querySelector('[name="description"]');
+
+    const nameWrap        = document.getElementById('nameWrap');
+    const priceWrap       = document.getElementById('priceWrap');
+    const quantityWrap    = document.getElementById('quantityWrap');
+    const descriptionWrap = document.getElementById('descriptionWrap');
+
+    let cropper = null;
+
+    // ---------- Image Validation ----------
+    function validateImage(file) {
+        const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        const maxSize = 5 * 1024 * 1024; // 5MB
+
+        if (!validTypes.includes(file.type)) {
+            if (typeof showToast === 'function') {
+                showToast('Please upload a valid image (JPEG, PNG, GIF, WEBP)', 'warning', 'bi-exclamation-triangle-fill');
+            }
+            return false;
+        }
+        if (file.size > maxSize) {
+            if (typeof showToast === 'function') {
+                showToast('Image size must be less than 5MB', 'warning', 'bi-exclamation-triangle-fill');
+            }
+            return false;
+        }
+        return true;
+    }
+
+    // ---------- Init Cropper ----------
+    function initCropper(url) {
+        previewImage.src = url;
+        previewContainer.classList.add('active');
+
+        if (cropper) { cropper.destroy(); cropper = null; }
+
+        cropper = new Cropper(previewImage, {
+            aspectRatio: 1,
+            viewMode: 1,
+            dragMode: 'move',
+            autoCropArea: 0.8,
+            restore: false,
+            guides: true,
+            center: true,
+            highlight: false,
+            cropBoxMovable: true,
+            cropBoxResizable: true,
+            toggleDragModeOnDblclick: false
+        });
+
+        cropBtn.style.display = 'inline-flex';
+        resetCropBtn.style.display = 'inline-flex';
+    }
+
+    // ---------- File Input Change ----------
+    if (imageInput) {
+        imageInput.addEventListener('change', function(e) {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+
+            if (!validateImage(file)) {
+                imageInput.value = '';
+                return;
+            }
+
+            const url = URL.createObjectURL(file);
+            initCropper(url);
+
+            if (typeof showToast === 'function') {
+                showToast('Image loaded — adjust the crop area', 'info', 'bi-crop');
+            }
+        });
+    }
+
+    // ---------- Crop & Use ----------
+    if (cropBtn) {
+        cropBtn.addEventListener('click', function() {
+            if (!cropper) return;
+
+            const originalHtml = cropBtn.innerHTML;
+            cropBtn.disabled = true;
+            cropBtn.innerHTML = '<span class="spinner-inline"></span> Processing…';
+
+            try {
+                const canvas = cropper.getCroppedCanvas({
+                    maxWidth: 1200,
+                    maxHeight: 1200,
+                    fillColor: '#fff',
+                    imageSmoothingEnabled: true,
+                    imageSmoothingQuality: 'high'
+                });
+
+                canvas.toBlob((blob) => {
+                    if (!blob) throw new Error('Failed to create blob');
+
+                    const fileName = (imageInput.files && imageInput.files[0])
+                        ? imageInput.files[0].name
+                        : 'cropped-image.jpg';
+
+                    const file = new File([blob], fileName, { type: blob.type });
+                    const dt = new DataTransfer();
+                    dt.items.add(file);
+                    imageInput.files = dt.files;
+
+                    previewImage.src = URL.createObjectURL(blob);
+
+                    if (cropper) { cropper.destroy(); cropper = null; }
+
+                    cropBtn.style.display = 'none';
+                    cropBtn.disabled = false;
+                    cropBtn.innerHTML = originalHtml;
+                    resetCropBtn.style.display = 'inline-flex';
+
+                    if (typeof showToast === 'function') {
+                        showToast('Image cropped successfully!', 'success', 'bi-check-circle-fill');
+                    }
+                }, 'image/jpeg', 0.9);
+            } catch (err) {
+                console.error(err);
+                cropBtn.disabled = false;
+                cropBtn.innerHTML = originalHtml;
+                if (typeof showToast === 'function') {
+                    showToast('Error cropping image', 'error', 'bi-exclamation-triangle-fill');
+                }
+            }
+        });
+    }
+
+    // ---------- Reset Image ----------
+    if (resetCropBtn) {
+        resetCropBtn.addEventListener('click', function() {
+            if (cropper) { cropper.destroy(); cropper = null; }
+            previewImage.src = '';
+            previewContainer.classList.remove('active');
+            imageInput.value = '';
+            cropBtn.style.display = 'none';
+            resetCropBtn.style.display = 'none';
+
+            if (typeof showToast === 'function') {
+                showToast('Image cleared', 'info', 'bi-arrow-counterclockwise');
+            }
+        });
+    }
+
+    // ---------- Drag & Drop ----------
+    function attachDragAndDrop(el) {
+        if (!el) return;
+        el.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            el.classList.add('drag-over');
+        });
+        el.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            el.classList.remove('drag-over');
+        });
+        el.addEventListener('drop', (e) => {
+            e.preventDefault();
+            el.classList.remove('drag-over');
+            const files = e.dataTransfer.files;
+            if (files && files.length) {
+                try {
+                    const dt = new DataTransfer();
+                    dt.items.add(files[0]);
+                    imageInput.files = dt.files;
+                    imageInput.dispatchEvent(new Event('change', { bubbles: true }));
+                } catch (err) { /* ignore */ }
+            }
+        });
+    }
+
+    attachDragAndDrop(fileInputWrap);
+    attachDragAndDrop(previewContainer);
+
+    // ---------- Live Validation ----------
+    function markInvalid(wrapEl, valid) {
+        if (wrapEl) wrapEl.classList.toggle('is-invalid', !valid);
+    }
+
+    if (nameInput) {
+        nameInput.addEventListener('input', function() {
+            markInvalid(nameWrap, this.value.trim().length > 0);
+        });
+    }
+
+    if (descriptionInput) {
+        descriptionInput.addEventListener('input', function() {
+            markInvalid(descriptionWrap, this.value.trim().length > 0);
+        });
+    }
+
+    if (priceInput) {
+        priceInput.addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9.]/g, '');
+            const parts = this.value.split('.');
+            if (parts.length > 2) this.value = parts[0] + '.' + parts.slice(1).join('');
+            const val = parseFloat(this.value);
+            markInvalid(priceWrap, !isNaN(val) && val > 0);
+        });
+    }
+
+    if (quantityInput) {
+        quantityInput.addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '');
+            const val = parseInt(this.value, 10);
+            markInvalid(quantityWrap, !isNaN(val) && val >= 0);
+        });
+    }
+
+    // ---------- Form Submit Validation ----------
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            let hasError = false;
+
+            if (!nameInput.value.trim()) {
+                markInvalid(nameWrap, false);
+                hasError = true;
+            }
+
+            const priceVal = parseFloat(priceInput.value);
+            if (isNaN(priceVal) || priceVal <= 0) {
+                markInvalid(priceWrap, false);
+                hasError = true;
+            }
+
+            const qtyVal = parseInt(quantityInput.value, 10);
+            if (isNaN(qtyVal) || qtyVal < 0) {
+                markInvalid(quantityWrap, false);
+                hasError = true;
+            }
+
+            if (hasError) {
+                e.preventDefault();
+                if (typeof showToast === 'function') {
+                    showToast('Please fix the highlighted fields.', 'warning', 'bi-exclamation-triangle-fill');
+                }
+                const firstInvalid = form.querySelector('.input-wrap.is-invalid input, .input-wrap.is-invalid textarea');
+                if (firstInvalid) firstInvalid.focus();
+                return;
+            }
+
+            // Loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-inline"></span> Updating…';
+
+            if (typeof showToast === 'function') {
+                showToast('Updating product…', 'info', 'bi-hourglass-split');
+            }
+        });
+    }
+
+    // ---------- Delete Confirmation ----------
+    const deleteForm = document.getElementById('deleteForm');
+    if (deleteForm) {
+        deleteForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const modalEl = document.getElementById('deleteModal');
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            if (modal) modal.hide();
+
+            if (typeof showToast === 'function') {
+                showToast('Deleting product…', 'warning', 'bi-trash-fill');
+            }
+
+            setTimeout(() => this.submit(), 300);
+        });
+    }
+
+    // ---------- Keyboard Shortcuts ----------
+    document.addEventListener('keydown', function(e) {
+        const tag = (document.activeElement || {}).tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') {
+            // Ctrl+Enter submits form even when typing
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                form.requestSubmit();
+            }
+            return;
+        }
+
+        // Escape clears preview
+        if (e.key === 'Escape' && previewContainer.classList.contains('active')) {
+            if (resetCropBtn) resetCropBtn.click();
+        }
+    });
+
+    // ---------- Welcome Toast ----------
+    if (typeof showToast === 'function') {
+        setTimeout(() => {
+            showToast('✏️ Editing: {{ product.name|replace("'", "\\'") }}', 'info', 'bi-pencil-fill');
+        }, 700);
+    }
+
+    console.log('✏️ Edit Product page loaded');
+})();
+</script>
+{% endblock %}

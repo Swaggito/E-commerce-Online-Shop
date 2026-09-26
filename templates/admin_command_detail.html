@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Order Details - ShopMetuge{% endblock %}
+
+{% block content %}
+<div class="mt-4">
+    <h1>Order Details (Admin)</h1>
+    <div class="card mt-3">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Order</h5>
+                    <p><strong>Order #:</strong> {{ command.command_number }}</p>
+                    <p><strong>Customer:</strong> {{ command.customer_name }} &middot; <a href="mailto:{{ command.customer_email }}">{{ command.customer_email }}</a></p>
+                    <p><strong>Shipping Address:</strong><br>{{ command.customer_address }}</p>
+                    <p><strong>Payment Method:</strong> {{ command.payment_method|default('cash')|title }}</p>
+                    <p><strong>Order Date:</strong> {{ command.created_at.strftime('%B %d, %Y at %H:%M') }}</p>
+                </div>
+                <div class="col-md-6">
+                    <h5>Admin Actions</h5>
+                    <form action="{{ url_for('update_command_status', command_id=command.id) }}" method="post" class="mb-2">
+                        <label class="form-label">Status</label>
+                        <div class="d-flex gap-2 align-items-center">
+                            <select name="status" class="form-select w-auto">
+                                <option value="pending" {% if command.status=='pending' %}selected{% endif %}>Pending</option>
+                                <option value="confirmed" {% if command.status=='confirmed' %}selected{% endif %}>Confirmed</option>
+                                <option value="shipped" {% if command.status=='shipped' %}selected{% endif %}>Shipped</option>
+                                <option value="delivered" {% if command.status=='delivered' %}selected{% endif %}>Delivered</option>
+                            </select>
+                            <button class="btn btn-success">Update</button>
+                        </div>
+                    </form>
+
+                    <form action="{{ url_for('delete_command', command_id=command.id) }}" method="post" onsubmit="return confirm('Delete this order? This will restore stock quantities.')">
+                        <button class="btn btn-danger">Delete Order</button>
+                    </form>
+                    <hr>
+                    <div class="mb-2">
+                        <form action="{{ url_for('set_transaction_reference', command_id=command.id) }}" method="post" class="d-flex gap-2 align-items-center">
+                            <label class="form-label mb-0">Transaction Ref:</label>
+                            <input type="text" name="transaction_reference" value="{{ command.transaction_reference or '' }}" class="form-control form-control-sm" placeholder="Txn ID or reference">
+                            <button class="btn btn-primary btn-sm">Save</button>
+                        </form>
+                    </div>
+                    <div class="d-flex gap-2 mt-2">
+                        <a href="{{ url_for('export_command_csv', command_id=command.id) }}" class="btn btn-outline-secondary btn-sm">Export CSV</a>
+                        <button class="btn btn-outline-secondary btn-sm" onclick="window.print()">Print</button>
+                    </div>
+                </div>
+            </div>
+
+            <hr>
+
+            <h5>Items</h5>
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Image</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in command.items %}
+                        <tr>
+                            <td>
+                                {% if item.product %}
+                                    <a href="{{ url_for('product_detail', id=item.product.id) }}">{{ item.product.name }}</a>
+                                {% else %}
+                                    [Product removed]
+                                {% endif %}
+                            </td>
+                            <td style="width:80px;">
+                                {% if item.product and item.product.image_url %}
+                                <img src="{{ item.product.image_url.replace('.','_thumb.') }}" alt="" class="img-fluid rounded" />
+                                {% else %}
+                                <span class="text-muted">No image</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ item.quantity }}</td>
+                            <td>{{ item.price_at_time|fcfa }} FCFA</td>
+                            <td>{{ (item.quantity * item.price_at_time)|fcfa }} FCFA</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="4" class="text-end"><strong>Total:</strong></td>
+                            <td><strong>{{ command.total_amount|fcfa }} FCFA</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+        </div>
+    </div>
+    <a href="{{ url_for('commands_list') }}" class="btn btn-link mt-3">Back to Orders</a>
+</div>
+{% endblock %}

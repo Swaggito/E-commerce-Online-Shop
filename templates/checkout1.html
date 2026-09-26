@@ -1,0 +1,668 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout - ShopMetuge{% endblock %}
+
+{% block styles %}
+<style>
+    /* Custom animations and styles for checkout */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    @keyframes shimmer {
+        0% {
+            background-position: -1000px 0;
+        }
+        100% {
+            background-position: 1000px 0;
+        }
+    }
+
+    @keyframes float {
+        0% {
+            transform: translateY(0px);
+        }
+        50% {
+            transform: translateY(-5px);
+        }
+        100% {
+            transform: translateY(0px);
+        }
+    }
+
+    .checkout-page {
+        animation: fadeInUp 0.8s ease-out;
+    }
+
+    .form-section {
+        background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+        animation: fadeInUp 0.8s ease-out 0.2s both;
+    }
+
+    .form-section:hover {
+        box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+    }
+
+    .order-summary-card {
+        animation: slideInRight 0.8s ease-out 0.3s both;
+        border: none;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+    }
+
+    .order-summary-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
+
+    .order-summary-card .card-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-bottom: none;
+        padding: 20px;
+    }
+
+    .order-summary-card .card-header h5 {
+        margin: 0;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        animation: float 3s ease-in-out infinite;
+    }
+
+    .form-control, .form-select {
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        padding: 12px 15px;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-group:hover .form-label {
+        color: #667eea;
+        transform: translateX(5px);
+    }
+
+    .btn-success {
+        background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        border: none;
+        border-radius: 12px;
+        padding: 15px 30px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+        animation: pulse 2s ease-in-out infinite;
+    }
+
+    .btn-success:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(72, 187, 120, 0.4);
+    }
+
+    .btn-success:active {
+        transform: translateY(0);
+    }
+
+    .btn-success::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(
+            to right,
+            rgba(255,255,255,0) 0%,
+            rgba(255,255,255,0.3) 50%,
+            rgba(255,255,255,0) 100%
+        );
+        transform: rotate(30deg);
+        animation: shimmer 3s infinite;
+    }
+
+    .transaction-field {
+        animation: fadeInUp 0.5s ease-out;
+        background: linear-gradient(135deg, #fff3cd 0%, #fff9e6 100%);
+        padding: 20px;
+        border-radius: 12px;
+        border-left: 4px solid #ffc107;
+        transition: all 0.3s ease;
+    }
+
+    .transaction-field:hover {
+        transform: translateX(5px);
+        box-shadow: 0 5px 15px rgba(255, 193, 7, 0.2);
+    }
+
+    .payment-instructions-card {
+        animation: slideInRight 0.8s ease-out 0.4s both;
+        border: none;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+        transition: all 0.3s ease;
+    }
+
+    .payment-instructions-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    }
+
+    .payment-instructions-card .card-header {
+        background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+        border-bottom: none;
+        padding: 15px 20px;
+    }
+
+    .payment-instructions-card .card-body {
+        min-height: 250px;
+        transition: all 0.5s ease;
+    }
+
+    .order-item {
+        animation: fadeInUp 0.5s ease-out;
+        transition: all 0.3s ease;
+        padding: 10px;
+        border-radius: 8px;
+    }
+
+    .order-item:hover {
+        background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+        transform: translateX(5px);
+    }
+
+    .total-amount {
+        font-size: 1.5rem;
+        color: #2d3748;
+        transition: all 0.3s ease;
+        animation: pulse 2s ease-in-out infinite;
+    }
+
+    .total-amount:hover {
+        color: #667eea;
+        transform: scale(1.05);
+    }
+
+    .payment-method-badge {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .payment-method-badge.mtn {
+        background: linear-gradient(135deg, #ffd700 0%, #ffb700 100%);
+        color: #000;
+    }
+
+    .payment-method-badge.orange {
+        background: linear-gradient(135deg, #ff6b6b 0%, #ff4757 100%);
+        color: white;
+    }
+
+    .payment-method-badge.cash {
+        background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        color: white;
+    }
+
+    /* Loading animation */
+    .loading {
+        position: relative;
+        opacity: 0.6;
+        pointer-events: none;
+    }
+
+    .loading::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 30px;
+        height: 30px;
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #667eea;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: translate(-50%, -50%) rotate(0deg); }
+        100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    /* Success animation */
+    .success-checkmark {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto;
+    }
+
+    .success-checkmark .check-icon {
+        width: 80px;
+        height: 80px;
+        position: relative;
+        border-radius: 50%;
+        box-sizing: content-box;
+        border: 4px solid #4caf50;
+    }
+
+    .success-checkmark .check-icon::before {
+        top: 50%;
+        left: 50%;
+        height: 0;
+        width: 0;
+        border-radius: 50%;
+        border: 2px solid #4caf50;
+        content: '';
+        position: absolute;
+    }
+
+    /* Tooltip animations */
+    .tooltip-custom {
+        position: relative;
+        display: inline-block;
+    }
+
+    .tooltip-custom .tooltip-text {
+        visibility: hidden;
+        width: 200px;
+        background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px;
+        position: absolute;
+        z-index: 1;
+        bottom: 125%;
+        left: 50%;
+        margin-left: -100px;
+        opacity: 0;
+        transition: opacity 0.3s, transform 0.3s;
+        transform: translateY(10px);
+        pointer-events: none;
+    }
+
+    .tooltip-custom:hover .tooltip-text {
+        visibility: visible;
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* Ripple effect */
+    .ripple {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .ripple:after {
+        content: "";
+        display: block;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+        background-image: radial-gradient(circle, #fff 10%, transparent 10.01%);
+        background-repeat: no-repeat;
+        background-position: 50%;
+        transform: scale(10, 10);
+        opacity: 0;
+        transition: transform 0.3s, opacity 0.5s;
+    }
+
+    .ripple:active:after {
+        transform: scale(0, 0);
+        opacity: 0.3;
+        transition: 0s;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="checkout-page">
+    <h1 class="mb-4" style="animation: fadeInUp 0.6s ease-out;">
+        <i class="bi bi-cart-check"></i> Checkout
+    </h1>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="form-section">
+                <form method="POST" id="checkoutForm">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="form-group mb-4 tooltip-custom">
+                        {{ form.customer_name.label(class="form-label") }}
+                        <div class="tooltip-text">Enter your full name as on ID</div>
+                        {{ form.customer_name(class="form-control", placeholder="John Doe") }}
+                    </div>
+                    
+                    <div class="form-group mb-4 tooltip-custom">
+                        {{ form.customer_email.label(class="form-label") }}
+                        <div class="tooltip-text">We'll send order confirmation here</div>
+                        {{ form.customer_email(class="form-control", placeholder="john@example.com") }}
+                    </div>
+                    
+                    <div class="form-group mb-4 tooltip-custom">
+                        {{ form.customer_address.label(class="form-label") }}
+                        <div class="tooltip-text">Include landmark for easy delivery</div>
+                        {{ form.customer_address(class="form-control", rows=4, placeholder="Your full address...") }}
+                    </div>
+                    
+                    <div class="form-group mb-4 tooltip-custom">
+                        {{ form.payment_method.label(class="form-label") }}
+                        <div class="tooltip-text">Choose your preferred payment method</div>
+                        {{ form.payment_method(class="form-select") }}
+                        <small class="text-muted d-block mt-2" id="paymentInfo"></small>
+                    </div>
+                    
+                    <!-- Transaction ID Field (shown for mobile money) -->
+                    <div class="form-group mb-4 transaction-field" id="transactionField" style="display: none;">
+                        {{ form.transaction_reference.label(class="form-label") }}
+                        {{ form.transaction_reference(class="form-control", placeholder="e.g., MTN123456789") }}
+                        <small class="text-muted d-block mt-2">
+                            <i class="bi bi-info-circle"></i> Required for mobile money payments. This will be sent to our team for verification.
+                        </small>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        {{ form.submit(class="btn btn-success btn-lg ripple", id="submitBtn") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="order-summary-card card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-bag-check"></i> Order Summary
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% for product_id, item in cart.items() %}
+                    <div class="order-item d-flex justify-content-between mb-2">
+                        <span>
+                            <i class="bi bi-dot"></i>
+                            {{ item.name }} 
+                            <span class="badge bg-secondary">x{{ item.quantity }}</span>
+                        </span>
+                        <span class="fw-bold">{{ (item.price * item.quantity)|fcfa }} FCFA</span>
+                    </div>
+                    {% endfor %}
+                    
+                    <hr class="my-3">
+                    
+                    <div class="order-item d-flex justify-content-between mb-2">
+                        <span>Subtotal:</span>
+                        <span>{{ subtotal|fcfa }} FCFA</span>
+                    </div>
+                    
+                    <div class="order-item d-flex justify-content-between mb-2">
+                        <span>Delivery Fee:</span>
+                        <span class="text-success">{{ delivery_fee|fcfa }} FCFA</span>
+                    </div>
+                    
+                    <hr class="my-3">
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                        <strong class="fs-5">Total:</strong>
+                        <strong class="total-amount">
+                            <span id="totalAmount" data-amount="{{ total_amount }}">{{ total_amount|fcfa }}</span> FCFA
+                        </strong>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="payment-instructions-card card mt-3">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-info-circle"></i> Payment Instructions
+                    </h5>
+                </div>
+                <div class="card-body" id="payment-instructions">
+                    <div class="text-center text-muted">
+                        <i class="bi bi-credit-card fs-1"></i>
+                        <p class="mt-2">Select a payment method to see instructions.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    var select = document.querySelector('select[name="payment_method"]');
+    var instr = document.getElementById('payment-instructions');
+    var transField = document.getElementById('transactionField');
+    var paymentInfo = document.getElementById('paymentInfo');
+    var transInput = document.querySelector('input[name="transaction_reference"]');
+    var totalAmount = document.getElementById('totalAmount').getAttribute('data-amount');
+    var submitBtn = document.getElementById('submitBtn');
+    
+    // Add payment method badges
+    function addPaymentMethodBadge(method) {
+        const badge = document.createElement('span');
+        badge.className = `payment-method-badge ${method} ms-2`;
+        badge.textContent = method.toUpperCase();
+        return badge;
+    }
+    
+    function update(){
+        if(!select) return;
+        var v = select.value;
+        
+        // Add loading animation to instructions
+        instr.classList.add('loading');
+        
+        setTimeout(function() {
+            // Show/hide transaction field with animation
+            if(v === 'mtn' || v === 'orange'){
+                transField.style.display = 'block';
+                transField.style.animation = 'fadeInUp 0.5s ease-out';
+                transInput.required = true;
+            } else {
+                transField.style.display = 'none';
+                transInput.required = false;
+            }
+            
+            // Update payment instructions with animations
+            if(v === 'mtn'){
+                instr.innerHTML = `
+                    <div class="text-center mb-3">
+                        <i class="bi bi-phone fs-1 text-warning" style="animation: float 3s ease-in-out infinite;"></i>
+                    </div>
+                    <h6 class="mb-3"><span class="payment-method-badge mtn">MTN</span> Mobile Money</h6>
+                    <p><strong>How to pay:</strong></p>
+                    <ol class="small" style="animation: fadeInUp 0.5s ease-out;">
+                        <li class="mb-2">📱 Open MTN Mobile Money on your phone</li>
+                        <li class="mb-2">💰 Select "Send Money"</li>
+                        <li class="mb-2">📞 Enter: <strong>699-000-000</strong></li>
+                        <li class="mb-2">💵 Enter amount: <strong>${totalAmount}</strong> FCFA</li>
+                        <li class="mb-2">📝 In description, enter your <strong>Order Number</strong></li>
+                        <li class="mb-2">✅ Complete the transaction</li>
+                        <li class="mb-2">🔑 <strong>Copy the Transaction ID</strong> and paste it in the field above</li>
+                    </ol>
+                    <div class="alert alert-info mt-3 p-2" style="animation: pulse 2s ease-in-out infinite;">
+                        <i class="bi bi-info-circle"></i> We will verify your payment and confirm your order.
+                    </div>
+                `;
+                paymentInfo.innerHTML = '<span class="badge bg-warning text-dark"><i class="bi bi-exclamation-circle"></i> Transaction ID required</span>';
+            } else if(v === 'orange'){
+                instr.innerHTML = `
+                    <div class="text-center mb-3">
+                        <i class="bi bi-phone fs-1 text-danger" style="animation: float 3s ease-in-out infinite;"></i>
+                    </div>
+                    <h6 class="mb-3"><span class="payment-method-badge orange">ORANGE</span> Money</h6>
+                    <p><strong>How to pay:</strong></p>
+                    <ol class="small" style="animation: fadeInUp 0.5s ease-out;">
+                        <li class="mb-2">📱 Open ORANGE Money on your phone</li>
+                        <li class="mb-2">💰 Select "Send Money"</li>
+                        <li class="mb-2">📞 Enter: <strong>650-000-000</strong></li>
+                        <li class="mb-2">💵 Enter amount: <strong>${totalAmount}</strong> FCFA</li>
+                        <li class="mb-2">📝 In description, enter your <strong>Order Number</strong></li>
+                        <li class="mb-2">✅ Complete the transaction</li>
+                        <li class="mb-2">🔑 <strong>Copy the Transaction ID</strong> and paste it in the field above</li>
+                    </ol>
+                    <div class="alert alert-info mt-3 p-2" style="animation: pulse 2s ease-in-out infinite;">
+                        <i class="bi bi-info-circle"></i> We will verify your payment and confirm your order.
+                    </div>
+                `;
+                paymentInfo.innerHTML = '<span class="badge bg-warning text-dark"><i class="bi bi-exclamation-circle"></i> Transaction ID required</span>';
+            } else if(v === 'cash'){
+                instr.innerHTML = `
+                    <div class="text-center mb-3">
+                        <i class="bi bi-cash-coin fs-1 text-success" style="animation: float 3s ease-in-out infinite;"></i>
+                    </div>
+                    <h6 class="mb-3"><span class="payment-method-badge cash">Cash on Delivery</span></h6>
+                    <p><strong>How it works:</strong></p>
+                    <ol class="small" style="animation: fadeInUp 0.5s ease-out;">
+                        <li class="mb-2">✅ Complete your order</li>
+                        <li class="mb-2">📞 Our courier will contact you within 24 hours</li>
+                        <li class="mb-2">💵 Pay the courier when they deliver your items</li>
+                        <li class="mb-2">🔍 Verify items before payment</li>
+                    </ol>
+                    <div class="alert alert-success mt-3 p-2" style="animation: pulse 2s ease-in-out infinite;">
+                        <i class="bi bi-check-circle"></i> No payment needed now
+                    </div>
+                `;
+                paymentInfo.innerHTML = '<span class="badge bg-success"><i class="bi bi-check-circle"></i> No transaction ID needed</span>';
+            } else {
+                instr.innerHTML = `
+                    <div class="text-center text-muted">
+                        <i class="bi bi-credit-card fs-1"></i>
+                        <p class="mt-2">Select a payment method to see instructions.</p>
+                    </div>
+                `;
+                paymentInfo.innerHTML = '';
+            }
+            
+            instr.classList.remove('loading');
+        }, 300);
+    }
+    
+    if(select){
+        select.addEventListener('change', update);
+        update();
+    }
+
+    // Form submission validation with animation
+    var form = document.getElementById('checkoutForm');
+    form.addEventListener('submit', function(e){
+        var paymentMethod = select.value;
+        var transId = transInput.value.trim();
+        
+        if((paymentMethod === 'mtn' || paymentMethod === 'orange') && !transId){
+            e.preventDefault();
+            
+            // Animate the transaction field
+            transField.style.animation = 'pulse 0.5s ease-in-out 3';
+            transInput.style.borderColor = '#e53e3e';
+            transInput.style.boxShadow = '0 0 0 3px rgba(229, 62, 62, 0.1)';
+            
+            // Show error message with animation
+            const errorMsg = document.createElement('div');
+            errorMsg.className = 'alert alert-danger mt-2';
+            errorMsg.style.animation = 'fadeInUp 0.3s ease-out';
+            errorMsg.innerHTML = '<i class="bi bi-exclamation-triangle"></i> Please enter your transaction ID for ' + paymentMethod.toUpperCase() + ' Mobile Money before placing the order.';
+            
+            const existingError = transField.querySelector('.alert-danger');
+            if(existingError) existingError.remove();
+            
+            transField.appendChild(errorMsg);
+            
+            setTimeout(() => {
+                if(errorMsg) errorMsg.remove();
+            }, 5000);
+            
+            transInput.focus();
+            return false;
+        }
+        
+        // Add loading animation to submit button
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Processing...';
+        submitBtn.disabled = true;
+    });
+
+    // Add input animations
+    const inputs = document.querySelectorAll('.form-control, .form-select');
+    inputs.forEach(input => {
+        input.addEventListener('focus', function() {
+            this.parentElement.classList.add('focused');
+        });
+        
+        input.addEventListener('blur', function() {
+            this.parentElement.classList.remove('focused');
+        });
+    });
+
+    // Add ripple effect to buttons
+    const buttons = document.querySelectorAll('.btn');
+    buttons.forEach(button => {
+        button.classList.add('ripple');
+    });
+
+    // Format transaction ID input
+    transInput.addEventListener('input', function(e) {
+        this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    });
+});
+</script>
+{% endblock %}

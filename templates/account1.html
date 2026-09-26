@@ -1,0 +1,971 @@
+{% extends "base.html" %}
+
+{% block title %}Account - ShopMetuge{% endblock %}
+
+{% block content %}
+<style>
+    /* Modern Account Page Styling */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+    :root {
+        --primary: #6366f1;
+        --primary-dark: #4f46e5;
+        --primary-light: #818cf8;
+        --secondary: #8b5cf6;
+        --success: #10b981;
+        --success-light: #d1fae5;
+        --danger: #ef4444;
+        --danger-light: #fee2e2;
+        --warning: #f59e0b;
+        --info: #3b82f6;
+        --gray-50: #f9fafb;
+        --gray-100: #f3f4f6;
+        --gray-200: #e5e7eb;
+        --gray-300: #d1d5db;
+        --gray-400: #9ca3af;
+        --gray-500: #6b7280;
+        --gray-600: #4b5563;
+        --gray-700: #374151;
+        --gray-800: #1f2937;
+        --gray-900: #111827;
+        
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+        
+        --radius-sm: 0.375rem;
+        --radius: 0.5rem;
+        --radius-md: 0.75rem;
+        --radius-lg: 1rem;
+        --radius-xl: 1.5rem;
+        --radius-2xl: 2rem;
+        --radius-full: 9999px;
+        
+        --transition-fast: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+        --transition: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+        --transition-bounce: 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* Page Header */
+    h1 {
+        font-size: clamp(2rem, 4vw, 2.5rem);
+        font-weight: 800;
+        color: var(--gray-900);
+        margin: 2rem 0;
+        position: relative;
+        display: inline-block;
+        animation: slideInDown 0.6s ease-out;
+    }
+
+    h1::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 80px;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        border-radius: var(--radius-full);
+        animation: expandWidth 0.8s ease-out 0.3s both;
+    }
+
+    h1 i {
+        color: var(--primary);
+        margin-right: 0.5rem;
+    }
+
+    /* Section Headers */
+    h4 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--gray-800);
+        margin: 2rem 0 1.5rem;
+        position: relative;
+        display: inline-block;
+    }
+
+    h4::after {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        left: 0;
+        width: 50px;
+        height: 3px;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        border-radius: var(--radius-full);
+    }
+
+    /* Profile Card */
+    .row .col-md-6:first-child {
+        animation: slideInLeft 0.8s ease-out;
+    }
+
+    .col-md-6:first-child h4 i {
+        color: var(--primary);
+        margin-right: 0.5rem;
+    }
+
+    .col-md-6:first-child p {
+        background: white;
+        padding: 1rem 1.5rem;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        margin-bottom: 1rem;
+        transition: all var(--transition);
+        border-left: 4px solid var(--primary);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .col-md-6:first-child p:hover {
+        transform: translateX(10px);
+        box-shadow: var(--shadow-xl);
+    }
+
+    .col-md-6:first-child p strong {
+        min-width: 100px;
+        color: var(--gray-700);
+        font-weight: 600;
+    }
+
+    .col-md-6:first-child p i {
+        color: var(--primary);
+        font-size: 1.25rem;
+    }
+
+    /* Add Address Form */
+    .row .col-md-6:last-child {
+        animation: slideInRight 0.8s ease-out;
+    }
+
+    .col-md-6:last-child h4 i {
+        color: var(--secondary);
+        margin-right: 0.5rem;
+    }
+
+    form {
+        background: white;
+        padding: 2rem;
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-xl);
+        border: 1px solid var(--gray-200);
+        transition: all var(--transition);
+    }
+
+    form:hover {
+        box-shadow: var(--shadow-2xl);
+        transform: translateY(-5px);
+    }
+
+    .form-control, .form-select {
+        border: 2px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        padding: 0.875rem 1rem;
+        font-size: 1rem;
+        transition: all var(--transition-fast);
+        background: var(--gray-50);
+        width: 100%;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary);
+        outline: none;
+        box-shadow: 0 0 0 4px var(--primary-light);
+        background: white;
+    }
+
+    .form-control::placeholder {
+        color: var(--gray-400);
+    }
+
+    textarea.form-control {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    /* Checkbox Styling */
+    .form-check {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin: 1rem 0;
+        padding: 0.5rem;
+        background: var(--gray-50);
+        border-radius: var(--radius-lg);
+        transition: all var(--transition);
+    }
+
+    .form-check:hover {
+        background: var(--gray-100);
+    }
+
+    .form-check-input {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+        position: relative;
+        transition: all var(--transition-fast);
+    }
+
+    .form-check-input:checked {
+        background-color: var(--primary);
+        border-color: var(--primary);
+    }
+
+    .form-check-label {
+        color: var(--gray-700);
+        font-weight: 500;
+        cursor: pointer;
+    }
+
+    /* Submit Button */
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: var(--radius-lg);
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all var(--transition-bounce);
+        box-shadow: var(--shadow);
+        width: 100%;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .btn-primary::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+
+    .btn-primary:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-xl);
+    }
+
+    .btn-primary i {
+        font-size: 1.2rem;
+        transition: transform var(--transition);
+    }
+
+    .btn-primary:hover i {
+        transform: translateX(5px) scale(1.2);
+    }
+
+    /* Divider */
+    hr {
+        margin: 3rem 0;
+        border: none;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, var(--primary), var(--secondary), var(--primary), transparent);
+        opacity: 0.3;
+        animation: gradientMove 3s linear infinite;
+        background-size: 200% 100%;
+    }
+
+    @keyframes gradientMove {
+        0% { background-position: 0% 0; }
+        100% { background-position: 200% 0; }
+    }
+
+    /* Addresses Header */
+    h4:last-of-type {
+        margin-bottom: 2rem;
+    }
+
+    h4:last-of-type i {
+        color: var(--success);
+        margin-right: 0.5rem;
+    }
+
+    /* Address Cards */
+    .card {
+        background: white;
+        border: 1px solid var(--gray-200) !important;
+        border-radius: var(--radius-xl) !important;
+        overflow: hidden;
+        transition: all var(--transition);
+        box-shadow: var(--shadow);
+        margin-bottom: 1rem !important;
+        animation: fadeInUp 0.6s ease-out;
+        animation-fill-mode: both;
+        position: relative;
+    }
+
+    .card:hover {
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: var(--shadow-xl);
+        border-color: transparent !important;
+    }
+
+    .card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        transform: scaleX(0);
+        transition: transform 0.5s ease;
+        transform-origin: left;
+    }
+
+    .card:hover::before {
+        transform: scaleX(1);
+    }
+
+    .card-body {
+        padding: 1.5rem !important;
+    }
+
+    .card-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--gray-900);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .card-title i {
+        color: var(--primary);
+    }
+
+    /* Default Badge */
+    .badge.bg-success {
+        background: linear-gradient(135deg, var(--success), #059669) !important;
+        padding: 0.35rem 1rem;
+        border-radius: var(--radius-full);
+        font-weight: 600;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        animation: pulse 2s infinite;
+        margin-left: 0.5rem;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+
+    .card-text {
+        color: var(--gray-700);
+        font-size: 1rem;
+        line-height: 1.6;
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .card-text i {
+        color: var(--primary);
+        margin-top: 0.2rem;
+    }
+
+    .text-muted {
+        color: var(--gray-500) !important;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        padding: 0.5rem 1rem;
+        background: var(--gray-50);
+        border-radius: var(--radius-full);
+        width: fit-content;
+    }
+
+    .text-muted i {
+        color: var(--success);
+    }
+
+    /* Delete Button */
+    .btn-sm.btn-danger {
+        background: linear-gradient(135deg, var(--danger), #dc2626);
+        color: white;
+        border: none;
+        padding: 0.5rem 1.5rem;
+        border-radius: var(--radius-lg);
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all var(--transition-bounce);
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: var(--shadow);
+    }
+
+    .btn-sm.btn-danger::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+
+    .btn-sm.btn-danger:hover::before {
+        width: 200px;
+        height: 200px;
+    }
+
+    .btn-sm.btn-danger:hover {
+        background: linear-gradient(135deg, #dc2626, var(--danger));
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: var(--shadow-xl);
+    }
+
+    .btn-sm.btn-danger i {
+        font-size: 1rem;
+        transition: transform var(--transition);
+    }
+
+    .btn-sm.btn-danger:hover i {
+        transform: rotate(90deg) scale(1.2);
+    }
+
+    /* No Addresses Message */
+    .no-addresses {
+        background: linear-gradient(135deg, var(--gray-50), var(--gray-100));
+        border: 2px dashed var(--gray-300);
+        border-radius: var(--radius-xl);
+        padding: 3rem;
+        text-align: center;
+        color: var(--gray-500);
+        animation: fadeInUp 0.8s ease-out;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .no-addresses::before {
+        content: '🏠';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 5rem;
+        opacity: 0.1;
+    }
+
+    .no-addresses p {
+        font-size: 1.1rem;
+        margin: 0;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Animations */
+    @keyframes slideInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes slideInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes expandWidth {
+        from { width: 0; }
+        to { width: 80px; }
+    }
+
+    /* Toast Notification */
+    .toast-notification {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background: linear-gradient(135deg, var(--success), #059669);
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-2xl);
+        transform: translateX(400px);
+        transition: transform 0.3s ease;
+        z-index: 9999;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .toast-notification.show {
+        transform: translateX(0);
+    }
+
+    .toast-notification i {
+        font-size: 1.25rem;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .row {
+            flex-direction: column;
+        }
+        
+        .col-md-6 {
+            width: 100%;
+            margin-bottom: 2rem;
+        }
+        
+        form {
+            padding: 1.5rem;
+        }
+        
+        .col-md-6:first-child p {
+            padding: 0.875rem 1rem;
+        }
+        
+        .col-md-6:first-child p strong {
+            min-width: 80px;
+        }
+        
+        .card {
+            margin-bottom: 1rem;
+        }
+        
+        .no-addresses {
+            padding: 2rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        h1 {
+            font-size: 1.75rem;
+        }
+        
+        h4 {
+            font-size: 1.25rem;
+        }
+        
+        .col-md-6:first-child p {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+        
+        .col-md-6:first-child p strong {
+            min-width: auto;
+        }
+        
+        .btn-primary {
+            padding: 0.875rem 1.5rem;
+        }
+        
+        .card-title {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .badge.bg-success {
+            margin-left: 0;
+        }
+        
+        .text-muted {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .btn-sm.btn-danger {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    /* Dark Mode */
+    @media (prefers-color-scheme: dark) {
+        .col-md-6:first-child p,
+        form,
+        .card {
+            background: var(--gray-800);
+            border-color: var(--gray-700) !important;
+        }
+        
+        .col-md-6:first-child p strong,
+        .card-title {
+            color: white;
+        }
+        
+        .col-md-6:first-child p,
+        .card-text {
+            color: var(--gray-300);
+        }
+        
+        .form-control,
+        .form-select {
+            background: var(--gray-700);
+            border-color: var(--gray-600);
+            color: white;
+        }
+        
+        .form-control:focus,
+        .form-select:focus {
+            background: var(--gray-600);
+        }
+        
+        .form-check {
+            background: var(--gray-700);
+        }
+        
+        .form-check-label {
+            color: var(--gray-300);
+        }
+        
+        .text-muted {
+            background: var(--gray-700);
+            color: var(--gray-400) !important;
+        }
+        
+        .no-addresses {
+            background: linear-gradient(135deg, var(--gray-800), var(--gray-900));
+            border-color: var(--gray-700);
+            color: var(--gray-400);
+        }
+        
+        h1, h4 {
+            color: white;
+        }
+    }
+</style>
+
+<!-- Page Header -->
+<h1><i class="bi bi-person-circle"></i> My Account</h1>
+
+<div class="row">
+    <!-- Profile Section -->
+    <div class="col-md-6">
+        <h4><i class="bi bi-person-badge"></i> Profile Information</h4>
+        <p>
+            <i class="bi bi-person"></i>
+            <strong>Username:</strong> 
+            <span>{{ user.username }}</span>
+        </p>
+        <p>
+            <i class="bi bi-envelope"></i>
+            <strong>Email:</strong> 
+            <span>{{ user.email }}</span>
+        </p>
+    </div>
+
+    <!-- Add Address Form -->
+    <div class="col-md-6">
+        <h4><i class="bi bi-plus-circle"></i> Add New Address</h4>
+        <form method="post" action="{{ url_for('account') }}" id="addressForm">
+            <div class="mb-3">
+                <label class="form-label">Address Label</label>
+                <input class="form-control" name="label" placeholder="e.g., Home, Work, Office" id="addressLabel">
+                <small class="text-muted">Give this address a nickname</small>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Full Address</label>
+                <textarea class="form-control" name="address" placeholder="Street, city, postal code, country" required id="addressFull"></textarea>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Phone Number</label>
+                <input class="form-control" name="phone" placeholder="+237 6XX XXX XXX" id="addressPhone">
+            </div>
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="is_default" name="is_default" value="1">
+                <label class="form-check-label" for="is_default">
+                    <i class="bi bi-star-fill text-warning"></i> Set as default address
+                </label>
+            </div>
+            <button class="btn-primary" type="submit">
+                <i class="bi bi-save"></i> Add Address
+            </button>
+        </form>
+    </div>
+</div>
+
+<hr>
+
+<!-- Addresses Section -->
+<h4><i class="bi bi-house-heart"></i> Your Saved Addresses</h4>
+<div id="addressesContainer">
+    {% for a in addresses %}
+    <div class="card" data-address-id="{{ a.id }}">
+        <div class="card-body">
+            <h5 class="card-title">
+                <i class="bi bi-geo-alt-fill"></i>
+                {{ a.label or 'Address' }}
+                {% if a.is_default %}
+                <span class="badge bg-success">
+                    <i class="bi bi-star-fill"></i> Default
+                </span>
+                {% endif %}
+            </h5>
+            <p class="card-text">
+                <i class="bi bi-pin-map"></i>
+                {{ a.address }}
+            </p>
+            <p class="text-muted">
+                <i class="bi bi-telephone"></i>
+                {{ a.phone or 'No phone provided' }}
+            </p>
+            <form method="post" action="{{ url_for('delete_address', addr_id=a.id) }}" class="d-inline delete-form" onsubmit="return confirmDelete(this);">
+                <button class="btn-sm btn-danger">
+                    <i class="bi bi-trash"></i> Delete Address
+                </button>
+            </form>
+        </div>
+    </div>
+    {% else %}
+    <div class="no-addresses">
+        <p>🏠 No saved addresses yet. Add your first address above!</p>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3"></div>
+
+<script>
+    // Modern JavaScript for Account Page
+    (function() {
+        'use strict';
+
+        // Toast notification system
+        function showToast(message, type = 'success', icon = 'bi-check-circle-fill') {
+            const toastContainer = document.querySelector('.toast-container');
+            if (!toastContainer) return;
+
+            const colors = {
+                success: 'linear-gradient(135deg, #10b981, #059669)',
+                warning: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                danger: 'linear-gradient(135deg, #ef4444, #dc2626)',
+                info: 'linear-gradient(135deg, #3b82f6, #2563eb)'
+            };
+
+            const toastId = 'toast-' + Date.now();
+            const toastHtml = `
+                <div id="${toastId}" class="toast-notification show" style="background: ${colors[type] || colors.success}">
+                    <i class="bi ${icon}"></i>
+                    <div class="toast-message">${message}</div>
+                </div>
+            `;
+
+            toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+
+            setTimeout(() => {
+                const toast = document.getElementById(toastId);
+                if (toast) {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 300);
+                }
+            }, 3000);
+        }
+
+        // Confirm delete function
+        window.confirmDelete = function(form) {
+            const addressCard = form.closest('.card');
+            const addressLabel = addressCard?.querySelector('.card-title')?.textContent.trim() || 'this address';
+            
+            // Show custom confirmation dialog
+            return new Promise((resolve) => {
+                // You can replace this with a custom modal
+                const confirmed = confirm(`Are you sure you want to delete ${addressLabel}? This action cannot be undone.`);
+                if (confirmed) {
+                    // Animate deletion
+                    addressCard.style.transform = 'translateX(100px)';
+                    addressCard.style.opacity = '0';
+                    addressCard.style.transition = 'all 0.3s ease';
+                    
+                    setTimeout(() => {
+                        form.submit();
+                    }, 300);
+                    
+                    showToast('Address deleted successfully', 'success', 'bi-trash');
+                }
+                return confirmed;
+            });
+        };
+
+        // Form validation
+        const addressForm = document.getElementById('addressForm');
+        if (addressForm) {
+            addressForm.addEventListener('submit', function(e) {
+                const addressInput = document.getElementById('addressFull');
+                const phoneInput = document.getElementById('addressPhone');
+                
+                // Validate address
+                if (!addressInput.value.trim()) {
+                    e.preventDefault();
+                    addressInput.classList.add('is-invalid');
+                    showToast('Please enter a valid address', 'warning', 'bi-exclamation-triangle');
+                    return;
+                }
+                
+                // Validate phone (optional but format check)
+                if (phoneInput.value.trim()) {
+                    const phoneRegex = /^[\+]?[(]?[0-9]{1,4}[)]?[-\s\.]?[0-9]{1,4}[-\s\.]?[0-9]{1,9}$/;
+                    if (!phoneRegex.test(phoneInput.value)) {
+                        e.preventDefault();
+                        phoneInput.classList.add('is-invalid');
+                        showToast('Please enter a valid phone number', 'warning', 'bi-exclamation-triangle');
+                        return;
+                    }
+                }
+                
+                // Show loading state
+                const submitBtn = this.querySelector('button[type="submit"]');
+                submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Adding...';
+                submitBtn.disabled = true;
+                
+                showToast('Adding your address...', 'info', 'bi-hourglass');
+            });
+            
+            // Remove validation styling on input
+            document.querySelectorAll('.form-control').forEach(input => {
+                input.addEventListener('input', function() {
+                    this.classList.remove('is-invalid');
+                });
+            });
+        }
+
+        // Address label suggestions
+        const addressLabel = document.getElementById('addressLabel');
+        if (addressLabel) {
+            const suggestions = ['Home', 'Work', 'Office', 'Parents House', 'Weekend Home'];
+            let datalist = document.createElement('datalist');
+            datalist.id = 'address-suggestions';
+            
+            suggestions.forEach(suggestion => {
+                let option = document.createElement('option');
+                option.value = suggestion;
+                datalist.appendChild(option);
+            });
+            
+            document.body.appendChild(datalist);
+            addressLabel.setAttribute('list', 'address-suggestions');
+        }
+
+        // Auto-fill from browser geolocation (optional)
+        document.addEventListener('keydown', function(e) {
+            // Alt + L to focus address label
+            if (e.altKey && e.key === 'l') {
+                e.preventDefault();
+                document.getElementById('addressLabel')?.focus();
+            }
+            // Alt + A to focus address
+            if (e.altKey && e.key === 'a') {
+                e.preventDefault();
+                document.getElementById('addressFull')?.focus();
+            }
+            // Alt + P to focus phone
+            if (e.altKey && e.key === 'p') {
+                e.preventDefault();
+                document.getElementById('addressPhone')?.focus();
+            }
+        });
+
+        // Copy address to clipboard
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('dblclick', function() {
+                const address = this.querySelector('.card-text')?.textContent;
+                if (address) {
+                    navigator.clipboard.writeText(address).then(() => {
+                        showToast('Address copied to clipboard!', 'success', 'bi-clipboard-check');
+                    });
+                }
+            });
+        });
+
+        // Set default address highlighting
+        function highlightDefaultAddress() {
+            document.querySelectorAll('.card').forEach(card => {
+                if (card.querySelector('.badge.bg-success')) {
+                    card.style.borderLeft = '4px solid var(--success)';
+                }
+            });
+        }
+        highlightDefaultAddress();
+
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function(tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        // Show welcome message on page load
+        setTimeout(() => {
+            showToast('👋 Welcome back, {{ user.username }}!', 'info', 'bi-person-circle');
+        }, 500);
+
+        // Console greeting
+        console.log('👤 Account page loaded - Manage your profile and addresses');
+
+        // Expose functions globally
+        window.showToast = showToast;
+    })();
+</script>
+{% endblock %}

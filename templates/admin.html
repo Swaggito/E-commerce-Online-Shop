@@ -1,0 +1,492 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Linux Shop{% endblock %}
+
+{% block content %}
+<style>
+    /* ============================================
+       ADMIN DASHBOARD — FULLY RESPONSIVE
+       ============================================ */
+
+    /* ---------- Page Header ---------- */
+    .dashboard-header {
+        margin: clamp(1rem, 3vw, 2rem) 0 clamp(1.5rem, 3.5vw, 2.25rem);
+        animation: slideInDown 0.6s ease-out;
+    }
+
+    .dashboard-header h1 {
+        font-size: clamp(1.4rem, 4.5vw, 2.2rem);
+        font-weight: 800;
+        color: var(--gray-900);
+        margin: 0;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        position: relative;
+    }
+
+    .dashboard-header h1 i {
+        color: var(--primary-color);
+        font-size: clamp(1.25rem, 3.5vw, 1.75rem);
+    }
+
+    .dashboard-header h1::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 70px;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-color), #7209b7);
+        border-radius: 999px;
+        animation: expandWidth 0.8s ease-out 0.3s both;
+    }
+
+    @keyframes expandWidth {
+        from { width: 0; }
+        to   { width: 70px; }
+    }
+
+    /* ---------- Stats Grid ---------- */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        gap: clamp(1rem, 2.5vw, 1.5rem);
+        margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
+        animation: fadeInUp 0.6s ease-out 0.1s both;
+    }
+
+    @media (max-width: 575.98px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* ---------- Stat Card ---------- */
+    .stat-card {
+        position: relative;
+        border-radius: var(--radius-lg);
+        padding: clamp(1.25rem, 3vw, 1.75rem);
+        color: white;
+        box-shadow: var(--shadow-lg);
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: default;
+        isolation: isolate;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-6px);
+        box-shadow: var(--shadow-2xl);
+    }
+
+    /* Decorative circle */
+    .stat-card::after {
+        content: '';
+        position: absolute;
+        bottom: -30px;
+        right: -30px;
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.12);
+        transition: transform 0.4s ease, opacity 0.4s ease;
+        z-index: 0;
+    }
+
+    .stat-card:hover::after {
+        transform: scale(1.25);
+        opacity: 0.6;
+    }
+
+    /* Color variants */
+    .stat-card.primary { background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); }
+    .stat-card.success { background: linear-gradient(135deg, var(--success-color), #059669); }
+    .stat-card.info    { background: linear-gradient(135deg, var(--info-color), #2563eb); }
+    .stat-card.warning { background: linear-gradient(135deg, var(--warning-color), #d97706); }
+
+    /* Card content */
+    .stat-card-content {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+    }
+
+    .stat-card-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: clamp(0.72rem, 1.9vw, 0.82rem);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: rgba(255, 255, 255, 0.92);
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-card-label .icon-box {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        background: rgba(255, 255, 255, 0.22);
+        border-radius: 9px;
+        font-size: 1rem;
+        transition: transform 0.4s ease, background 0.3s ease;
+        flex-shrink: 0;
+    }
+
+    .stat-card:hover .stat-card-label .icon-box {
+        transform: rotate(-10deg) scale(1.1);
+        background: rgba(255, 255, 255, 0.32);
+    }
+
+    .stat-card-value {
+        font-size: clamp(1.5rem, 4vw, 2.15rem);
+        font-weight: 800;
+        line-height: 1.1;
+        color: white;
+        display: flex;
+        align-items: baseline;
+        gap: 0.35rem;
+        word-break: break-word;
+    }
+
+    .stat-card-value small {
+        font-size: 0.55em;
+        font-weight: 500;
+        opacity: 0.85;
+    }
+
+    /* ---------- Quick Actions Section ---------- */
+    .quick-actions-section {
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        padding: clamp(1.25rem, 3vw, 1.75rem);
+        box-shadow: var(--shadow-md);
+        animation: fadeInUp 0.6s ease-out 0.3s both;
+    }
+
+    .quick-actions-section h3 {
+        font-size: clamp(1.05rem, 2.8vw, 1.35rem);
+        font-weight: 700;
+        color: var(--gray-800);
+        margin-bottom: clamp(0.85rem, 2.5vw, 1.15rem);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .quick-actions-section h3 i {
+        color: var(--primary-color);
+    }
+
+    .quick-actions-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .action-btn {
+        flex: 1;
+        min-width: 180px;
+        padding: clamp(0.7rem, 2vw, 0.9rem) clamp(1rem, 2.5vw, 1.5rem);
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: clamp(0.85rem, 2vw, 0.95rem);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        text-decoration: none;
+        border: none;
+        white-space: nowrap;
+        color: white;
+    }
+
+    .action-btn i {
+        font-size: 1.1em;
+        transition: transform 0.25s ease;
+    }
+
+    .action-btn:hover i {
+        transform: translateX(3px) scale(1.1);
+    }
+
+    .action-btn.primary {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        box-shadow: 0 3px 10px rgba(67, 97, 238, 0.25);
+    }
+    .action-btn.primary:hover {
+        background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(67, 97, 238, 0.4);
+    }
+
+    .action-btn.secondary {
+        background: linear-gradient(135deg, var(--gray-600), var(--gray-700));
+        box-shadow: 0 3px 10px rgba(75, 85, 99, 0.25);
+    }
+    .action-btn.secondary:hover {
+        background: linear-gradient(135deg, var(--gray-700), var(--gray-800));
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(75, 85, 99, 0.4);
+    }
+
+    .action-btn.success {
+        background: linear-gradient(135deg, var(--success-color), #059669);
+        box-shadow: 0 3px 10px rgba(6, 214, 160, 0.25);
+    }
+    .action-btn.success:hover {
+        background: linear-gradient(135deg, #059669, var(--success-color));
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(6, 214, 160, 0.4);
+    }
+
+    /* ---------- Animations ---------- */
+    @keyframes slideInDown {
+        from { opacity: 0; transform: translateY(-20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ---------- Reduced Motion ---------- */
+    @media (prefers-reduced-motion: reduce) {
+        .dashboard-header,
+        .stats-grid,
+        .quick-actions-section {
+            animation: none !important;
+        }
+        .stat-card:hover {
+            transform: none;
+        }
+        .stat-card:hover::after,
+        .stat-card:hover .stat-card-label .icon-box,
+        .action-btn:hover i {
+            transform: none;
+        }
+    }
+
+    /* ---------- Dark Mode ---------- */
+    body.dark-mode .dashboard-header h1 { color: var(--gray-100); }
+
+    body.dark-mode .quick-actions-section {
+        background: var(--gray-800);
+        border-color: var(--gray-700);
+    }
+
+    body.dark-mode .quick-actions-section h3 { color: var(--gray-100); }
+
+    body.dark-mode .action-btn.secondary {
+        background: linear-gradient(135deg, var(--gray-700), var(--gray-800));
+    }
+</style>
+
+<!-- Page Header -->
+<div class="dashboard-header">
+    <h1><i class="bi bi-speedometer2"></i> Admin Dashboard</h1>
+</div>
+
+<!-- Stats Grid -->
+<div class="stats-grid">
+
+    <!-- Total Products -->
+    <div class="stat-card primary" data-stat-value="{{ total_products }}">
+        <div class="stat-card-content">
+            <div class="stat-card-label">
+                <span class="icon-box"><i class="bi bi-box-seam"></i></span>
+                Total Products
+            </div>
+            <div class="stat-card-value">
+                <span class="count-up" data-target="{{ total_products }}">0</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Orders -->
+    <div class="stat-card success" data-stat-value="{{ total_orders }}">
+        <div class="stat-card-content">
+            <div class="stat-card-label">
+                <span class="icon-box"><i class="bi bi-receipt"></i></span>
+                Total Orders
+            </div>
+            <div class="stat-card-value">
+                <span class="count-up" data-target="{{ total_orders }}">0</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Orders -->
+    <div class="stat-card info" data-stat-value="{{ pending_orders }}">
+        <div class="stat-card-content">
+            <div class="stat-card-label">
+                <span class="icon-box"><i class="bi bi-hourglass-split"></i></span>
+                Pending Orders
+            </div>
+            <div class="stat-card-value">
+                <span class="count-up" data-target="{{ pending_orders }}">0</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Revenue -->
+    <div class="stat-card warning" data-stat-value="{{ total_revenue }}">
+        <div class="stat-card-content">
+            <div class="stat-card-label">
+                <span class="icon-box"><i class="bi bi-currency-exchange"></i></span>
+                Total Revenue
+            </div>
+            <div class="stat-card-value">
+                <span class="count-up" data-target="{{ total_revenue }}" data-suffix=" FCFA">0</span>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Quick Actions (uncomment in production if desired) 
+<div class="quick-actions-section">
+    <h3><i class="bi bi-lightning-charge-fill"></i> Quick Actions</h3>
+    <div class="quick-actions-grid">
+        <a href="{{ url_for('add_product') }}" class="action-btn primary">
+            <i class="bi bi-plus-circle-fill"></i> Add Product
+        </a>
+        <a href="{{ url_for('admin_products') }}" class="action-btn secondary">
+            <i class="bi bi-box-seam"></i> Manage Products
+        </a>
+        <a href="{{ url_for('commands_list') }}" class="action-btn success">
+            <i class="bi bi-receipt"></i> View Orders
+        </a>
+    </div>
+</div>
+-->
+
+<script>
+/* ============================================
+   ADMIN DASHBOARD SCRIPT
+   ============================================ */
+(function() {
+    'use strict';
+
+    // ---------- Number formatting ----------
+    function formatNumber(n) {
+        return new Intl.NumberFormat('fr-FR').format(Math.round(n));
+    }
+
+    // ---------- Animated counter (single implementation) ----------
+    function animateCounter(el, target, suffix, duration) {
+        const startTime = performance.now();
+        const startVal = 0;
+        const endVal = target;
+
+        // If user prefers reduced motion, set instantly
+        if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            el.textContent = formatNumber(endVal) + (suffix || '');
+            return;
+        }
+
+        function tick(now) {
+            const elapsed = now - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+
+            // ease-out cubic
+            const eased = 1 - Math.pow(1 - progress, 3);
+            const value = startVal + (endVal - startVal) * eased;
+
+            el.textContent = formatNumber(value) + (suffix || '');
+
+            if (progress < 1) {
+                requestAnimationFrame(tick);
+            } else {
+                el.textContent = formatNumber(endVal) + (suffix || '');
+            }
+        }
+
+        requestAnimationFrame(tick);
+    }
+
+    // ---------- Initialize all counters ----------
+    function initCounters() {
+        document.querySelectorAll('.count-up').forEach((el, idx) => {
+            const target = parseFloat(el.dataset.target) || 0;
+            const suffix = el.dataset.suffix || '';
+            const delay = 150 * idx;
+
+            setTimeout(() => {
+                animateCounter(el, target, suffix, 1600);
+            }, delay);
+        });
+    }
+
+    // Use IntersectionObserver so counters animate only when visible
+    if ('IntersectionObserver' in window) {
+        const cards = document.querySelectorAll('.stat-card');
+        const observer = new IntersectionObserver((entries) => {
+            let anyVisible = false;
+            entries.forEach(entry => {
+                if (entry.isIntersecting) anyVisible = true;
+            });
+            if (anyVisible) {
+                initCounters();
+                observer.disconnect();
+            }
+        }, { threshold: 0.1 });
+
+        cards.forEach(card => observer.observe(card));
+    } else {
+        // Fallback: run on load
+        initCounters();
+    }
+
+    // ---------- Welcome Toast ----------
+    const totalProducts = parseInt(document.querySelector('[data-stat-value]')?.dataset.statValue) || 0;
+    const totalOrders   = parseFloat(document.querySelectorAll('[data-stat-value]')[1]?.dataset.statValue) || 0;
+
+    if (typeof showToast === 'function') {
+        setTimeout(() => {
+            const products = parseInt(document.querySelector('.stat-card.primary')?.dataset.statValue) || 0;
+            const orders   = parseFloat(document.querySelector('.stat-card.success')?.dataset.statValue) || 0;
+            showToast(
+                `📊 Welcome back — ${formatNumber(products)} products · ${formatNumber(orders)} orders`,
+                'info',
+                'bi-speedometer2'
+            );
+        }, 1200);
+    }
+
+    // ---------- Keyboard Shortcuts ----------
+    document.addEventListener('keydown', function(e) {
+        const tag = (document.activeElement || {}).tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+
+        // Alt+1 → Add product
+        if (e.altKey && e.key === '1') {
+            e.preventDefault();
+            window.location.href = "{{ url_for('add_product') }}";
+        }
+        // Alt+2 → Manage products
+        if (e.altKey && e.key === '2') {
+            e.preventDefault();
+            window.location.href = "{{ url_for('admin_products') }}";
+        }
+        // Alt+3 → Orders list
+        if (e.altKey && e.key === '3') {
+            e.preventDefault();
+            window.location.href = "{{ url_for('commands_list') }}";
+        }
+    });
+
+    console.log('📊 Admin Dashboard loaded');
+})();
+</script>
+{% endblock %}

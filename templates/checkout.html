@@ -1,0 +1,740 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout - Linux Shop{% endblock %}
+
+{% block content %}
+<style>
+    /* ============================================
+       CHECKOUT PAGE — FULLY RESPONSIVE
+       ============================================ */
+
+    /* ---------- Page Header ---------- */
+    .checkout-header {
+        margin: clamp(1rem, 3vw, 2rem) 0 clamp(1.25rem, 3vw, 2rem);
+        animation: slideInDown 0.6s ease-out;
+    }
+
+    .checkout-header h1 {
+        font-size: clamp(1.4rem, 4.5vw, 2.2rem);
+        font-weight: 800;
+        color: var(--gray-900);
+        margin: 0;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        position: relative;
+    }
+
+    .checkout-header h1 i {
+        color: var(--primary-color);
+        font-size: clamp(1.25rem, 3.5vw, 1.75rem);
+    }
+
+    .checkout-header h1::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 70px;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-color), #7209b7);
+        border-radius: 999px;
+        animation: expandWidth 0.8s ease-out 0.3s both;
+    }
+
+    @keyframes expandWidth {
+        from { width: 0; }
+        to   { width: 70px; }
+    }
+
+    /* ---------- Layout Grid ---------- */
+    .checkout-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: clamp(1.25rem, 3vw, 2rem);
+        animation: fadeInUp 0.6s ease-out 0.1s both;
+    }
+
+    @media (min-width: 992px) {
+        .checkout-grid {
+            grid-template-columns: 1.55fr 1fr;
+            align-items: start;
+        }
+    }
+
+    /* ---------- Cards ---------- */
+    .checkout-card {
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: clamp(1.1rem, 3vw, 1.75rem);
+        transition: box-shadow 0.25s ease;
+    }
+
+    .checkout-card:hover {
+        box-shadow: var(--shadow-lg);
+    }
+
+    /* ---------- Form Fields ---------- */
+    .form-group-modern {
+        margin-bottom: clamp(0.9rem, 2.5vw, 1.15rem);
+    }
+
+    .form-group-modern:last-child {
+        margin-bottom: 0;
+    }
+
+    .form-label {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-weight: 600;
+        color: var(--gray-700);
+        font-size: clamp(0.78rem, 2vw, 0.88rem);
+        margin-bottom: 0.4rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .form-label i {
+        color: var(--primary-color);
+        font-size: 0.95em;
+    }
+
+    .input-wrap {
+        position: relative;
+        display: flex;
+        align-items: stretch;
+        background: var(--gray-100);
+        border: 2px solid var(--gray-200);
+        border-radius: 12px;
+        transition: all 0.2s ease;
+        overflow: hidden;
+    }
+
+    .input-wrap:focus-within {
+        border-color: var(--primary-color);
+        background: white;
+        box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.12);
+    }
+
+    .input-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: clamp(38px, 9vw, 44px);
+        min-width: clamp(38px, 9vw, 44px);
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: white;
+        font-size: clamp(0.85rem, 2vw, 0.95rem);
+    }
+
+    .input-wrap input,
+    .input-wrap textarea,
+    .input-wrap select {
+        flex: 1;
+        border: none;
+        outline: none;
+        background: transparent;
+        padding: clamp(0.55rem, 1.6vw, 0.7rem) clamp(0.75rem, 2vw, 1rem);
+        font-size: clamp(0.85rem, 2vw, 0.95rem);
+        color: var(--gray-800);
+        min-height: 42px;
+        width: 100%;
+        font-family: inherit;
+        appearance: none;
+        -webkit-appearance: none;
+    }
+
+    .input-wrap select {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%236b7280' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        padding-right: 2.25rem;
+        cursor: pointer;
+    }
+
+    .input-wrap textarea {
+        resize: vertical;
+        min-height: 90px;
+        line-height: 1.5;
+        padding-top: 0.7rem;
+    }
+
+    .input-wrap input::placeholder,
+    .input-wrap textarea::placeholder {
+        color: var(--gray-400);
+    }
+
+    .form-help {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.35rem;
+        font-size: clamp(0.72rem, 1.8vw, 0.8rem);
+        color: var(--gray-500);
+        margin-top: 0.4rem;
+        line-height: 1.5;
+    }
+
+    .form-help i {
+        color: var(--info-color);
+        flex-shrink: 0;
+        margin-top: 1px;
+    }
+
+    /* ---------- Info Banner ---------- */
+    .info-banner {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.65rem;
+        padding: clamp(0.85rem, 2.2vw, 1.1rem) clamp(0.9rem, 2.5vw, 1.15rem);
+        background: linear-gradient(135deg, rgba(76, 201, 240, 0.14), rgba(76, 201, 240, 0.04));
+        border: 1px solid rgba(76, 201, 240, 0.3);
+        border-radius: 12px;
+        margin: clamp(0.9rem, 2.5vw, 1.15rem) 0;
+        font-size: clamp(0.82rem, 2vw, 0.9rem);
+        color: #0369a1;
+        line-height: 1.55;
+    }
+
+    .info-banner i {
+        color: var(--info-color);
+        font-size: clamp(1rem, 2.5vw, 1.15rem);
+        flex-shrink: 0;
+        margin-top: 2px;
+    }
+
+    .info-banner strong {
+        display: block;
+        color: #0c4a6e;
+        font-size: clamp(0.85rem, 2.1vw, 0.95rem);
+        margin-bottom: 0.15rem;
+    }
+
+    .info-banner small {
+        color: #0369a1;
+        line-height: 1.55;
+    }
+
+    /* ---------- Pay Button ---------- */
+    .btn-pay {
+        width: 100%;
+        padding: clamp(0.75rem, 2vw, 0.95rem) 1.5rem;
+        border: none;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--success-color), #059669);
+        color: white;
+        font-weight: 700;
+        font-size: clamp(0.92rem, 2.2vw, 1.05rem);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        box-shadow: 0 4px 14px rgba(6, 214, 160, 0.3);
+        line-height: 1.2;
+    }
+
+    .btn-pay:hover:not(:disabled) {
+        background: linear-gradient(135deg, #059669, var(--success-color));
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(6, 214, 160, 0.45);
+        color: white;
+    }
+
+    .btn-pay:disabled {
+        opacity: 0.75;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    /* Spinner inside button */
+    .spinner-inline {
+        display: inline-block;
+        width: 15px;
+        height: 15px;
+        border: 2px solid rgba(255,255,255,0.4);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    /* ---------- Order Summary Card ---------- */
+    .summary-card {
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-md);
+        animation: slideInRight 0.6s ease-out 0.2s both;
+    }
+
+    @media (min-width: 992px) {
+        .summary-card {
+            position: sticky;
+            top: 100px;
+        }
+    }
+
+    .summary-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: white;
+        padding: clamp(0.85rem, 2vw, 1.1rem) clamp(1rem, 2.5vw, 1.25rem);
+        font-weight: 700;
+        font-size: clamp(0.95rem, 2.3vw, 1.05rem);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .summary-body {
+        padding: clamp(1rem, 2.5vw, 1.35rem);
+    }
+
+    .summary-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 0.75rem;
+        padding: clamp(0.55rem, 1.5vw, 0.7rem) 0;
+        font-size: clamp(0.82rem, 2vw, 0.9rem);
+        color: var(--gray-700);
+        border-bottom: 1px dashed var(--gray-200);
+    }
+
+    .summary-item:last-of-type {
+        border-bottom: none;
+    }
+
+    .summary-item-name {
+        flex: 1;
+        min-width: 0;
+        word-break: break-word;
+        line-height: 1.4;
+    }
+
+    .summary-item-name .qty {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.15rem 0.45rem;
+        background: var(--gray-200);
+        border-radius: 999px;
+        font-size: 0.75em;
+        font-weight: 700;
+        color: var(--gray-700);
+        margin-left: 0.35rem;
+    }
+
+    .summary-item-price {
+        font-weight: 700;
+        white-space: nowrap;
+        color: var(--gray-800);
+    }
+
+    .summary-divider {
+        margin: clamp(0.75rem, 2vw, 1rem) 0;
+        border: none;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--gray-300), transparent);
+    }
+
+    .summary-total-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.5rem;
+        padding-top: clamp(0.5rem, 1.5vw, 0.65rem);
+        font-size: clamp(0.9rem, 2.2vw, 1.05rem);
+        font-weight: 800;
+        color: var(--gray-800);
+    }
+
+    .summary-total-value {
+        font-size: clamp(1.05rem, 3vw, 1.35rem);
+        font-weight: 800;
+        color: var(--success-color);
+        white-space: nowrap;
+    }
+
+    /* ---------- How It Works Card ---------- */
+    .how-card {
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        margin-top: clamp(1rem, 2.5vw, 1.5rem);
+        animation: slideInRight 0.6s ease-out 0.3s both;
+    }
+
+    .how-header {
+        background: linear-gradient(135deg, var(--info-color), #2563eb);
+        color: white;
+        padding: clamp(0.75rem, 1.8vw, 0.95rem) clamp(1rem, 2.5vw, 1.25rem);
+        font-weight: 700;
+        font-size: clamp(0.88rem, 2.2vw, 0.98rem);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .how-body {
+        padding: clamp(1rem, 2.5vw, 1.35rem);
+        font-size: clamp(0.82rem, 2vw, 0.9rem);
+        color: var(--gray-700);
+    }
+
+    .how-body ol {
+        padding-left: 1.15rem;
+        margin: 0;
+    }
+
+    .how-body ol li {
+        margin-bottom: 0.45rem;
+        line-height: 1.55;
+    }
+
+    .how-body ol li:last-child {
+        margin-bottom: 0;
+    }
+
+    .how-body strong {
+        color: var(--gray-800);
+    }
+
+    /* ---------- Animations ---------- */
+    @keyframes slideInDown {
+        from { opacity: 0; transform: translateY(-20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideInRight {
+        from { opacity: 0; transform: translateX(20px); }
+        to   { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ---------- Reduced Motion ---------- */
+    @media (prefers-reduced-motion: reduce) {
+        .checkout-header,
+        .checkout-grid,
+        .summary-card,
+        .how-card {
+            animation: none !important;
+        }
+        .btn-pay:hover:not(:disabled) {
+            transform: none;
+        }
+    }
+
+    /* ---------- Dark Mode ---------- */
+    body.dark-mode .checkout-header h1 { color: var(--gray-100); }
+
+    body.dark-mode .checkout-card,
+    body.dark-mode .summary-card,
+    body.dark-mode .how-card {
+        background: var(--gray-800);
+        border-color: var(--gray-700);
+    }
+
+    body.dark-mode .form-label { color: var(--gray-300); }
+
+    body.dark-mode .input-wrap {
+        background: var(--gray-700);
+        border-color: var(--gray-600);
+    }
+
+    body.dark-mode .input-wrap:focus-within {
+        background: var(--gray-600);
+    }
+
+    body.dark-mode .input-wrap input,
+    body.dark-mode .input-wrap textarea,
+    body.dark-mode .input-wrap select {
+        color: white;
+    }
+
+    body.dark-mode .summary-item {
+        color: var(--gray-300);
+        border-bottom-color: var(--gray-700);
+    }
+
+    body.dark-mode .summary-item-price { color: var(--gray-100); }
+    body.dark-mode .summary-item-name .qty { background: var(--gray-700); color: var(--gray-200); }
+    body.dark-mode .summary-total-row { color: var(--gray-100); }
+
+    body.dark-mode .info-banner {
+        background: linear-gradient(135deg, rgba(76, 201, 240, 0.16), rgba(76, 201, 240, 0.05));
+        border-color: rgba(76, 201, 240, 0.4);
+        color: var(--info-color);
+    }
+
+    body.dark-mode .info-banner strong { color: #bae6fd; }
+    body.dark-mode .info-banner small  { color: #7dd3fc; }
+
+    body.dark-mode .how-body { color: var(--gray-300); }
+    body.dark-mode .how-body strong { color: var(--gray-100); }
+</style>
+
+<div class="container">
+    <!-- Page Header -->
+    <div class="checkout-header">
+        <h1><i class="bi bi-cart-check-fill"></i> Checkout</h1>
+    </div>
+
+    <!-- Checkout Grid -->
+    <div class="checkout-grid">
+
+        <!-- ============ FORM COLUMN ============ -->
+        <div>
+            <div class="checkout-card">
+                <form method="POST" action="{{ url_for('checkout') }}" id="checkoutForm" novalidate>
+
+                    <!-- Full Name -->
+                    <div class="form-group-modern">
+                        <label class="form-label" for="customer_name">
+                            <i class="bi bi-person-fill"></i> Full Name
+                        </label>
+                        <div class="input-wrap" id="nameWrap">
+                            <span class="input-icon"><i class="bi bi-person"></i></span>
+                            <input type="text" id="customer_name" name="customer_name"
+                                   placeholder="John Doe" autocomplete="name" required>
+                        </div>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="form-group-modern">
+                        <label class="form-label" for="customer_email">
+                            <i class="bi bi-envelope-fill"></i> Email Address
+                        </label>
+                        <div class="input-wrap" id="emailWrap">
+                            <span class="input-icon"><i class="bi bi-envelope"></i></span>
+                            <input type="email" id="customer_email" name="customer_email"
+                                   placeholder="john@example.com" autocomplete="email" required>
+                        </div>
+                        <div class="form-help">
+                            <i class="bi bi-info-circle-fill"></i>
+                            Your payment receipt will be sent here.
+                        </div>
+                    </div>
+
+                    <!-- Address -->
+                    <div class="form-group-modern">
+                        <label class="form-label" for="customer_address">
+                            <i class="bi bi-geo-alt-fill"></i> Shipping Address
+                        </label>
+                        <div class="input-wrap" id="addressWrap">
+                            <span class="input-icon"><i class="bi bi-pin-map"></i></span>
+                            <textarea id="customer_address" name="customer_address"
+                                      rows="4" placeholder="Street, city, landmark..."
+                                      autocomplete="street-address" required></textarea>
+                        </div>
+                        <div class="form-help">
+                            <i class="bi bi-info-circle-fill"></i>
+                            Include a landmark to help our courier find you faster.
+                        </div>
+                    </div>
+
+                    <!-- Payment Method -->
+                    <div class="form-group-modern">
+                        <label class="form-label" for="payment_method">
+                            <i class="bi bi-credit-card-fill"></i> Payment Method
+                        </label>
+                        <div class="input-wrap">
+                            <span class="input-icon"><i class="bi bi-wallet2"></i></span>
+                            <select id="payment_method" name="payment_method">
+                                <option value="mtn">MTN Mobile Money</option>
+                                <option value="orange">Orange Money</option>
+                                <option value="cash">Cash on Delivery</option>
+                            </select>
+                        </div>
+                        <div class="form-help">
+                            <i class="bi bi-shield-check"></i>
+                            You'll be redirected to Fapshi to complete payment securely.
+                        </div>
+                    </div>
+
+                    <!-- Info banner -->
+                    <div class="info-banner">
+                        <i class="bi bi-info-circle-fill"></i>
+                        <div>
+                            <strong>Secure Payment via Fapshi</strong>
+                            <small>
+                                After clicking the button below, you'll be redirected to Fapshi's
+                                secure payment page. Pay with MTN Mobile Money or Orange Money, then
+                                you'll be sent back here automatically.
+                            </small>
+                        </div>
+                    </div>
+
+                    <!-- Pay button -->
+                    <button type="submit" class="btn-pay" id="payBtn">
+                        <i class="bi bi-shield-lock-fill"></i>
+                        <span>Pay Now — {{ total_amount|fcfa }} FCFA</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- ============ SUMMARY COLUMN ============ -->
+        <div>
+
+            <!-- Order Summary -->
+            <div class="summary-card">
+                <div class="summary-header">
+                    <i class="bi bi-bag-check-fill"></i> Order Summary
+                </div>
+                <div class="summary-body">
+                    {% for product_id, item in cart.items() %}
+                    <div class="summary-item">
+                        <span class="summary-item-name">
+                            {{ item.name }}
+                            <span class="qty">×{{ item.quantity }}</span>
+                        </span>
+                        <span class="summary-item-price">{{ (item.price * item.quantity)|fcfa }} FCFA</span>
+                    </div>
+                    {% endfor %}
+
+                    <hr class="summary-divider">
+
+                    <div class="summary-item">
+                        <span>Subtotal</span>
+                        <span class="summary-item-price">{{ subtotal|fcfa }} FCFA</span>
+                    </div>
+
+                    <div class="summary-item">
+                        <span>Delivery Fee</span>
+                        <span class="summary-item-price" style="color: var(--success-color);">{{ delivery_fee|fcfa }} FCFA</span>
+                    </div>
+
+                    <hr class="summary-divider">
+
+                    <div class="summary-total-row">
+                        <span>Total</span>
+                        <span class="summary-total-value">{{ total_amount|fcfa }} FCFA</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- How It Works -->
+            <div class="how-card">
+                <div class="how-header">
+                    <i class="bi bi-info-circle-fill"></i> How It Works
+                </div>
+                <div class="how-body">
+                    <ol>
+                        <li>Fill in your delivery details</li>
+                        <li>Click <strong>Pay Now</strong></li>
+                        <li>You'll be redirected to <strong>Fapshi</strong></li>
+                        <li>Enter your MTN or Orange number</li>
+                        <li>Approve the payment on your phone</li>
+                        <li>You'll return here with a confirmation</li>
+                    </ol>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+/* ============================================
+   CHECKOUT PAGE SCRIPT
+   ============================================ */
+(function() {
+    'use strict';
+
+    const form = document.getElementById('checkoutForm');
+    const btn = document.getElementById('payBtn');
+    const nameInput = document.getElementById('customer_name');
+    const emailInput = document.getElementById('customer_email');
+    const addressInput = document.getElementById('customer_address');
+    const nameWrap = document.getElementById('nameWrap');
+    const emailWrap = document.getElementById('emailWrap');
+    const addressWrap = document.getElementById('addressWrap');
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    // ---------- Live Validation ----------
+    function markInvalid(wrapEl, valid) {
+        if (wrapEl) wrapEl.classList.toggle('is-invalid', !valid);
+    }
+
+    if (nameInput) {
+        nameInput.addEventListener('input', function() {
+            markInvalid(nameWrap, this.value.trim().length > 0);
+        });
+    }
+
+    if (emailInput) {
+        emailInput.addEventListener('input', function() {
+            const v = this.value.trim();
+            markInvalid(emailWrap, v === '' || emailPattern.test(v));
+        });
+    }
+
+    if (addressInput) {
+        addressInput.addEventListener('input', function() {
+            markInvalid(addressWrap, this.value.trim().length > 0);
+        });
+    }
+
+    // ---------- Form Submit ----------
+    if (form && btn) {
+        form.addEventListener('submit', function(e) {
+            let hasError = false;
+
+            // Validate name
+            if (!nameInput.value.trim()) {
+                markInvalid(nameWrap, false);
+                hasError = true;
+            }
+
+            // Validate email
+            const emailVal = emailInput.value.trim();
+            if (!emailVal || !emailPattern.test(emailVal)) {
+                markInvalid(emailWrap, false);
+                hasError = true;
+            }
+
+            // Validate address
+            if (!addressInput.value.trim()) {
+                markInvalid(addressWrap, false);
+                hasError = true;
+            }
+
+            if (hasError) {
+                e.preventDefault();
+                if (typeof showToast === 'function') {
+                    showToast('Please fix the highlighted fields.', 'warning', 'bi-exclamation-triangle-fill');
+                }
+                const firstInvalid = form.querySelector('.input-wrap.is-invalid input, .input-wrap.is-invalid textarea');
+                if (firstInvalid) firstInvalid.focus();
+                return;
+            }
+
+            // Loading state
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-inline"></span><span>Redirecting to Fapshi…</span>';
+
+            if (typeof showToast === 'function') {
+                showToast('Redirecting to secure payment…', 'info', 'bi-shield-lock-fill');
+            }
+        });
+    }
+
+    console.log('🛒 Checkout page loaded');
+})();
+</script>
+{% endblock %}

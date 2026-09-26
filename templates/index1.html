@@ -1,0 +1,847 @@
+{% extends "base.html" %}
+
+{% block title %}Linux Shop{% endblock %}
+
+{% block content %}
+<style>
+    /* Modern Inline CSS for Linux Shop - Preserving All Functions */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+    :root {
+        --primary: #4361ee;
+        --primary-dark: #3a56d4;
+        --primary-light: #6c8cff;
+        --secondary: #7209b7;
+        --accent: #f72585;
+        --success: #06d6a0;
+        --warning: #ffd166;
+        --danger: #ef476f;
+        --dark: #1e293b;
+        --light: #f8fafc;
+        --gray: #64748b;
+        --border: #e2e8f0;
+        --card-bg: #ffffff;
+        --shadow-sm: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+        --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+        --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+        --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+        --radius: 1rem;
+        --radius-sm: 0.5rem;
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Base Styles */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        background: linear-gradient(135deg, #667eea0a 0%, #764ba20a 100%);
+        color: var(--dark);
+        line-height: 1.6;
+    }
+
+    .container {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 2rem;
+    }
+
+    /* Hero Section */
+    .row:first-child .col-md-12 {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        padding: 4rem 2rem !important;
+        border-radius: var(--radius);
+        margin: 2rem 0 3rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        box-shadow: var(--shadow-xl);
+        animation: slideInDown 0.8s ease-out;
+    }
+
+    .row:first-child .col-md-12::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 50%);
+        animation: rotate 20s linear infinite;
+    }
+
+    .row:first-child h1 {
+        color: white;
+        font-size: clamp(2rem, 5vw, 3.5rem);
+        font-weight: 800;
+        margin-bottom: 1rem;
+        text-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        position: relative;
+        z-index: 1;
+        animation: fadeInUp 0.8s ease-out 0.2s both;
+    }
+
+    .row:first-child p {
+        color: rgba(255,255,255,0.95);
+        font-size: clamp(1rem, 2vw, 1.25rem);
+        max-width: 600px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+        animation: fadeInUp 0.8s ease-out 0.4s both;
+    }
+
+    /* Section Title */
+    h2.mt-4 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--dark);
+        margin: 3rem 0 2rem;
+        position: relative;
+        display: inline-block;
+        animation: fadeIn 0.8s ease-out;
+    }
+
+    h2.mt-4::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 80px;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary), var(--accent));
+        border-radius: 2px;
+        animation: expandWidth 0.8s ease-out 0.5s both;
+    }
+
+    /* Product Grid */
+    .row.mt-3 {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 2rem;
+        margin: 0 !important;
+    }
+
+    .col-md-4 {
+        padding: 0 !important;
+        width: 100% !important;
+        animation: fadeInUp 0.6s ease-out;
+        animation-fill-mode: both;
+    }
+
+    /* Stagger Animation */
+    {% for i in range(1, 7) %}
+    .col-md-4:nth-child({{ i }}) {
+        animation-delay: {{ 0.1 * i }}s;
+    }
+    {% endfor %}
+
+    /* Product Card */
+    .card {
+        background: var(--card-bg);
+        border: 1px solid var(--border) !important;
+        border-radius: var(--radius) !important;
+        overflow: hidden;
+        transition: var(--transition);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        box-shadow: var(--shadow-sm);
+        cursor: pointer;
+    }
+
+    .card:hover {
+        transform: translateY(-8px);
+        box-shadow: var(--shadow-xl);
+        border-color: transparent !important;
+    }
+
+    .card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary), var(--accent));
+        transform: scaleX(0);
+        transition: transform 0.5s ease;
+        transform-origin: left;
+        z-index: 2;
+    }
+
+    .card:hover::before {
+        transform: scaleX(1);
+    }
+
+    /* Product Image */
+    .card-img-top {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .card:hover .card-img-top {
+        transform: scale(1.05);
+    }
+
+    /* Card Body */
+    .card-body {
+        padding: 1.5rem !important;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        background: linear-gradient(180deg, var(--card-bg) 0%, #fafafa 100%);
+    }
+
+    .card-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--dark);
+        margin-bottom: 0.5rem;
+        line-height: 1.4;
+        transition: color 0.3s ease;
+    }
+
+    .card:hover .card-title {
+        color: var(--primary);
+    }
+
+    .card-text {
+        color: var(--gray);
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+        flex: 1;
+    }
+
+    /* Price */
+    .h5 {
+        font-size: 1.5rem !important;
+        font-weight: 700;
+        color: var(--primary);
+        margin: 1rem 0 0.5rem !important;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .h5::before {
+        content: '';
+        width: 4px;
+        height: 24px;
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        border-radius: 2px;
+    }
+
+    /* Stock Status */
+    .text-muted {
+        color: var(--gray) !important;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin: 0.5rem 0 1rem !important;
+        padding: 0.5rem 1rem;
+        background: #f1f5f9;
+        border-radius: 2rem;
+        width: fit-content;
+        transition: var(--transition);
+    }
+
+    .card:hover .text-muted {
+        background: #e2e8f0;
+    }
+
+    .text-muted::before {
+        content: '✓';
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
+        background: var(--success);
+        color: white;
+        border-radius: 50%;
+        font-size: 12px;
+        font-weight: bold;
+    }
+
+    /* Buttons Container */
+    .card-body {
+        position: relative;
+    }
+
+    /* Buttons */
+    .btn {
+        padding: 0.75rem 1.5rem !important;
+        border-radius: 0.75rem !important;
+        font-weight: 600 !important;
+        font-size: 0.95rem !important;
+        transition: var(--transition) !important;
+        border: none !important;
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+        text-decoration: none !important;
+        margin: 0.25rem !important;
+        flex: 1;
+    }
+
+    .btn::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.2);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+
+    .btn:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark)) !important;
+        color: white !important;
+        box-shadow: var(--shadow-md);
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, var(--primary-dark), var(--primary)) !important;
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .btn-outline-secondary {
+        background: transparent !important;
+        color: var(--dark) !important;
+        border: 2px solid var(--border) !important;
+    }
+
+    .btn-outline-secondary:hover {
+        background: #f1f5f9 !important;
+        border-color: var(--gray) !important;
+        transform: translateY(-2px);
+        color: var(--dark) !important;
+    }
+
+    /* Button Group */
+    .card-body .btn {
+        display: inline-block;
+        width: calc(50% - 0.5rem);
+        margin: 0 0.25rem;
+    }
+
+    /* Loading Animation */
+    @keyframes slideInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes expandWidth {
+        from { width: 0; }
+        to { width: 80px; }
+    }
+
+    @keyframes rotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    @keyframes shimmer {
+        0% { background-position: -1000px 0; }
+        100% { background-position: 1000px 0; }
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+
+    /* Toast Notification */
+    .toast-notification {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background: linear-gradient(135deg, var(--success), #05b386);
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 1rem;
+        box-shadow: var(--shadow-xl);
+        transform: translateX(400px);
+        transition: transform 0.3s ease;
+        z-index: 9999;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .toast-notification.show {
+        transform: translateX(0);
+    }
+
+    .toast-notification i {
+        font-size: 1.25rem;
+    }
+
+    /* Loading Skeleton */
+    .skeleton {
+        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background-size: 1000px 100%;
+        animation: shimmer 2s infinite;
+    }
+
+    /* Quick View Modal */
+    .quick-view-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 10000;
+        justify-content: center;
+        align-items: center;
+        backdrop-filter: blur(5px);
+    }
+
+    .quick-view-modal.show {
+        display: flex;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .modal-content {
+        background: white;
+        padding: 2rem;
+        border-radius: var(--radius);
+        max-width: 500px;
+        width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+        position: relative;
+        animation: slideInUp 0.3s ease;
+    }
+
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .close-modal {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: var(--gray);
+        transition: color 0.3s ease;
+    }
+
+    .close-modal:hover {
+        color: var(--danger);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .container {
+            padding: 0 1rem;
+        }
+        
+        .row.mt-3 {
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+        
+        .card-img-top {
+            height: 200px;
+        }
+        
+        .card-body {
+            padding: 1rem !important;
+        }
+        
+        .h5 {
+            font-size: 1.25rem !important;
+        }
+        
+        .btn {
+            padding: 0.6rem 1rem !important;
+            font-size: 0.9rem !important;
+        }
+        
+        .row:first-child .col-md-12 {
+            padding: 2rem 1rem !important;
+        }
+        
+        h2.mt-4 {
+            font-size: 2rem;
+        }
+        
+        .toast-notification {
+            left: 1rem;
+            right: 1rem;
+            bottom: 1rem;
+            transform: translateY(400px);
+        }
+    }
+
+    @media (max-width: 480px) {
+        .card-body .btn {
+            width: 100%;
+            margin: 0.25rem 0;
+        }
+        
+        .row.mt-3 {
+            grid-template-columns: 1fr;
+        }
+        
+        .h5 {
+            font-size: 1.1rem !important;
+        }
+        
+        .text-muted {
+            font-size: 0.85rem;
+        }
+    }
+
+    /* Dark Mode Support */
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --card-bg: #1e293b;
+            --dark: #f1f5f9;
+            --light: #0f172a;
+            --gray: #94a3b8;
+            --border: #334155;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+        
+        .card-body {
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+        }
+        
+        .text-muted {
+            background: #334155;
+            color: #cbd5e1 !important;
+        }
+        
+        .btn-outline-secondary {
+            color: #f1f5f9 !important;
+            border-color: #334155 !important;
+        }
+        
+        .btn-outline-secondary:hover {
+            background: #334155 !important;
+        }
+        
+        .modal-content {
+            background: #1e293b;
+            color: #f1f5f9;
+        }
+    }
+</style>
+
+<!-- Quick View Modal -->
+<div class="quick-view-modal" id="quickViewModal">
+    <div class="modal-content">
+        <button class="close-modal" onclick="closeQuickView()">&times;</button>
+        <div id="quickViewContent"></div>
+    </div>
+</div>
+
+<!-- Original Content - Unchanged -->
+<div class="row">
+    <div class="col-md-12">
+        <h1><strong>Welcome to Linux Shop</strong></h1>
+        <p>Your one-stop shop for all products!</p>
+    </div>
+</div>
+
+<h2 class="mt-4">Featured Products</h2>
+<div class="row mt-3">
+    {% for product in products %}
+    <div class="col-md-4 mb-4" data-product-id="{{ product.id }}" data-product-name="{{ product.name }}" data-product-price="{{ product.price }}" data-product-description="{{ product.description }}">
+        <div class="card h-100">
+            {% if product.image_url %}
+            <img src="{{ product.image_url }}"
+                srcset="{{ product.image_url.replace('.','_med.') }} 400w, {{ product.image_url.replace('.','_thumb.') }} 200w"
+                sizes="(max-width: 600px) 200px, 400px"
+                class="card-img-top" alt="{{ product.name }}">
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ product.name }}</h5>
+                <p class="card-text">{{ product.description[:100] }}...</p>
+                <p class="h5">{{ product.price|fcfa }} FCFA</p>
+                <p class="text-muted">In stock: {{ product.quantity }}</p>
+                <a href="{{ url_for('add_to_cart', product_id=product.id) }}" class="btn btn-primary add-to-cart">Add to Cart</a>
+                <a href="{{ url_for('product_detail', id=product.id) }}" class="btn btn-outline-secondary">View Details</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+    // Modern JavaScript Features - Preserving All Original Functions
+    (function() {
+        'use strict';
+
+        // Toast notification function
+        function showToast(message, type = 'success') {
+            // Remove existing toast if any
+            const existingToast = document.querySelector('.toast-notification');
+            if (existingToast) {
+                existingToast.remove();
+            }
+
+            // Create toast
+            const toast = document.createElement('div');
+            toast.className = 'toast-notification';
+            toast.innerHTML = `
+                <i class="bi ${type === 'success' ? 'bi-check-circle-fill' : 'bi-exclamation-circle-fill'}"></i>
+                <span>${message}</span>
+            `;
+            document.body.appendChild(toast);
+
+            // Show toast
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 100);
+
+            // Hide toast after 3 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 3000);
+        }
+
+        // Quick view functionality
+        window.openQuickView = function(productId, productName, productPrice, productDescription) {
+            const modal = document.getElementById('quickViewModal');
+            const content = document.getElementById('quickViewContent');
+            
+            content.innerHTML = `
+                <h2>${productName}</h2>
+                <p class="h5">${productPrice} FCFA</p>
+                <p>${productDescription}</p>
+                <a href="/add_to_cart/${productId}" class="btn btn-primary">Add to Cart</a>
+                <a href="/product_detail/${productId}" class="btn btn-outline-secondary">View Full Details</a>
+            `;
+            
+            modal.classList.add('show');
+        };
+
+        window.closeQuickView = function() {
+            document.getElementById('quickViewModal').classList.remove('show');
+        };
+
+        // Add click event to cards for quick view (double-click)
+        document.querySelectorAll('.card').forEach((card, index) => {
+            let clickTimer = null;
+            
+            card.addEventListener('click', function(e) {
+                // Don't trigger if clicking on buttons or links
+                if (e.target.tagName === 'A' || e.target.tagName === 'BUTTON' || e.target.closest('a') || e.target.closest('button')) {
+                    return;
+                }
+                
+                if (clickTimer === null) {
+                    clickTimer = setTimeout(() => {
+                        // Single click - do nothing
+                        clickTimer = null;
+                    }, 250);
+                } else {
+                    // Double click - show quick view
+                    clearTimeout(clickTimer);
+                    clickTimer = null;
+                    
+                    const col = this.closest('.col-md-4');
+                    const productId = col.dataset.productId;
+                    const productName = col.dataset.productName;
+                    const productPrice = col.dataset.productPrice;
+                    const productDescription = col.dataset.productDescription;
+                    
+                    openQuickView(productId, productName, productPrice, productDescription);
+                }
+            });
+        });
+
+        // Add to cart animation
+        document.querySelectorAll('.add-to-cart').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Get product info
+                const card = this.closest('.card');
+                const productName = card.querySelector('.card-title').textContent;
+                
+                // Animate button
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 200);
+                
+                // Show toast notification
+                showToast(`${productName} added to cart!`);
+                
+                // Original functionality - navigate to add to cart URL
+                setTimeout(() => {
+                    window.location.href = this.href;
+                }, 500);
+            });
+        });
+
+        // Lazy loading for images
+        if ('IntersectionObserver' in window) {
+            const imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        img.src = img.dataset.src || img.src;
+                        img.classList.add('fade-in');
+                        imageObserver.unobserve(img);
+                    }
+                });
+            });
+
+            document.querySelectorAll('.card-img-top').forEach(img => {
+                if (!img.complete) {
+                    img.style.opacity = '0';
+                    img.addEventListener('load', function() {
+                        this.style.opacity = '1';
+                    });
+                }
+                imageObserver.observe(img);
+            });
+        }
+
+        // Add hover effect with 3D tilt
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('mousemove', function(e) {
+                const rect = this.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                const angleX = (y - centerY) / 20;
+                const angleY = (centerX - x) / 20;
+                
+                this.style.transform = `perspective(1000px) rotateX(${angleX}deg) rotateY(${angleY}deg) translateY(-5px)`;
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = '';
+            });
+        });
+
+        // Stock level indicators
+        document.querySelectorAll('.text-muted').forEach(stockElement => {
+            const stockText = stockElement.textContent;
+            const stockMatch = stockText.match(/\d+/);
+            if (stockMatch) {
+                const stock = parseInt(stockMatch[0]);
+                if (stock < 5) {
+                    stockElement.style.background = '#fff3cd';
+                    stockElement.style.color = '#856404';
+                    stockElement.querySelector('::before')?.style.background = '#ffc107';
+                } else if (stock < 10) {
+                    stockElement.style.background = '#cff4fc';
+                    stockElement.style.color = '#055160';
+                }
+            }
+        });
+
+        // Parallax effect on hero section
+        const hero = document.querySelector('.row:first-child .col-md-12');
+        if (hero) {
+            window.addEventListener('scroll', () => {
+                const scrolled = window.pageYOffset;
+                const rate = scrolled * 0.5;
+                hero.style.backgroundPosition = `center ${rate}px`;
+            });
+        }
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeQuickView();
+            }
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('quickViewModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeQuickView();
+            }
+        });
+
+        // Add loading skeleton while images load
+        document.querySelectorAll('.card-img-top').forEach(img => {
+            if (!img.complete) {
+                img.classList.add('skeleton');
+                img.addEventListener('load', function() {
+                    this.classList.remove('skeleton');
+                });
+            }
+        });
+
+        console.log('✨ Linux Shop modern features loaded successfully!');
+    })();
+</script>
+{% endblock %}

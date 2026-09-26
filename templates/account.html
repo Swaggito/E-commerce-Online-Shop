@@ -1,0 +1,962 @@
+{% extends "base.html" %}
+
+{% block title %}Account - Linux Shop{% endblock %}
+
+{% block content %}
+<style>
+    /* ============================================
+       ACCOUNT PAGE — FULLY RESPONSIVE
+       ============================================ */
+
+    /* ---------- Page Header ---------- */
+    .page-header {
+        margin: clamp(1rem, 3vw, 2rem) 0 clamp(1.25rem, 3vw, 2rem);
+        animation: slideInDown 0.6s ease-out;
+    }
+
+    .page-header h1 {
+        font-size: clamp(1.4rem, 4.5vw, 2.2rem);
+        font-weight: 800;
+        color: var(--gray-900);
+        margin: 0;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        position: relative;
+    }
+
+    .page-header h1 i {
+        color: var(--primary-color);
+        font-size: clamp(1.25rem, 3.5vw, 1.75rem);
+    }
+
+    .page-header h1::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 70px;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-color), #7209b7);
+        border-radius: 999px;
+        animation: expandWidth 0.8s ease-out 0.3s both;
+    }
+
+    @keyframes expandWidth {
+        from { width: 0; }
+        to   { width: 70px; }
+    }
+
+    /* ---------- Layout Grid ---------- */
+    .account-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: clamp(1.25rem, 3vw, 2rem);
+        margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
+    }
+
+    @media (min-width: 768px) {
+        .account-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    /* ---------- Section Headings ---------- */
+    .section-heading {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: clamp(1.05rem, 2.8vw, 1.3rem);
+        font-weight: 700;
+        color: var(--gray-800);
+        margin-bottom: clamp(1rem, 2.5vw, 1.25rem);
+        position: relative;
+        padding-bottom: 0.55rem;
+    }
+
+    .section-heading::after {
+        content: '';
+        position: absolute;
+        bottom: 0; left: 0;
+        width: 50px;
+        height: 3px;
+        background: linear-gradient(90deg, var(--primary-color), #7209b7);
+        border-radius: 999px;
+    }
+
+    .section-heading i {
+        color: var(--primary-color);
+        font-size: 1.05em;
+    }
+
+    /* ---------- Profile Card ---------- */
+    .profile-card {
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        overflow: hidden;
+        animation: slideInLeft 0.6s ease-out;
+    }
+
+    .profile-row {
+        display: flex;
+        align-items: center;
+        gap: clamp(0.75rem, 2vw, 1rem);
+        padding: clamp(0.85rem, 2.5vw, 1.1rem) clamp(1rem, 3vw, 1.5rem);
+        border-bottom: 1px solid var(--gray-100);
+        transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .profile-row:last-child {
+        border-bottom: none;
+    }
+
+    .profile-row:hover {
+        background: var(--gray-100);
+        transform: translateX(4px);
+    }
+
+    .profile-icon {
+        width: clamp(38px, 9vw, 44px);
+        height: clamp(38px, 9vw, 44px);
+        min-width: clamp(38px, 9vw, 44px);
+        border-radius: 11px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, rgba(67, 97, 238, 0.15), rgba(67, 97, 238, 0.08));
+        color: var(--primary-color);
+        font-size: clamp(1rem, 2.4vw, 1.15rem);
+        flex-shrink: 0;
+    }
+
+    .profile-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .profile-info .label {
+        display: block;
+        font-size: clamp(0.72rem, 1.8vw, 0.78rem);
+        color: var(--gray-500);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+        margin-bottom: 0.15rem;
+    }
+
+    .profile-info .value {
+        font-size: clamp(0.9rem, 2.2vw, 1rem);
+        font-weight: 600;
+        color: var(--gray-800);
+        word-break: break-word;
+    }
+
+    /* ---------- Address Form Card ---------- */
+    .form-card {
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: clamp(1.1rem, 3vw, 1.65rem);
+        animation: slideInRight 0.6s ease-out;
+    }
+
+    .form-group-modern {
+        margin-bottom: clamp(0.85rem, 2.5vw, 1.15rem);
+    }
+
+    .form-group-modern:last-child {
+        margin-bottom: 0;
+    }
+
+    .form-label {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-weight: 600;
+        color: var(--gray-700);
+        font-size: clamp(0.78rem, 2vw, 0.88rem);
+        margin-bottom: 0.4rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .form-label i {
+        color: var(--primary-color);
+        font-size: 0.95em;
+    }
+
+    .input-wrap {
+        position: relative;
+        display: flex;
+        align-items: stretch;
+        background: var(--gray-100);
+        border: 2px solid var(--gray-200);
+        border-radius: 12px;
+        transition: all 0.2s ease;
+        overflow: hidden;
+    }
+
+    .input-wrap:focus-within {
+        border-color: var(--primary-color);
+        background: white;
+        box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.12);
+    }
+
+    .input-wrap.is-invalid {
+        border-color: var(--danger-color);
+    }
+
+    .input-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: clamp(38px, 9vw, 44px);
+        min-width: clamp(38px, 9vw, 44px);
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: white;
+        font-size: clamp(0.85rem, 2vw, 0.95rem);
+    }
+
+    .input-wrap input,
+    .input-wrap textarea {
+        flex: 1;
+        border: none;
+        outline: none;
+        background: transparent;
+        padding: clamp(0.55rem, 1.6vw, 0.7rem) clamp(0.75rem, 2vw, 1rem);
+        font-size: clamp(0.85rem, 2vw, 0.95rem);
+        color: var(--gray-800);
+        font-family: inherit;
+        width: 100%;
+        min-height: 42px;
+    }
+
+    .input-wrap textarea {
+        resize: vertical;
+        min-height: 90px;
+        line-height: 1.5;
+        padding-top: 0.7rem;
+    }
+
+    .input-wrap input::placeholder,
+    .input-wrap textarea::placeholder {
+        color: var(--gray-400);
+    }
+
+    /* Checkbox */
+    .checkbox-wrap {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: clamp(0.65rem, 2vw, 0.85rem);
+        background: var(--gray-100);
+        border-radius: 11px;
+        cursor: pointer;
+        transition: background 0.2s ease;
+        margin-bottom: clamp(0.85rem, 2.5vw, 1.15rem);
+    }
+
+    .checkbox-wrap:hover {
+        background: var(--gray-200);
+    }
+
+    .checkbox-wrap input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+        accent-color: var(--primary-color);
+        margin: 0;
+        flex-shrink: 0;
+    }
+
+    .checkbox-wrap label {
+        color: var(--gray-700);
+        font-weight: 500;
+        font-size: clamp(0.85rem, 2vw, 0.92rem);
+        cursor: pointer;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        user-select: none;
+    }
+
+    .checkbox-wrap label i {
+        color: var(--warning-color);
+    }
+
+    /* Submit button */
+    .btn-submit {
+        width: 100%;
+        padding: clamp(0.7rem, 2vw, 0.9rem) 1.5rem;
+        border: none;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: white;
+        font-weight: 700;
+        font-size: clamp(0.88rem, 2.2vw, 1rem);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        box-shadow: 0 4px 14px rgba(67, 97, 238, 0.3);
+    }
+
+    .btn-submit:hover:not(:disabled) {
+        background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(67, 97, 238, 0.45);
+    }
+
+    .btn-submit:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    /* Inline spinner */
+    .spinner-inline {
+        display: inline-block;
+        width: 15px;
+        height: 15px;
+        border: 2px solid rgba(255,255,255,0.4);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    /* ---------- Divider ---------- */
+    .section-divider {
+        margin: clamp(1.5rem, 4vw, 2.5rem) 0;
+        border: none;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, var(--primary-color), #7209b7, var(--primary-color), transparent);
+        opacity: 0.25;
+    }
+
+    /* ---------- Address Cards Grid ---------- */
+    .addresses-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: clamp(0.85rem, 2.5vw, 1.25rem);
+        animation: fadeInUp 0.6s ease-out 0.2s both;
+    }
+
+    @media (max-width: 575.98px) {
+        .addresses-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .address-card {
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        padding: clamp(1rem, 2.5vw, 1.25rem);
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+        display: flex;
+        flex-direction: column;
+        gap: 0.65rem;
+    }
+
+    .address-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-xl);
+        border-color: transparent;
+    }
+
+    .address-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-color), #7209b7);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.4s ease;
+    }
+
+    .address-card:hover::before {
+        transform: scaleX(1);
+    }
+
+    .address-card.is-default {
+        border-left: 4px solid var(--success-color);
+    }
+
+    .address-card-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .address-card-title {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        font-size: clamp(0.95rem, 2.3vw, 1.05rem);
+        font-weight: 700;
+        color: var(--gray-900);
+        margin: 0;
+        flex: 1;
+        min-width: 0;
+        word-break: break-word;
+    }
+
+    .address-card-title i {
+        color: var(--primary-color);
+        flex-shrink: 0;
+    }
+
+    .default-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.25rem 0.65rem;
+        background: linear-gradient(135deg, var(--success-color), #059669);
+        color: white;
+        border-radius: 999px;
+        font-size: clamp(0.65rem, 1.5vw, 0.72rem);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .address-card-body {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5rem;
+        font-size: clamp(0.85rem, 2vw, 0.92rem);
+        color: var(--gray-700);
+        line-height: 1.5;
+        word-break: break-word;
+    }
+
+    .address-card-body i {
+        color: var(--primary-color);
+        flex-shrink: 0;
+        margin-top: 2px;
+    }
+
+    .address-card-phone {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.4rem 0.75rem;
+        background: var(--gray-100);
+        border-radius: 999px;
+        font-size: clamp(0.78rem, 1.9vw, 0.85rem);
+        color: var(--gray-600);
+        width: fit-content;
+        max-width: 100%;
+        word-break: break-word;
+    }
+
+    .address-card-phone i {
+        color: var(--success-color);
+        flex-shrink: 0;
+    }
+
+    .address-card-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: auto;
+        padding-top: 0.5rem;
+        border-top: 1px dashed var(--gray-200);
+    }
+
+    .btn-delete {
+        padding: clamp(0.4rem, 1.3vw, 0.5rem) clamp(0.85rem, 2vw, 1rem);
+        border-radius: 10px;
+        border: 1.5px solid rgba(239, 68, 68, 0.35);
+        background: rgba(239, 68, 68, 0.06);
+        color: var(--danger-color);
+        font-weight: 600;
+        font-size: clamp(0.78rem, 1.9vw, 0.85rem);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+    }
+
+    .btn-delete:hover {
+        background: var(--danger-color);
+        color: white;
+        border-color: var(--danger-color);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+
+    /* ---------- No Addresses Empty State ---------- */
+    .no-addresses {
+        text-align: center;
+        padding: clamp(2rem, 6vw, 3.5rem) clamp(1rem, 3vw, 2rem);
+        background: linear-gradient(135deg, var(--gray-100), var(--gray-200));
+        border: 2px dashed var(--gray-300);
+        border-radius: var(--radius-lg);
+        color: var(--gray-500);
+        position: relative;
+        overflow: hidden;
+        animation: fadeInUp 0.6s ease-out;
+        grid-column: 1 / -1;
+    }
+
+    .no-addresses .icon {
+        font-size: clamp(2.5rem, 8vw, 4rem);
+        opacity: 0.35;
+        display: block;
+        margin-bottom: 0.75rem;
+        animation: floatY 3s ease-in-out infinite;
+    }
+
+    @keyframes floatY {
+        0%, 100% { transform: translateY(0); }
+        50%      { transform: translateY(-10px); }
+    }
+
+    .no-addresses p {
+        font-size: clamp(0.9rem, 2.2vw, 1.05rem);
+        margin: 0;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* ---------- Animations ---------- */
+    @keyframes slideInDown {
+        from { opacity: 0; transform: translateY(-20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideInLeft {
+        from { opacity: 0; transform: translateX(-20px); }
+        to   { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes slideInRight {
+        from { opacity: 0; transform: translateX(20px); }
+        to   { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ---------- Reduced Motion ---------- */
+    @media (prefers-reduced-motion: reduce) {
+        .page-header,
+        .profile-card,
+        .form-card,
+        .address-card,
+        .no-addresses,
+        .no-addresses .icon {
+            animation: none !important;
+        }
+        .address-card:hover,
+        .profile-row:hover,
+        .btn-delete:hover {
+            transform: none;
+        }
+    }
+
+    /* ---------- Dark Mode ---------- */
+    body.dark-mode .page-header h1 { color: var(--gray-100); }
+
+    body.dark-mode .section-heading { color: var(--gray-100); }
+
+    body.dark-mode .profile-card,
+    body.dark-mode .form-card,
+    body.dark-mode .address-card {
+        background: var(--gray-800);
+        border-color: var(--gray-700);
+    }
+
+    body.dark-mode .profile-row {
+        border-bottom-color: var(--gray-700);
+    }
+
+    body.dark-mode .profile-row:hover { background: var(--gray-700); }
+
+    body.dark-mode .profile-info .label { color: var(--gray-400); }
+    body.dark-mode .profile-info .value { color: var(--gray-100); }
+
+    body.dark-mode .form-label { color: var(--gray-300); }
+
+    body.dark-mode .input-wrap {
+        background: var(--gray-700);
+        border-color: var(--gray-600);
+    }
+
+    body.dark-mode .input-wrap:focus-within {
+        background: var(--gray-600);
+    }
+
+    body.dark-mode .input-wrap input,
+    body.dark-mode .input-wrap textarea {
+        color: white;
+    }
+
+    body.dark-mode .checkbox-wrap {
+        background: var(--gray-700);
+    }
+
+    body.dark-mode .checkbox-wrap:hover { background: var(--gray-600); }
+    body.dark-mode .checkbox-wrap label { color: var(--gray-200); }
+
+    body.dark-mode .address-card-title { color: var(--gray-100); }
+    body.dark-mode .address-card-body { color: var(--gray-300); }
+    body.dark-mode .address-card-phone { background: var(--gray-700); color: var(--gray-300); }
+    body.dark-mode .address-card-actions { border-top-color: var(--gray-600); }
+
+    body.dark-mode .no-addresses {
+        background: linear-gradient(135deg, var(--gray-800), var(--gray-900));
+        border-color: var(--gray-700);
+        color: var(--gray-400);
+    }
+</style>
+
+<!-- Page Header -->
+<div class="page-header">
+    <h1><i class="bi bi-person-circle"></i> My Account</h1>
+</div>
+
+<!-- Profile + Add Address Grid -->
+<div class="account-grid">
+
+    <!-- Profile Section -->
+    <div>
+        <h4 class="section-heading">
+            <i class="bi bi-person-badge-fill"></i> Profile Information
+        </h4>
+        <div class="profile-card">
+            <div class="profile-row">
+                <div class="profile-icon"><i class="bi bi-person-fill"></i></div>
+                <div class="profile-info">
+                    <span class="label">Username</span>
+                    <span class="value">{{ user.username }}</span>
+                </div>
+            </div>
+            <div class="profile-row">
+                <div class="profile-icon"><i class="bi bi-envelope-fill"></i></div>
+                <div class="profile-info">
+                    <span class="label">Email</span>
+                    <span class="value">{{ user.email }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Address Form -->
+    <div>
+        <h4 class="section-heading">
+            <i class="bi bi-plus-circle-fill"></i> Add New Address
+        </h4>
+        <div class="form-card">
+            <form method="post" action="{{ url_for('account') }}" id="addressForm" novalidate>
+
+                <div class="form-group-modern">
+                    <label class="form-label" for="addressLabel">
+                        <i class="bi bi-tag-fill"></i> Address Label
+                    </label>
+                    <div class="input-wrap">
+                        <span class="input-icon"><i class="bi bi-bookmark"></i></span>
+                        <input type="text" 
+                               id="addressLabel" 
+                               name="label" 
+                               placeholder="e.g., Home, Work, Office"
+                               maxlength="50"
+                               list="address-suggestions">
+                    </div>
+                </div>
+
+                <div class="form-group-modern">
+                    <label class="form-label" for="addressFull">
+                        <i class="bi bi-geo-alt-fill"></i> Full Address
+                    </label>
+                    <div class="input-wrap" id="addressWrap">
+                        <span class="input-icon"><i class="bi bi-pin-map"></i></span>
+                        <textarea id="addressFull" 
+                                  name="address" 
+                                  placeholder="Street, city, postal code, country" 
+                                  maxlength="300"
+                                  required></textarea>
+                    </div>
+                </div>
+
+                <div class="form-group-modern">
+                    <label class="form-label" for="addressPhone">
+                        <i class="bi bi-telephone-fill"></i> Phone Number
+                    </label>
+                    <div class="input-wrap" id="phoneWrap">
+                        <span class="input-icon"><i class="bi bi-telephone"></i></span>
+                        <input type="tel" 
+                               id="addressPhone" 
+                               name="phone" 
+                               placeholder="+237 6XX XXX XXX"
+                               maxlength="20"
+                               inputmode="tel">
+                    </div>
+                </div>
+
+                <label class="checkbox-wrap" for="is_default">
+                    <input type="checkbox" id="is_default" name="is_default" value="1">
+                    <label for="is_default">
+                        <i class="bi bi-star-fill"></i> Set as default address
+                    </label>
+                </label>
+
+                <button type="submit" class="btn-submit" id="submitBtn">
+                    <i class="bi bi-save-fill"></i> Add Address
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Divider -->
+<hr class="section-divider">
+
+<!-- Saved Addresses -->
+<h4 class="section-heading">
+    <i class="bi bi-house-heart-fill"></i> Your Saved Addresses
+</h4>
+
+<div class="addresses-grid" id="addressesContainer">
+    {% for a in addresses %}
+    <div class="address-card {% if a.is_default %}is-default{% endif %}" data-address-id="{{ a.id }}">
+        <div class="address-card-header">
+            <h5 class="address-card-title">
+                <i class="bi bi-geo-alt-fill"></i>
+                {{ a.label or 'Address' }}
+            </h5>
+            {% if a.is_default %}
+            <span class="default-badge">
+                <i class="bi bi-star-fill"></i> Default
+            </span>
+            {% endif %}
+        </div>
+
+        <div class="address-card-body">
+            <i class="bi bi-pin-map-fill"></i>
+            <span>{{ a.address }}</span>
+        </div>
+
+        {% if a.phone %}
+        <span class="address-card-phone">
+            <i class="bi bi-telephone-fill"></i>
+            {{ a.phone }}
+        </span>
+        {% else %}
+        <span class="address-card-phone" style="opacity: 0.65;">
+            <i class="bi bi-telephone-x"></i>
+            No phone provided
+        </span>
+        {% endif %}
+
+        <div class="address-card-actions">
+            <form method="post" 
+                  action="{{ url_for('delete_address', addr_id=a.id) }}" 
+                  class="delete-form" 
+                  style="flex: 1;"
+                  onsubmit="return confirmDelete(event, this);">
+                <button type="submit" class="btn-delete" style="width: 100%; justify-content: center;">
+                    <i class="bi bi-trash-fill"></i> Delete
+                </button>
+            </form>
+        </div>
+    </div>
+    {% else %}
+    <div class="no-addresses">
+        <span class="icon">🏠</span>
+        <p>No saved addresses yet — add your first address above!</p>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Address label suggestion datalist -->
+<datalist id="address-suggestions">
+    <option value="Home">
+    <option value="Work">
+    <option value="Office">
+    <option value="Parents House">
+    <option value="Weekend Home">
+</datalist>
+
+<script>
+/* ============================================
+   ACCOUNT PAGE SCRIPT
+   ============================================ */
+(function() {
+    'use strict';
+
+    const form        = document.getElementById('addressForm');
+    const labelInput  = document.getElementById('addressLabel');
+    const addrInput   = document.getElementById('addressFull');
+    const phoneInput  = document.getElementById('addressPhone');
+    const submitBtn   = document.getElementById('submitBtn');
+    const addrWrap    = document.getElementById('addressWrap');
+    const phoneWrap   = document.getElementById('phoneWrap');
+
+    // ---------- Live Validation ----------
+    function markInvalid(wrapEl, valid) {
+        if (wrapEl) wrapEl.classList.toggle('is-invalid', !valid);
+    }
+
+    if (addrInput) {
+        addrInput.addEventListener('input', function() {
+            markInvalid(addrWrap, this.value.trim().length > 0);
+        });
+    }
+
+    if (phoneInput) {
+        phoneInput.addEventListener('input', function() {
+            // Loose phone validation — only check if non-empty has enough digits
+            const val = this.value.trim();
+            if (!val) {
+                markInvalid(phoneWrap, true); // optional field
+                return;
+            }
+            const digitCount = val.replace(/[^\d]/g, '').length;
+            markInvalid(phoneWrap, digitCount >= 7);
+        });
+    }
+
+    // ---------- Form Submit Validation ----------
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            let hasError = false;
+
+            // Address required
+            if (!addrInput.value.trim()) {
+                markInvalid(addrWrap, false);
+                hasError = true;
+            }
+
+            // Phone (optional — validate format only if filled)
+            const phoneVal = phoneInput.value.trim();
+            if (phoneVal) {
+                const digits = phoneVal.replace(/[^\d]/g, '');
+                if (digits.length < 7) {
+                    markInvalid(phoneWrap, false);
+                    hasError = true;
+                }
+            }
+
+            if (hasError) {
+                e.preventDefault();
+                if (typeof showToast === 'function') {
+                    showToast('Please fix the highlighted fields.', 'warning', 'bi-exclamation-triangle-fill');
+                }
+                const firstInvalid = form.querySelector('.input-wrap.is-invalid input, .input-wrap.is-invalid textarea');
+                if (firstInvalid) firstInvalid.focus();
+                return;
+            }
+
+            // Loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-inline"></span> Adding...';
+
+            if (typeof showToast === 'function') {
+                showToast('Adding your address...', 'info', 'bi-hourglass-split');
+            }
+        });
+    }
+
+    // ---------- Delete Confirmation ----------
+    window.confirmDelete = function(event, formEl) {
+        event.preventDefault();
+
+        const card = formEl.closest('.address-card');
+        const label = card?.querySelector('.address-card-title')?.textContent.trim() || 'this address';
+
+        const ok = confirm(`Delete "${label}"?\n\nThis action cannot be undone.`);
+        if (!ok) return false;
+
+        // Animate removal
+        if (card) {
+            card.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+            card.style.opacity = '0';
+            card.style.transform = 'translateX(40px)';
+        }
+
+        if (typeof showToast === 'function') {
+            showToast(`Deleting "${label}"...`, 'warning', 'bi-trash-fill');
+        }
+
+        setTimeout(() => formEl.submit(), 250);
+        return false;
+    };
+
+    // ---------- Double-click to copy address ----------
+    document.querySelectorAll('.address-card').forEach(card => {
+        card.addEventListener('dblclick', function(e) {
+            // Ignore when double-clicking on the delete button or form
+            if (e.target.closest('.address-card-actions')) return;
+
+            const body = this.querySelector('.address-card-body span');
+            const address = body ? body.textContent.trim() : '';
+            if (!address) return;
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(address)
+                    .then(() => {
+                        if (typeof showToast === 'function') {
+                            showToast('Address copied to clipboard!', 'success', 'bi-clipboard-check-fill');
+                        }
+                    })
+                    .catch(() => {});
+            }
+        });
+    });
+
+    // ---------- Keyboard Shortcuts ----------
+    document.addEventListener('keydown', function(e) {
+        const tag = (document.activeElement || {}).tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+
+        // Alt + L → focus label
+        if (e.altKey && e.key.toLowerCase() === 'l') {
+            e.preventDefault();
+            labelInput?.focus();
+        }
+        // Alt + A → focus address
+        if (e.altKey && e.key.toLowerCase() === 'a') {
+            e.preventDefault();
+            addrInput?.focus();
+        }
+        // Alt + P → focus phone
+        if (e.altKey && e.key.toLowerCase() === 'p') {
+            e.preventDefault();
+            phoneInput?.focus();
+        }
+    });
+
+    // ---------- Welcome Toast ----------
+    if (typeof showToast === 'function') {
+        setTimeout(() => {
+            showToast('👋 Welcome back, {{ user.username }}!', 'info', 'bi-person-circle');
+        }, 600);
+    }
+
+    console.log('👤 Account page loaded');
+})();
+</script>
+{% endblock %}

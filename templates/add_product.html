@@ -1,0 +1,931 @@
+{% extends "base.html" %}
+
+{% block title %}Add Product - Linux Shop{% endblock %}
+
+{% block content %}
+<style>
+    /* ============================================
+       ADD PRODUCT PAGE — FULLY RESPONSIVE
+       ============================================ */
+
+    /* ---------- Page Header ---------- */
+    .page-header {
+        margin: clamp(1rem, 3vw, 2rem) 0 clamp(1rem, 2.5vw, 1.5rem);
+        animation: slideInDown 0.6s ease-out;
+    }
+
+    .page-header h1 {
+        font-size: clamp(1.4rem, 4vw, 2.1rem);
+        font-weight: 800;
+        color: var(--gray-900);
+        margin: 0;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        position: relative;
+    }
+
+    .page-header h1 i {
+        color: var(--primary-color);
+        font-size: clamp(1.25rem, 3.5vw, 1.75rem);
+    }
+
+    .page-header h1::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 70px;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-color), #7209b7);
+        border-radius: 999px;
+        animation: expandWidth 0.8s ease-out 0.3s both;
+    }
+
+    @keyframes expandWidth {
+        from { width: 0; }
+        to   { width: 70px; }
+    }
+
+    /* ---------- Form Card ---------- */
+    .product-form {
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: clamp(1.25rem, 3.5vw, 2rem);
+        max-width: 900px;
+        margin: 0 auto clamp(1.5rem, 4vw, 2.5rem);
+        animation: fadeInUp 0.6s ease-out 0.1s both;
+    }
+
+    /* ---------- Form Sections ---------- */
+    .form-section {
+        background: var(--gray-100);
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        padding: clamp(1rem, 2.5vw, 1.5rem);
+        margin-bottom: clamp(1.25rem, 3vw, 1.75rem);
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .form-section:hover {
+        border-color: var(--primary-color);
+        box-shadow: 0 4px 12px rgba(67, 97, 238, 0.06);
+    }
+
+    .form-section h5 {
+        font-size: clamp(0.95rem, 2.4vw, 1.1rem);
+        font-weight: 700;
+        color: var(--gray-800);
+        margin-bottom: clamp(0.85rem, 2.5vw, 1.25rem);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .form-section h5 i {
+        color: var(--primary-color);
+        font-size: 1.05em;
+    }
+
+    /* ---------- Form Group ---------- */
+    .form-group-modern {
+        margin-bottom: clamp(0.85rem, 2.5vw, 1.15rem);
+    }
+
+    .form-group-modern:last-child {
+        margin-bottom: 0;
+    }
+
+    .form-label {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-weight: 600;
+        color: var(--gray-700);
+        font-size: clamp(0.78rem, 2vw, 0.88rem);
+        margin-bottom: 0.4rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .form-label i {
+        color: var(--primary-color);
+        font-size: 0.95em;
+    }
+
+    /* ---------- Input Wrapper ---------- */
+    .input-wrap {
+        position: relative;
+        display: flex;
+        align-items: stretch;
+        background: white;
+        border: 2px solid var(--gray-200);
+        border-radius: 12px;
+        transition: all 0.2s ease;
+        overflow: hidden;
+    }
+
+    .input-wrap:focus-within {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.12);
+    }
+
+    .input-wrap.is-invalid {
+        border-color: var(--danger-color);
+    }
+
+    .input-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: clamp(38px, 9vw, 44px);
+        min-width: clamp(38px, 9vw, 44px);
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: white;
+        font-size: clamp(0.85rem, 2vw, 0.95rem);
+        flex-shrink: 0;
+    }
+
+    .input-wrap input,
+    .input-wrap textarea,
+    .input-wrap select {
+        flex: 1;
+        border: none;
+        outline: none;
+        background: transparent;
+        padding: clamp(0.55rem, 1.6vw, 0.7rem) clamp(0.75rem, 2vw, 1rem);
+        font-size: clamp(0.85rem, 2vw, 0.95rem);
+        color: var(--gray-800);
+        min-height: 42px;
+        width: 100%;
+        font-family: inherit;
+    }
+
+    .input-wrap textarea {
+        resize: vertical;
+        min-height: 110px;
+        line-height: 1.5;
+        padding-top: 0.75rem;
+    }
+
+    .input-wrap input::placeholder,
+    .input-wrap textarea::placeholder {
+        color: var(--gray-400);
+    }
+
+    /* Row layout — uses CSS grid for responsiveness */
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: clamp(0.75rem, 2vw, 1rem);
+    }
+
+    @media (min-width: 576px) {
+        .form-row.cols-2 {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    /* Form help text */
+    .form-help {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: clamp(0.72rem, 1.8vw, 0.8rem);
+        color: var(--gray-500);
+        margin-top: 0.35rem;
+    }
+
+    .form-help i {
+        color: var(--info-color);
+        flex-shrink: 0;
+    }
+
+    /* ---------- File Input ---------- */
+    .file-input-wrap {
+        border: 2px dashed var(--gray-300);
+        border-radius: 12px;
+        padding: clamp(0.6rem, 2vw, 0.85rem);
+        background: white;
+        transition: all 0.2s ease;
+        position: relative;
+    }
+
+    .file-input-wrap:hover,
+    .file-input-wrap.drag-over {
+        border-color: var(--primary-color);
+        background: rgba(67, 97, 238, 0.04);
+    }
+
+    .file-input-wrap input[type="file"] {
+        width: 100%;
+        font-size: clamp(0.8rem, 2vw, 0.9rem);
+        color: var(--gray-700);
+        cursor: pointer;
+    }
+
+    .file-input-wrap input[type="file"]::file-selector-button {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: white;
+        border: none;
+        padding: clamp(0.4rem, 1.2vw, 0.5rem) clamp(0.75rem, 2vw, 1rem);
+        border-radius: 8px;
+        margin-right: 0.75rem;
+        font-weight: 600;
+        font-size: clamp(0.78rem, 1.9vw, 0.85rem);
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .file-input-wrap input[type="file"]::file-selector-button:hover {
+        background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+        transform: translateY(-1px);
+    }
+
+    /* ---------- Image Preview ---------- */
+    .image-preview-container {
+        margin-top: clamp(0.85rem, 2.5vw, 1.25rem);
+        background: linear-gradient(135deg, var(--gray-100), var(--gray-200));
+        border: 2px dashed var(--gray-300);
+        border-radius: 12px;
+        padding: clamp(1.25rem, 3vw, 2rem);
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.25s ease;
+        min-height: 140px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .image-preview-container:hover {
+        border-color: var(--primary-color);
+        background: linear-gradient(135deg, #f8f9ff, var(--gray-100));
+    }
+
+    .image-preview-container.drag-over {
+        border-color: var(--primary-color);
+        background: rgba(67, 97, 238, 0.08);
+    }
+
+    .image-preview-container::before {
+        content: '📷';
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: clamp(2rem, 6vw, 3.5rem);
+        opacity: 0.12;
+        pointer-events: none;
+    }
+
+    #previewImage {
+        max-width: 100%;
+        max-height: 260px;
+        border-radius: 10px;
+        box-shadow: var(--shadow-lg);
+        position: relative;
+        z-index: 1;
+        display: none;
+    }
+
+    /* ---------- Image Action Buttons ---------- */
+    .image-actions {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 0.85rem;
+    }
+
+    /* ---------- Buttons ---------- */
+    .btn-modern {
+        padding: clamp(0.5rem, 1.5vw, 0.65rem) clamp(1rem, 2.5vw, 1.35rem);
+        border-radius: 11px;
+        font-weight: 600;
+        font-size: clamp(0.82rem, 2vw, 0.9rem);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        border: none;
+        text-decoration: none;
+        white-space: nowrap;
+        line-height: 1.2;
+    }
+
+    .btn-outline-primary-modern {
+        background: transparent;
+        color: var(--primary-color);
+        border: 2px solid var(--primary-color);
+    }
+
+    .btn-outline-primary-modern:hover {
+        background: var(--primary-color);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+    }
+
+    .btn-outline-secondary-modern {
+        background: transparent;
+        color: var(--gray-600);
+        border: 2px solid var(--gray-300);
+    }
+
+    .btn-outline-secondary-modern:hover {
+        background: var(--gray-100);
+        color: var(--gray-800);
+        border-color: var(--gray-500);
+        transform: translateY(-2px);
+    }
+
+    .btn-submit {
+        width: 100%;
+        background: linear-gradient(135deg, var(--success-color), #059669);
+        color: white;
+        padding: clamp(0.75rem, 2vw, 0.95rem) 1.5rem;
+        font-size: clamp(0.95rem, 2.3vw, 1.05rem);
+        font-weight: 700;
+        border-radius: 12px;
+        box-shadow: 0 4px 14px rgba(6, 214, 160, 0.3);
+        margin-top: clamp(0.75rem, 2vw, 1rem);
+    }
+
+    .btn-submit:hover:not(:disabled) {
+        background: linear-gradient(135deg, #059669, var(--success-color));
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(6, 214, 160, 0.45);
+        color: white;
+    }
+
+    .btn-submit:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    /* Inline spinner */
+    .spinner-inline {
+        display: inline-block;
+        width: 15px;
+        height: 15px;
+        border: 2px solid rgba(255,255,255,0.4);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        vertical-align: middle;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    /* Cropper custom styles */
+    .cropper-container {
+        border-radius: var(--radius-lg) !important;
+        overflow: hidden;
+    }
+
+    .cropper-view-box {
+        outline: 2px solid var(--primary-color) !important;
+    }
+
+    .cropper-line,
+    .cropper-point {
+        background-color: var(--primary-color) !important;
+    }
+
+    /* ---------- Animations ---------- */
+    @keyframes slideInDown {
+        from { opacity: 0; transform: translateY(-20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width: 575.98px) {
+        .product-form {
+            border-radius: var(--radius);
+        }
+
+        .image-actions {
+            flex-direction: column;
+        }
+
+        .image-actions .btn-modern {
+            width: 100%;
+        }
+
+        #previewImage {
+            max-height: 200px;
+        }
+    }
+
+    /* ---------- Reduced Motion ---------- */
+    @media (prefers-reduced-motion: reduce) {
+        .page-header,
+        .product-form {
+            animation: none !important;
+        }
+        .btn-modern:hover,
+        .btn-submit:hover:not(:disabled) {
+            transform: none;
+        }
+    }
+
+    /* ---------- Dark Mode ---------- */
+    body.dark-mode .product-form {
+        background: var(--gray-800);
+        border-color: var(--gray-700);
+    }
+
+    body.dark-mode .page-header h1 { color: var(--gray-100); }
+
+    body.dark-mode .form-section {
+        background: var(--gray-700);
+        border-color: var(--gray-600);
+    }
+
+    body.dark-mode .form-section h5 { color: var(--gray-100); }
+    body.dark-mode .form-label { color: var(--gray-300); }
+
+    body.dark-mode .input-wrap {
+        background: var(--gray-700);
+        border-color: var(--gray-600);
+    }
+
+    body.dark-mode .input-wrap:focus-within {
+        background: var(--gray-600);
+    }
+
+    body.dark-mode .input-wrap input,
+    body.dark-mode .input-wrap textarea {
+        color: white;
+    }
+
+    body.dark-mode .file-input-wrap {
+        background: var(--gray-700);
+        border-color: var(--gray-600);
+    }
+
+    body.dark-mode .file-input-wrap:hover {
+        background: var(--gray-600);
+    }
+
+    body.dark-mode .file-input-wrap input[type="file"] {
+        color: var(--gray-200);
+    }
+
+    body.dark-mode .image-preview-container {
+        background: linear-gradient(135deg, var(--gray-700), var(--gray-800));
+        border-color: var(--gray-600);
+    }
+
+    body.dark-mode .btn-outline-secondary-modern {
+        color: var(--gray-200);
+        border-color: var(--gray-600);
+    }
+
+    body.dark-mode .btn-outline-secondary-modern:hover {
+        background: var(--gray-600);
+        color: white;
+    }
+</style>
+
+<!-- Page Header -->
+<div class="page-header">
+    <h1><i class="bi bi-plus-circle-fill"></i> Add New Product</h1>
+</div>
+
+<!-- Form -->
+<form method="POST" 
+      class="product-form" 
+      enctype="multipart/form-data" 
+      id="addProductForm"
+      novalidate>
+    {{ form.hidden_tag() }}
+    <input type="hidden" name="MAX_FILE_SIZE" value="5242880">
+
+    <!-- ============ IMAGE SECTION ============ -->
+    <div class="form-section">
+        <h5><i class="bi bi-image-fill"></i> Product Image</h5>
+
+        <div class="form-group-modern">
+            <label class="form-label" for="imageInput">
+                <i class="bi bi-upload"></i> Choose or Drop an Image
+            </label>
+            <div class="file-input-wrap" id="fileInputWrap">
+                <input type="file" name="image_file" id="imageInput" accept="image/*">
+            </div>
+            <div class="form-help">
+                <i class="bi bi-info-circle-fill"></i>
+                Upload from your device — you can preview, crop, and optimize before saving.
+            </div>
+        </div>
+
+        <!-- Image Preview -->
+        <div class="image-preview-container" id="imagePreviewContainer">
+            <img id="previewImage" src="" alt="Preview">
+        </div>
+
+        <!-- Image Actions -->
+        <div class="image-actions">
+            <button type="button" id="cropBtn" class="btn-modern btn-outline-primary-modern" style="display:none;">
+                <i class="bi bi-crop"></i> Crop &amp; Use
+            </button>
+            <button type="button" id="resetCropBtn" class="btn-modern btn-outline-secondary-modern" style="display:none;">
+                <i class="bi bi-arrow-counterclockwise"></i> Reset
+            </button>
+        </div>
+    </div>
+
+    <!-- ============ DETAILS SECTION ============ -->
+    <div class="form-section">
+        <h5><i class="bi bi-info-circle-fill"></i> Product Details</h5>
+
+        <div class="form-row cols-2">
+            <div class="form-group-modern">
+                {{ form.name.label(class="form-label") }}
+                <div class="input-wrap" id="nameWrap">
+                    <span class="input-icon"><i class="bi bi-tag"></i></span>
+                    {{ form.name(class="form-control", placeholder="Enter product name") }}
+                </div>
+            </div>
+
+            <div class="form-group-modern">
+                {{ form.price.label(class="form-label") }}
+                <div class="input-wrap" id="priceWrap">
+                    <span class="input-icon"><i class="bi bi-currency-exchange"></i></span>
+                    {{ form.price(class="form-control", placeholder="Enter price") }}
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group-modern">
+            {{ form.description.label(class="form-label") }}
+            <div class="input-wrap" id="descriptionWrap">
+                <span class="input-icon"><i class="bi bi-card-text"></i></span>
+                {{ form.description(class="form-control", rows=4, placeholder="Enter product description") }}
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ INVENTORY SECTION ============ -->
+    <div class="form-section">
+        <h5><i class="bi bi-box-seam-fill"></i> Inventory Management</h5>
+
+        <div class="form-row cols-2">
+            <div class="form-group-modern">
+                {{ form.quantity.label(class="form-label") }}
+                <div class="input-wrap" id="quantityWrap">
+                    <span class="input-icon"><i class="bi bi-calculator"></i></span>
+                    {{ form.quantity(class="form-control", placeholder="Enter quantity") }}
+                </div>
+            </div>
+
+            <div class="form-group-modern">
+                {{ form.image_url.label(class="form-label") }}
+                <div class="input-wrap" id="imageUrlWrap">
+                    <span class="input-icon"><i class="bi bi-link-45deg"></i></span>
+                    {{ form.image_url(class="form-control", placeholder="Image URL (optional)") }}
+                </div>
+                <div class="form-help">
+                    <i class="bi bi-info-circle-fill"></i>
+                    External image URL (optional) — used if no file is uploaded.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Submit -->
+    <div>
+        {{ form.submit_btn(class="btn-modern btn-submit", id="submitBtn") }}
+    </div>
+</form>
+
+<!-- Cropper.js -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+<script>
+/* ============================================
+   ADD PRODUCT PAGE SCRIPT
+   ============================================ */
+(function() {
+    'use strict';
+
+    // ---------- Elements ----------
+    const form                = document.getElementById('addProductForm');
+    const imageInput          = document.getElementById('imageInput');
+    const previewImage        = document.getElementById('previewImage');
+    const cropBtn             = document.getElementById('cropBtn');
+    const resetCropBtn        = document.getElementById('resetCropBtn');
+    const previewContainer    = document.getElementById('imagePreviewContainer');
+    const fileInputWrap       = document.getElementById('fileInputWrap');
+
+    const nameInput        = document.querySelector('[name="name"]');
+    const priceInput       = document.querySelector('[name="price"]');
+    const quantityInput    = document.querySelector('[name="quantity"]');
+    const descriptionInput = document.querySelector('[name="description"]');
+    const submitBtn        = document.getElementById('submitBtn');
+
+    let cropper = null;
+
+    // ---------- Image Validation ----------
+    function validateImage(file) {
+        const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        const maxSize = 5 * 1024 * 1024; // 5MB
+
+        if (!validTypes.includes(file.type)) {
+            if (typeof showToast === 'function') {
+                showToast('Please upload a valid image (JPEG, PNG, GIF, WEBP)', 'warning', 'bi-exclamation-triangle-fill');
+            }
+            return false;
+        }
+        if (file.size > maxSize) {
+            if (typeof showToast === 'function') {
+                showToast('Image size must be less than 5MB', 'warning', 'bi-exclamation-triangle-fill');
+            }
+            return false;
+        }
+        return true;
+    }
+
+    // ---------- Init Cropper ----------
+    function initCropper(url) {
+        previewImage.src = url;
+        previewImage.style.display = 'block';
+
+        if (cropper) {
+            cropper.destroy();
+            cropper = null;
+        }
+
+        cropper = new Cropper(previewImage, {
+            aspectRatio: 1,
+            viewMode: 1,
+            dragMode: 'move',
+            autoCropArea: 0.8,
+            restore: false,
+            guides: true,
+            center: true,
+            highlight: false,
+            cropBoxMovable: true,
+            cropBoxResizable: true,
+            toggleDragModeOnDblclick: false
+        });
+
+        cropBtn.style.display = 'inline-flex';
+        resetCropBtn.style.display = 'inline-flex';
+    }
+
+    // ---------- File Input Change ----------
+    if (imageInput) {
+        imageInput.addEventListener('change', function(e) {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+
+            if (!validateImage(file)) {
+                imageInput.value = '';
+                return;
+            }
+
+            const url = URL.createObjectURL(file);
+            initCropper(url);
+
+            if (typeof showToast === 'function') {
+                showToast('Image loaded — adjust the crop area', 'info', 'bi-crop');
+            }
+        });
+    }
+
+    // ---------- Crop & Use ----------
+    if (cropBtn) {
+        cropBtn.addEventListener('click', function() {
+            if (!cropper) return;
+
+            const originalHtml = cropBtn.innerHTML;
+            cropBtn.disabled = true;
+            cropBtn.innerHTML = '<span class="spinner-inline"></span> Processing...';
+
+            try {
+                const canvas = cropper.getCroppedCanvas({
+                    maxWidth: 1200,
+                    maxHeight: 1200,
+                    fillColor: '#fff',
+                    imageSmoothingEnabled: true,
+                    imageSmoothingQuality: 'high'
+                });
+
+                canvas.toBlob((blob) => {
+                    if (!blob) throw new Error('Failed to create blob');
+
+                    // Replace the file in the input via DataTransfer
+                    const fileName = (imageInput.files && imageInput.files[0])
+                        ? imageInput.files[0].name
+                        : 'cropped-image.jpg';
+
+                    const file = new File([blob], fileName, { type: blob.type });
+                    const dt = new DataTransfer();
+                    dt.items.add(file);
+                    imageInput.files = dt.files;
+
+                    // Update preview
+                    const croppedUrl = URL.createObjectURL(blob);
+                    previewImage.src = croppedUrl;
+
+                    // Destroy cropper
+                    if (cropper) { cropper.destroy(); cropper = null; }
+
+                    cropBtn.style.display = 'none';
+                    cropBtn.disabled = false;
+                    cropBtn.innerHTML = originalHtml;
+                    resetCropBtn.style.display = 'inline-flex';
+
+                    if (typeof showToast === 'function') {
+                        showToast('Image cropped successfully!', 'success', 'bi-check-circle-fill');
+                    }
+                }, 'image/jpeg', 0.9);
+            } catch (err) {
+                console.error(err);
+                cropBtn.disabled = false;
+                cropBtn.innerHTML = originalHtml;
+                if (typeof showToast === 'function') {
+                    showToast('Error cropping image', 'error', 'bi-exclamation-triangle-fill');
+                }
+            }
+        });
+    }
+
+    // ---------- Reset Image ----------
+    if (resetCropBtn) {
+        resetCropBtn.addEventListener('click', function() {
+            if (cropper) { cropper.destroy(); cropper = null; }
+            previewImage.src = '';
+            previewImage.style.display = 'none';
+            imageInput.value = '';
+            cropBtn.style.display = 'none';
+            resetCropBtn.style.display = 'none';
+
+            if (typeof showToast === 'function') {
+                showToast('Image cleared', 'info', 'bi-arrow-counterclockwise');
+            }
+        });
+    }
+
+    // ---------- Drag & Drop (both input wrap and preview) ----------
+    function attachDragAndDrop(el) {
+        if (!el) return;
+        el.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            el.classList.add('drag-over');
+        });
+        el.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            el.classList.remove('drag-over');
+        });
+        el.addEventListener('drop', (e) => {
+            e.preventDefault();
+            el.classList.remove('drag-over');
+
+            const files = e.dataTransfer.files;
+            if (files && files.length) {
+                try {
+                    const dt = new DataTransfer();
+                    dt.items.add(files[0]);
+                    imageInput.files = dt.files;
+                    imageInput.dispatchEvent(new Event('change', { bubbles: true }));
+                } catch (err) {
+                    console.warn('Drag and drop not fully supported:', err);
+                }
+            }
+        });
+    }
+
+    attachDragAndDrop(fileInputWrap);
+    attachDragAndDrop(previewContainer);
+
+    // ---------- Live Validation ----------
+    function markInvalid(wrapEl, valid) {
+        if (wrapEl) wrapEl.classList.toggle('is-invalid', !valid);
+    }
+
+    if (nameInput) {
+        nameInput.addEventListener('input', function() {
+            markInvalid(document.getElementById('nameWrap'), this.value.trim().length > 0);
+        });
+    }
+    if (descriptionInput) {
+        descriptionInput.addEventListener('input', function() {
+            markInvalid(document.getElementById('descriptionWrap'), this.value.trim().length > 0);
+        });
+    }
+    if (priceInput) {
+        priceInput.addEventListener('input', function() {
+            // Keep only numbers and a single decimal point
+            this.value = this.value.replace(/[^0-9.]/g, '');
+            const parts = this.value.split('.');
+            if (parts.length > 2) this.value = parts[0] + '.' + parts.slice(1).join('');
+            const val = parseFloat(this.value);
+            markInvalid(document.getElementById('priceWrap'), !isNaN(val) && val > 0);
+        });
+    }
+    if (quantityInput) {
+        quantityInput.addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '');
+            const val = parseInt(this.value, 10);
+            markInvalid(document.getElementById('quantityWrap'), !isNaN(val) && val >= 0);
+        });
+    }
+
+    // ---------- Form Submit Validation ----------
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            let hasError = false;
+
+            // Name
+            const nameVal = nameInput ? nameInput.value.trim() : '';
+            if (!nameVal) {
+                markInvalid(document.getElementById('nameWrap'), false);
+                hasError = true;
+            }
+
+            // Description
+            const descVal = descriptionInput ? descriptionInput.value.trim() : '';
+            if (!descVal) {
+                markInvalid(document.getElementById('descriptionWrap'), false);
+                hasError = true;
+            }
+
+            // Price
+            const priceVal = priceInput ? parseFloat(priceInput.value) : NaN;
+            if (isNaN(priceVal) || priceVal <= 0) {
+                markInvalid(document.getElementById('priceWrap'), false);
+                hasError = true;
+            }
+
+            // Quantity
+            const qtyVal = quantityInput ? parseInt(quantityInput.value, 10) : NaN;
+            if (isNaN(qtyVal) || qtyVal < 0) {
+                markInvalid(document.getElementById('quantityWrap'), false);
+                hasError = true;
+            }
+
+            if (hasError) {
+                e.preventDefault();
+                if (typeof showToast === 'function') {
+                    showToast('Please fix the highlighted fields.', 'warning', 'bi-exclamation-triangle-fill');
+                }
+                // Focus the first invalid input
+                const firstInvalid = form.querySelector('.input-wrap.is-invalid input, .input-wrap.is-invalid textarea');
+                if (firstInvalid) firstInvalid.focus();
+                return;
+            }
+
+            // Loading state
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner-inline"></span> Adding Product...';
+            }
+
+            if (typeof showToast === 'function') {
+                showToast('Adding product...', 'info', 'bi-hourglass-split');
+            }
+        });
+    }
+
+    // ---------- Keyboard Shortcuts ----------
+    document.addEventListener('keydown', function(e) {
+        // Ctrl/Cmd+Enter submits form
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+            if (form && document.activeElement && form.contains(document.activeElement)) {
+                e.preventDefault();
+                form.requestSubmit();
+            }
+        }
+        // Escape clears image
+        if (e.key === 'Escape' && previewImage.style.display === 'block') {
+            if (resetCropBtn) resetCropBtn.click();
+        }
+    });
+
+    // ---------- Welcome Toast ----------
+    if (typeof showToast === 'function') {
+        setTimeout(() => {
+            showToast('📝 Fill in the product details below', 'info', 'bi-pencil-fill');
+        }, 900);
+    }
+
+    console.log('📦 Add Product page loaded');
+})();
+</script>
+{% endblock %}
